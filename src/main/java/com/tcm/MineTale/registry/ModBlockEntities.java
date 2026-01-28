@@ -2,6 +2,7 @@ package com.tcm.MineTale.registry;
 
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.entity.CampfireWorkbenchEntity;
+import com.tcm.MineTale.block.workbenches.entity.FurnaceWorkbenchEntity;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.Registry;
@@ -17,6 +18,12 @@ public class ModBlockEntities {
         "campfire_workbench_be", 
         CampfireWorkbenchEntity::new,
         ModBlocks.CAMPFIRE_WORKBENCH_BLOCK
+    );
+
+    public static final BlockEntityType<FurnaceWorkbenchEntity> FURNACE_WORKBENCH_BE = register(
+        "furnace_workbench_be", 
+        FurnaceWorkbenchEntity::new,
+        ModBlocks.FURNACE_WORKBENCH_BLOCK
     );
 
 
