@@ -10,6 +10,7 @@ import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModEntities;
 import com.tcm.MineTale.registry.ModEntityDataSerializers;
 import com.tcm.MineTale.registry.ModItems;
+import com.tcm.MineTale.registry.ModMenuTypes;
 
 public class MineTale implements ModInitializer {
 	public static final String MOD_ID = "minetale";
@@ -19,10 +20,17 @@ public class MineTale implements ModInitializer {
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+	/**
+	 * Initializes and registers the mod's game content and subsystems during Fabric startup.
+	 *
+	 * <p>Triggers initialization for blocks, block entities, menu types, entities, items, and entity
+	 * data serializers so they are registered with the game before gameplay begins.</p>
+	 */
 	@Override
 	public void onInitialize() {
 		ModBlocks.initialize();
 		ModBlockEntities.initialize();
+		ModMenuTypes.initialize();
 		ModEntities.initialize();
 		ModItems.initialize();
 

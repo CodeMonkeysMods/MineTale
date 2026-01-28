@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.CampfireWorkbench;
+import com.tcm.MineTale.block.workbenches.FurnaceWorkbench;
 
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.Registry;
@@ -26,11 +27,25 @@ public class ModBlocks {
 		BlockBehaviour.Properties.of().sound(SoundType.WOOD), 
 		true
 	);
+
+	public static final Block FURNACE_WORKBENCH_BLOCK = register(
+		"furnace_workbench_block",
+		FurnaceWorkbench::new,
+		BlockBehaviour.Properties.of().sound(SoundType.WOOD),
+		true
+	);
     
+    /**
+     * Registers this mod's blocks into the Functional Blocks creative tab and records the registration.
+     *
+     * Adds CAMPFIRE_WORKBENCH_BLOCK and FURNACE_WORKBENCH_BLOCK to CreativeModeTabs.FUNCTIONAL_BLOCKS and prints a registration message including the mod ID.
+     */
     public static void initialize() { 
 		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(entries -> {
         	entries.accept(CAMPFIRE_WORKBENCH_BLOCK);
+			entries.accept(FURNACE_WORKBENCH_BLOCK);
     	});
+		
 
         System.out.println("Registered Mod Blocks for " + MineTale.MOD_ID);
     }

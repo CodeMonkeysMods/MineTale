@@ -2,6 +2,7 @@ package com.tcm.MineTale.registry;
 
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.entity.CampfireWorkbenchEntity;
+import com.tcm.MineTale.block.workbenches.entity.FurnaceWorkbenchEntity;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.Registry;
@@ -19,7 +20,18 @@ public class ModBlockEntities {
         ModBlocks.CAMPFIRE_WORKBENCH_BLOCK
     );
 
+    public static final BlockEntityType<FurnaceWorkbenchEntity> FURNACE_WORKBENCH_BE = register(
+        "furnace_workbench_be", 
+        FurnaceWorkbenchEntity::new,
+        ModBlocks.FURNACE_WORKBENCH_BLOCK
+    );
 
+
+    /**
+     * Logs a confirmation that the mod's block entity types have been registered.
+     *
+     * Prints "Registered Mod Entities for {modId}" to standard output, where `{modId}` is the mod's identifier.
+     */
     public static void initialize() {
         System.out.println("Registered Mod Entities for " + MineTale.MOD_ID);
     }

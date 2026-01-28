@@ -3,7 +3,10 @@ package com.tcm.MineTale.block.workbenches;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
@@ -18,11 +21,15 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.*;
+import net.minecraft.world.phys.BlockHitResult;
+
 import org.jetbrains.annotations.Nullable;
+
+import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
 
 import java.util.function.Supplier;
 
-public abstract class AbstractWorkbench<E extends BlockEntity> extends BaseEntityBlock {
+public abstract class AbstractWorkbench<E extends AbstractWorkbenchEntity> extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
     public static final EnumProperty<ChestType> TYPE = BlockStateProperties.CHEST_TYPE;
@@ -127,8 +134,98 @@ public abstract class AbstractWorkbench<E extends BlockEntity> extends BaseEntit
         return true;
     }
 
+    /**
+     * Registers the block state properties used by this block.
+     *
+     * @param builder the state builder to populate with this block's properties (`FACING`, `HALF`, `TYPE`)
+     */
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, HALF, TYPE);
+    }
+
+    /**
+     * Create the block entity for the primary anchor of a multipart workbench.
+     *
+     * @param pos   the position where the block entity would be created
+     * @param state the block state at the position
+     * @return the new block entity when this block is the primary anchor (lower half with TYPE `LEFT` or `SINGLE`), or `null` if this block is a secondary part
+     */
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        // We only want a Block Entity at the 'primary' anchor point of the structure.
+        // For 1x1: HALF=LOWER, TYPE=SINGLE
+        // For 2x1: HALF=LOWER, TYPE=LEFT
+        // For 2x2: HALF=LOWER, TYPE=LEFT
+        
+        boolean isLower = state.getValue(HALF) == DoubleBlockHalf.LOWER;
+        ChestType type = state.getValue(TYPE);
+
+        // If it's the RIGHT side of a wide block, or the UPPER half of a tall block, return null.
+        if (isLower && (type == ChestType.LEFT || type == ChestType.SINGLE)) {
+            return this.blockEntityType.get().create(pos, state);
+        }
+        
+        return null;
+    }
+
+    /**
+     * Open the workbench menu for the block's master part when a player interacts without an item.
+     *
+     * @param state     the block state at the clicked position
+     * @param level     the level in which the interaction occurs
+     * @param pos       the position of the block that was interacted with
+     * @param player    the player performing the interaction
+     * @param hitResult details about the hit (hit position and face)
+     * @return {@code InteractionResult.CONSUME} if a menu was opened on the server, {@code InteractionResult.SUCCESS} on the client, {@code InteractionResult.PASS} otherwise
+     */
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+
+        // 1. Find the Master Position (Bottom-Left)
+        BlockPos masterPos = getMasterPos(state, pos);
+        BlockEntity blockEntity = level.getBlockEntity(masterPos);
+
+        // 2. Check if the Master block has the MenuProvider trait
+        if (blockEntity instanceof MenuProvider menuProvider) {
+            // 3. Open the Screen (this triggers the ScreenHandler/Menu)
+            player.openMenu(menuProvider);
+            return InteractionResult.CONSUME;
+        }
+
+        return InteractionResult.PASS;
+    }
+
+    /**
+     * Compute the master (bottom-left) anchor position for this workbench block.
+     *
+     * The master is the block that serves as the primary anchor for multi-block
+     * behavior and block-entity placement: if this block is the upper half the
+     * master is one block below; if this block is the right-side part the master
+     * is one block to the left relative to the block's facing.
+     *
+     * @param state the block state used to determine HALF, TYPE, and FACING
+     * @param pos   the current block position
+     * @return the position of the master (bottom-left) block for this workbench
+     */
+    public BlockPos getMasterPos(BlockState state, BlockPos pos) {
+        BlockPos master = pos;
+        Direction facing = state.getValue(FACING);
+        
+        // Move down if we are the upper half
+        if (state.getValue(HALF) == DoubleBlockHalf.UPPER) {
+            master = master.below();
+        }
+        
+        // Move left if we are the right side (relative to facing)
+        if (state.getValue(TYPE) == ChestType.RIGHT) {
+            master = master.relative(facing.getCounterClockWise());
+        }
+        
+        return master;
     }
 }
