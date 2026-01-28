@@ -27,6 +27,11 @@ public class ModBlockEntities {
     );
 
 
+    /**
+     * Logs a confirmation that the mod's block entity types have been registered.
+     *
+     * Prints "Registered Mod Entities for {modId}" to standard output, where `{modId}` is the mod's identifier.
+     */
     public static void initialize() {
         System.out.println("Registered Mod Entities for " + MineTale.MOD_ID);
     }

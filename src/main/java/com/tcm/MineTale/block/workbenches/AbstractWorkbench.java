@@ -134,11 +134,23 @@ public abstract class AbstractWorkbench<E extends AbstractWorkbenchEntity> exten
         return true;
     }
 
+    /**
+     * Registers the block state properties used by this block.
+     *
+     * @param builder the state builder to populate with this block's properties (`FACING`, `HALF`, `TYPE`)
+     */
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, HALF, TYPE);
     }
 
+    /**
+     * Create the block entity for the primary anchor of a multipart workbench.
+     *
+     * @param pos   the position where the block entity would be created
+     * @param state the block state at the position
+     * @return the new block entity when this block is the primary anchor (lower half with TYPE `LEFT` or `SINGLE`), or `null` if this block is a secondary part
+     */
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -158,6 +170,16 @@ public abstract class AbstractWorkbench<E extends AbstractWorkbenchEntity> exten
         return null;
     }
 
+    /**
+     * Open the workbench menu for the block's master part when a player interacts without an item.
+     *
+     * @param state     the block state at the clicked position
+     * @param level     the level in which the interaction occurs
+     * @param pos       the position of the block that was interacted with
+     * @param player    the player performing the interaction
+     * @param hitResult details about the hit (hit position and face)
+     * @return {@code InteractionResult.CONSUME} if a menu was opened on the server, {@code InteractionResult.SUCCESS} on the client, {@code InteractionResult.PASS} otherwise
+     */
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (level.isClientSide()) {
@@ -178,6 +200,18 @@ public abstract class AbstractWorkbench<E extends AbstractWorkbenchEntity> exten
         return InteractionResult.PASS;
     }
 
+    /**
+     * Compute the master (bottom-left) anchor position for this workbench block.
+     *
+     * The master is the block that serves as the primary anchor for multi-block
+     * behavior and block-entity placement: if this block is the upper half the
+     * master is one block below; if this block is the right-side part the master
+     * is one block to the left relative to the block's facing.
+     *
+     * @param state the block state used to determine HALF, TYPE, and FACING
+     * @param pos   the current block position
+     * @return the position of the master (bottom-left) block for this workbench
+     */
     public BlockPos getMasterPos(BlockState state, BlockPos pos) {
         BlockPos master = pos;
         Direction facing = state.getValue(FACING);
