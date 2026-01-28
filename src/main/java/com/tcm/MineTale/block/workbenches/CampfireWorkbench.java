@@ -31,8 +31,7 @@ public class CampfireWorkbench extends AbstractWorkbench<CampfireWorkbenchEntity
     public static final boolean IS_WIDE = false;
     public static final boolean IS_TALL = false;
 
-    public static final MapCodec<CampfireWorkbench> CODEC = simpleCodec((properties) -> 
-        new CampfireWorkbench(properties, () -> null));
+    public static final MapCodec<CampfireWorkbench> CODEC = simpleCodec(CampfireWorkbench::new);
 
     /**
      * Creates a CampfireWorkbench configured to use the mod's CAMPFIRE_WORKBENCH_BE block entity type.

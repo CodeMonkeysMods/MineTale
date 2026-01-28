@@ -9,6 +9,7 @@ import com.tcm.MineTale.block.workbenches.menu.FurnaceWorkbenchMenu;
 import com.tcm.MineTale.registry.ModBlockEntities;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -214,7 +215,7 @@ public class FurnaceWorkbenchEntity extends AbstractWorkbenchEntity {
         ItemStack output = inventory.getItem(outputSlot);
 
         if (output.isEmpty()) {
-            inventory.setItem(2, result.copy());
+            inventory.setItem(outputSlot, result.copy())
         } else if (ItemStack.isSameItem(output, result)) {
             output.grow(result.getCount());
         }
@@ -262,19 +263,19 @@ public class FurnaceWorkbenchEntity extends AbstractWorkbenchEntity {
     }
 
     /**
- * Determines whether the provided item stack is a supported ore.
- *
- * @param stack the item stack to test
- * @return `true` if the stack is a supported ore (currently `Items.RAW_COPPER`), `false` otherwise
- */
+     * Determines whether the provided item stack is a supported ore.
+     *
+     * @param stack the item stack to test
+     * @return `true` if the stack is a supported ore (currently `Items.RAW_COPPER`), `false` otherwise
+     */
     private boolean isOre(ItemStack stack) { return stack.is(Items.RAW_COPPER); /* Add more ores */ }
     /**
- * Determines whether the given item stack represents a wood log item.
- *
- * @param stack the item stack to inspect
- * @return `true` if the stack's item is a wood log, `false` otherwise
- */
-private boolean isWood(ItemStack stack) { return stack.getItem().toString().contains("log"); }
+     * Determines whether the given item stack represents a wood log item.
+     *
+     * @param stack the item stack to inspect
+     * @return `true` if the stack's item is a wood log, `false` otherwise
+     */
+    private boolean isWood(ItemStack stack) { return stack.is(ItemTags.LOGS_THAT_BURN); }
 
     /**
      * Persist entity-specific state into the provided ValueOutput.
