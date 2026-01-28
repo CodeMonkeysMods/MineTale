@@ -35,6 +35,11 @@ public class ModBlocks {
 		true
 	);
     
+    /**
+     * Registers this mod's blocks into the Functional Blocks creative tab and records the registration.
+     *
+     * Adds CAMPFIRE_WORKBENCH_BLOCK and FURNACE_WORKBENCH_BLOCK to CreativeModeTabs.FUNCTIONAL_BLOCKS and prints a registration message including the mod ID.
+     */
     public static void initialize() { 
 		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(entries -> {
         	entries.accept(CAMPFIRE_WORKBENCH_BLOCK);
