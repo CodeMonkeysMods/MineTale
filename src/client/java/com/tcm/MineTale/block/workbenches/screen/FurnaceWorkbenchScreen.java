@@ -9,12 +9,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.network.chat.Component;
 
-// FurnaceBlockEntity
-// AbstractFurnaceMenu
-// FurnaceMenu
-// FurnaceScreen
-// AbstractFurnaceScreen
-
 public class FurnaceWorkbenchScreen extends AbstractContainerScreen<FurnaceWorkbenchMenu> {
     private static final Identifier TEXTURE = 
         // Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "textures/gui/container/furnace_workbench.png");
