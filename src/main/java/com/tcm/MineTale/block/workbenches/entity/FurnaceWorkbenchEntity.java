@@ -215,7 +215,7 @@ public class FurnaceWorkbenchEntity extends AbstractWorkbenchEntity {
         ItemStack output = inventory.getItem(outputSlot);
 
         if (output.isEmpty()) {
-            inventory.setItem(outputSlot, result.copy())
+            inventory.setItem(outputSlot, result.copy());
         } else if (ItemStack.isSameItem(output, result)) {
             output.grow(result.getCount());
         }
