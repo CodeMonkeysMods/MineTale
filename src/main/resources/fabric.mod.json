@@ -1,6 +1,6 @@
 {
 	"schemaVersion": 1,
-	"id": "modid",
+	"id": "minetale",
 	"version": "${version}",
 	"name": "Example mod",
 	"description": "This is an example description! Tell everyone what your mod is about!",
@@ -16,10 +16,10 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.example.ExampleMod"
+			"com.tcm.MineTale.MineTale"
 		],
 		"client": [
-			"com.example.ExampleModClient"
+			"com.tcm.MineTale.MineTaleClient"
 		]
 	},
 	"mixins": [
