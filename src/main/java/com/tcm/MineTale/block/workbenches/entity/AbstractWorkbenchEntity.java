@@ -32,6 +32,9 @@ public abstract class AbstractWorkbenchEntity extends BlockEntity implements Men
     // --- CHEST SCANNING ---
     public List<Container> getNearbyInventories() {
         List<Container> inventories = new ArrayList<>();
+        if (level == null) {
+            return inventories;
+        } 
         BlockPos.betweenClosed(
             worldPosition.offset((int)-scanRadius, -2, (int)-scanRadius),
             worldPosition.offset((int)scanRadius, 2, (int)scanRadius)

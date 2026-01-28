@@ -21,8 +21,7 @@ public class FurnaceWorkbench extends AbstractWorkbench<FurnaceWorkbenchEntity> 
     private static final boolean IS_WIDE = true;
     private static final boolean IS_TALL = true;
 
-    public static final MapCodec<FurnaceWorkbench> CODEC = simpleCodec((properties) -> 
-        new FurnaceWorkbench(properties, () -> null));
+    public static final MapCodec<FurnaceWorkbench> CODEC = simpleCodec(FurnaceWorkbench::new);
 
     /**
      * Standard constructor for registration.

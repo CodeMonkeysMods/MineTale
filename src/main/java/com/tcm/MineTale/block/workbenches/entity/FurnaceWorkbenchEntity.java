@@ -27,6 +27,11 @@ public class FurnaceWorkbenchEntity extends AbstractWorkbenchEntity {
     // 0     -> Fuel Slots
     // 1, 2  -> Input Slot
     // 3-6   -> Output Slots
+    private static final int FUEL_SLOT = 0;
+    private static final int INPUT_1 = 1;
+    private static final int INPUT_2 = 2;
+    private static final int OUTPUT_START = 3;
+    private static final int OUTPUT_END = 6;
     private final SimpleContainer inventory = new SimpleContainer(7);
 
     private int cookTime;
@@ -68,8 +73,10 @@ public class FurnaceWorkbenchEntity extends AbstractWorkbenchEntity {
         if (level.isClientSide()) return;
 
         boolean changed = false;
-        ItemStack input = inventory.getItem(0);
-        ItemStack fuel = inventory.getItem(1);
+        ItemStack fuel = inventory.getItem(FUEL_SLOT);
+        ItemStack input = !inventory.getItem(INPUT_1).isEmpty()
+            ? inventory.getItem(INPUT_1)
+            : inventory.getItem(INPUT_2);
 
         // TRAIT: Streamline crafting by pulling from nearby chests if input is empty
         if (input.isEmpty() && level.getGameTime() % 20 == 0) {
@@ -130,7 +137,10 @@ public class FurnaceWorkbenchEntity extends AbstractWorkbenchEntity {
             result = new ItemStack(Items.COPPER_INGOT); 
         }
 
-        ItemStack output = inventory.getItem(2);
+        int outputSlot = findOutputSlot(result);
+        if (outputSlot == -1) return;
+        ItemStack output = inventory.getItem(outputSlot);
+
         if (output.isEmpty()) {
             inventory.setItem(2, result.copy());
         } else if (ItemStack.isSameItem(output, result)) {
@@ -145,12 +155,25 @@ public class FurnaceWorkbenchEntity extends AbstractWorkbenchEntity {
             for (int i = 0; i < chest.getContainerSize(); i++) {
                 ItemStack stack = chest.getItem(i);
                 if (isOre(stack) || isWood(stack)) {
-                    inventory.setItem(0, stack.split(1));
+                    int inputSlot = inventory.getItem(INPUT_1).isEmpty() ? INPUT_1 : (inventory.getItem(INPUT_2).isEmpty() ? INPUT_2 : -1);
+                    if (inputSlot == -1) return;
+                    inventory.setItem(inputSlot, stack.split(1));
                     chest.setChanged();
                     return;
                 }
             }
         }
+    }
+
+    private int findOutputSlot(ItemStack result) {
+        for (int i = OUTPUT_START; i <= OUTPUT_END; i++) {
+            ItemStack out = inventory.getItem(i);
+            if (out.isEmpty() || (ItemStack.isSameItem(out, result)
+                && out.getCount() + result.getCount() <= out.getMaxStackSize())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     // --- Helpers ---

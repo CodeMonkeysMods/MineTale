@@ -2,6 +2,7 @@ package com.tcm.MineTale.block.workbenches.menu;
 
 import com.tcm.MineTale.registry.ModMenuTypes;
 
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -36,6 +37,7 @@ public class FurnaceWorkbenchMenu extends AbstractContainerMenu {
     public FurnaceWorkbenchMenu(int syncId, Inventory playerInventory, Container container, ContainerData data) {
         super(ModMenuTypes.FURNACE_WORKBENCH_MENU, syncId);
         checkContainerSize(container, containerSize);
+        checkContainerDataCount(data, 4);
         this.container = container;
         this.data = data;
 
@@ -47,8 +49,7 @@ public class FurnaceWorkbenchMenu extends AbstractContainerMenu {
         this.addSlot(new Slot(container, FUEL_SLOT, 80, 53) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                // Trait: Sticks, Fibres (String), and Logs
-                return stack.is(Items.STICK) || stack.is(Items.STRING) || stack.getItem().toString().contains("log");
+                return isFuel(stack);
             }
         });
 
@@ -57,10 +58,10 @@ public class FurnaceWorkbenchMenu extends AbstractContainerMenu {
         this.addSlot(new Slot(container, INPUT_2, 44, 35));
 
         // 3. Four Output Slots (2x2 Grid on the right)
-        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, 3, 116, 21));
-        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, 4, 134, 21));
-        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, 5, 116, 39));
-        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, 6, 134, 39));
+        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, OUTPUT_START, 116, 21));
+        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, OUTPUT_START + 1, 134, 21));
+        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, OUTPUT_END - 1, 116, 39));
+        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, OUTPUT_END, 134, 39));
 
         // --- PLAYER INVENTORY ---
         addPlayerInventory(playerInventory);
@@ -106,7 +107,7 @@ public class FurnaceWorkbenchMenu extends AbstractContainerMenu {
     }
 
     private boolean isFuel(ItemStack stack) {
-        return stack.is(Items.STICK) || stack.is(Items.STRING) || stack.getItem().toString().contains("log");
+        return stack.is(Items.STICK) || stack.is(Items.STRING) || stack.is(ItemTags.LOGS_THAT_BURN);
     }
 
     @Override
