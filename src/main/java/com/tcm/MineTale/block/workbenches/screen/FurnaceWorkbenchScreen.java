@@ -1,6 +1,5 @@
 package com.tcm.MineTale.block.workbenches.screen;
 
-import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.menu.FurnaceWorkbenchMenu;
 
 import net.minecraft.client.gui.GuiGraphics;
