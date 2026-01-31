@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -76,6 +77,23 @@ public void setTier(int tier) { this.tier = tier; setChanged(); }
         });
         
         return inventories;
+    }
+
+    /**
+     * Finds the first output slot that can accept the given result.
+     *
+     * @param result the item stack to place into an output slot
+     * @return the index of the first suitable output slot between OUTPUT_START and OUTPUT_END, or -1 if none is available
+     */
+    public int findOutputSlot(ItemStack result, SimpleContainer inventory, int start, int end) {
+        for (int i = start; i <= end; i++) {
+            ItemStack out = inventory.getItem(i);
+            if (out.isEmpty() || (ItemStack.isSameItem(out, result)
+                && out.getCount() + result.getCount() <= out.getMaxStackSize())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /**
