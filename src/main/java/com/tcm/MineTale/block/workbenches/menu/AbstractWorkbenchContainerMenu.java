@@ -166,8 +166,13 @@ public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMe
             itemStack = itemStack2.copy();
 
             // From Furnace to Player
-            if (index < 7) {
-                if (!this.moveItemStackTo(itemStack2, 7, 43, true)) {
+            int containerSlots = Constants.TOTAL_SLOTS;
+            int playerStart = containerSlots;
+            int playerEnd = playerStart + 36;
+
+            // From Furnace to Player
+            if (index < containerSlots) {
+                if (!this.moveItemStackTo(itemStack2, playerStart, playerEnd, true)) {
                     return ItemStack.EMPTY;
                 }
             } 
@@ -175,10 +180,10 @@ public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMe
             else {
                 // If it's fuel, try fuel slot
                 if (isFuel(itemStack2)) {
-                    if (!this.moveItemStackTo(itemStack2, 0, 1, false)) return ItemStack.EMPTY;
+                    if (!this.moveItemStackTo(itemStack2, Constants.FUEL_SLOT, Constants.FUEL_SLOT + 1, false)) return ItemStack.EMPTY;
                 } 
                 // Otherwise, try inputs
-                else if (!this.moveItemStackTo(itemStack2, 1, 3, false)) {
+                else if (!this.moveItemStackTo(itemStack2, Constants.INPUT_1, Constants.INPUT_2 + 1, false)) {
                     return ItemStack.EMPTY;
                 }
             }

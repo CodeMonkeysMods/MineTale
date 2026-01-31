@@ -228,7 +228,12 @@ public class FurnaceWorkbenchEntity extends AbstractWorkbenchEntity {
             for (int i = 0; i < chest.getContainerSize(); i++) {
                 ItemStack stack = chest.getItem(i);
                 if (isOre(stack) || isWood(stack)) {
-                    int inputSlot = inventory.getItem(Constants.INPUT_1).isEmpty() ? Constants.INPUT_1 : (inventory.getItem(Constants.INPUT_2).isEmpty() ? Constants.INPUT_2 : -1);
+                    int inputSlot = -1;
+                    if (inventory.getItem(Constants.INPUT_1).isEmpty()) {
+                        inputSlot = Constants.INPUT_1;
+                    } else if (inventory.getItem(Constants.INPUT_2).isEmpty()) {
+                        inputSlot = Constants.INPUT_2;
+                    }
                     if (inputSlot == -1) return;
                     inventory.setItem(inputSlot, stack.split(1));
                     chest.setChanged();

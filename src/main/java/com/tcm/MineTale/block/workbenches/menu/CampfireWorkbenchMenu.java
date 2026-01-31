@@ -1,6 +1,7 @@
 package com.tcm.MineTale.block.workbenches.menu;
 
 import com.tcm.MineTale.registry.ModMenuTypes;
+import com.tcm.MineTale.util.Constants;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -9,7 +10,7 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
 
 public class CampfireWorkbenchMenu extends AbstractWorkbenchContainerMenu {
-    private static final int containerSize = 7;
+    private static final int containerSize = Constants.TOTAL_SLOTS;
     private static final int containerDataSize = 4;
     
     /**

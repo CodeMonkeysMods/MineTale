@@ -31,7 +31,7 @@ public abstract class AbstractWorkbenchEntity extends BlockEntity implements Men
     protected double scanRadius = 5.0;
 
     // Slot Mapping: 0-1 Inputs, 2 Fuel, 3-6 Outputs
-    protected final SimpleContainer inventory = new SimpleContainer(7);
+    protected final SimpleContainer inventory = new SimpleContainer(Constants.TOTAL_SLOTS);
     protected int progress = 0;
     protected int maxProgress = 200;
 
