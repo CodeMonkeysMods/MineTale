@@ -19,11 +19,28 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
 public class ModRecipeProvider extends FabricRecipeProvider {
+	/**
+	 * Creates a ModRecipeProvider that supplies mod-specific recipes to the data generator.
+	 *
+	 * @param output the FabricDataOutput used to write generated data files
+	 * @param registriesFuture a future providing registry lookup access required when building recipes
+	 */
 	public ModRecipeProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
 		super(output, registriesFuture);
 	}
 
-    @Override
+    /**
+	 * Creates a RecipeProvider that registers a campfire cooking recipe for porkchop.
+	 *
+	 * The produced provider builds a single recipe that cooks a porkchop into a cooked porkchop,
+	 * requires 10 time units, is unlocked when the player has a porkchop, and is saved under
+	 * the mod namespace with path "campfire_pork_cooking".
+	 *
+	 * @param registryLookup provider for looking up game registries used when building recipes
+	 * @param exporter       destination used to write the generated recipe JSON
+	 * @return               a RecipeProvider that produces the described campfire cooking recipe
+	 */
+	@Override
 	protected RecipeProvider createRecipeProvider(HolderLookup.Provider registryLookup, RecipeOutput exporter) {
 		return new RecipeProvider(registryLookup, exporter) {
 			@Override
@@ -41,6 +58,11 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 		};
 	}
 
+	/**
+	 * Identifier string for this recipe provider.
+	 *
+	 * @return the provider identifier composed of the mod ID followed by "ModRecipeProvider"
+	 */
 	@Override
 	public String getName() {
 		return MineTale.MOD_ID + "ModRecipeProvider";

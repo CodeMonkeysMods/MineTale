@@ -20,6 +20,18 @@ public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMe
     private final Container container;
     private final ContainerData data;
 
+    /**
+     * Creates a workbench container menu backed by the given inventory and sync data, sets up slots
+     * (fuel slot, two inputs, four result slots) and binds player inventory/hotbar and data for progress syncing.
+     *
+     * @param menuType the menu type (may be null for dynamic registration)
+     * @param syncId the window synchronization id
+     * @param container the underlying container inventory for the workbench
+     * @param data the container data used to synchronize cook and burn progress
+     * @param containerSize expected size of {@code container}; validated by this constructor
+     * @param containerDataSize expected size of {@code data}; validated by this constructor
+     * @param playerInventory the player's inventory used to add player slots and to identify the player for result slots
+     */
     public AbstractWorkbenchContainerMenu(@Nullable MenuType<?> menuType, int syncId, Container container, ContainerData data, int containerSize, int containerDataSize, Inventory playerInventory) {
         super(menuType, syncId);
 
@@ -135,16 +147,16 @@ public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMe
     }
 
     /**
-     * Handles a quick (shift-click) transfer of an item stack between the furnace-workbench container and the player's inventory.
-     *
-     * Attempts to move the stack from the container area (slots belonging to this menu) to the player's inventory, or from the
-     * player inventory into the appropriate container slots. When moving into the container, fuel items are sent to the fuel
-     * slot and other items are sent to the input slots. If the transfer cannot be completed, no change is applied.
-     *
-     * @param player the player performing the transfer
-     * @param index  the index of the slot that was shift-clicked
-     * @return the original ItemStack from the clicked slot, or ItemStack.EMPTY if the transfer failed
-     */
+         * Performs a shift-click transfer between this container and the player's inventory.
+         *
+         * Moves the clicked stack into the player's inventory if it came from the container, or into the appropriate container
+         * slots if it came from the player's inventory. Fuel items are moved to the fuel slot; all other items are moved to the
+         * input slots. If the transfer cannot be completed, no changes are applied to the source slot.
+         *
+         * @param player the player performing the transfer
+         * @param index  the index of the slot that was shift-clicked
+         * @return the original ItemStack from the clicked slot, or ItemStack.EMPTY if the transfer failed
+         */
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
