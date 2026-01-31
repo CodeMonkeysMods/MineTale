@@ -1,25 +1,30 @@
 package com.tcm.MineTale.block.workbenches.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jspecify.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
 import com.tcm.MineTale.block.workbenches.menu.CampfireWorkbenchMenu;
+import com.tcm.MineTale.recipe.WorkbenchRecipe;
 import com.tcm.MineTale.registry.ModBlockEntities;
+import com.tcm.MineTale.registry.ModRecipes;
+import com.tcm.MineTale.util.Constants;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 public class CampfireWorkbenchEntity extends AbstractWorkbenchEntity {
-    private final SimpleContainer inventory = new SimpleContainer(7);
-
     private int cookTime;
     private int cookTimeTotal = 200; 
     private int fuelTime;
@@ -92,10 +97,6 @@ public class CampfireWorkbenchEntity extends AbstractWorkbenchEntity {
 
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (level.isClientSide()) return;
-
-        // boolean changed = false;
-        // ItemStack fuel = inventory.getItem(FUEL_SLOT);
-        // List<ItemStack> inputs = List.of(inventory.getItem(INPUT_1), inventory.getItem(INPUT_2));
     }
 
     /**
@@ -126,6 +127,16 @@ public class CampfireWorkbenchEntity extends AbstractWorkbenchEntity {
         // store() uses Codecs for type safety
         valueOutput.store("WorkbenchTier", Codec.INT, this.tier);
         valueOutput.store("ScanRadius", Codec.DOUBLE, this.scanRadius);
+
+        // Convert the SimpleContainer to a List of ItemStacks for the Codec
+        // Or use the built-in NBT helper if your framework supports it
+        List<ItemStack> stacks = new ArrayList<>();
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            stacks.add(inventory.getItem(i));
+        }
+
+        // CHANGE: Use OPTIONAL_CODEC instead of CODEC
+        valueOutput.store("Inventory", ItemStack.OPTIONAL_CODEC.listOf(), stacks);
     }
 
     /**
@@ -141,10 +152,35 @@ public class CampfireWorkbenchEntity extends AbstractWorkbenchEntity {
         // read() returns an Optional
         this.tier = valueInput.read("WorkbenchTier", Codec.INT).orElse(1);
         this.scanRadius = valueInput.read("ScanRadius", Codec.DOUBLE).orElse(0.0);
+
+        // Read the inventory list back
+        valueInput.read("Inventory", ItemStack.OPTIONAL_CODEC.listOf()).ifPresent(stacks -> {
+            for (int i = 0; i < stacks.size() && i < inventory.getContainerSize(); i++) {
+                inventory.setItem(i, stacks.get(i));
+            }
+        });
     }
 
     @Override
     public @Nullable AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
         return new CampfireWorkbenchMenu(syncId, playerInventory, this.inventory, this.data);
+    }
+
+    @Override
+    public RecipeType<WorkbenchRecipe> getWorkbenchRecipeType() {
+        return ModRecipes.CAMPFIRE_TYPE;
+    }
+
+    @Override
+    protected boolean hasFuel() {
+        if (this.level == null) return false;
+        
+        // Check if block is lit
+        // BlockState state = this.level.getBlockState(this.worldPosition);
+        // boolean isLit = state.hasProperty(BlockStateProperties.LIT) && state.getValue(BlockStateProperties.LIT);
+        
+        boolean hasFuelItem = !this.getItem(Constants.FUEL_SLOT).isEmpty();
+        
+        return hasFuelItem;
     }
 }

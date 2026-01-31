@@ -2,8 +2,13 @@ package com.tcm.MineTale.block.workbenches.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
+
+import com.tcm.MineTale.recipe.WorkbenchRecipe;
+import com.tcm.MineTale.recipe.WorkbenchRecipeInput;
+import com.tcm.MineTale.util.Constants;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -14,6 +19,9 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,6 +29,11 @@ import net.minecraft.world.level.block.state.BlockState;
 public abstract class AbstractWorkbenchEntity extends BlockEntity implements MenuProvider {
     protected int tier = 1;
     protected double scanRadius = 5.0;
+
+    // Slot Mapping: 0-1 Inputs, 2 Fuel, 3-6 Outputs
+    protected final SimpleContainer inventory = new SimpleContainer(7);
+    protected int progress = 0;
+    protected int maxProgress = 200;
 
     /**
      * Creates a new workbench block entity instance.
@@ -34,17 +47,178 @@ public abstract class AbstractWorkbenchEntity extends BlockEntity implements Men
     }
 
     /**
- * Gets the workstation's current tier.
- *
- * @return the current tier value
- */
-    public int getTier() { return tier; }
+     * Subclasses (Campfire/Furnace) must define which recipe type they look for.
+     */
+    public abstract RecipeType<WorkbenchRecipe> getWorkbenchRecipeType();
+
+    public static void tick(Level level, BlockPos pos, BlockState state, AbstractWorkbenchEntity entity) {
+    // 1. Create the input wrapper using the internal SimpleContainer
+    // Slot 1 = Input A, Slot 2 = Input B
+    WorkbenchRecipeInput input = new WorkbenchRecipeInput(
+        entity.inventory.getItem(Constants.INPUT_1), 
+        entity.inventory.getItem(Constants.INPUT_2)
+    );
+
+    // DEBUG 1: Is the machine even seeing the pork?
+    if (!entity.inventory.getItem(Constants.INPUT_1).isEmpty()) {
+        System.out.println("Slot 1 (Input) contains: " + entity.inventory.getItem(Constants.INPUT_1).getItem().toString());
+    }
+
+    if (!entity.inventory.getItem(Constants.FUEL_SLOT).isEmpty()) {
+        System.out.println("Slot 0 (Fuel) contains: " + entity.inventory.getItem(Constants.FUEL_SLOT).getItem().toString());
+    }
+
+    // 2. Fetch the RecipeManager from the server
+    if (level.getServer() == null) return;
+    var recipeManager = level.getServer().getRecipeManager();
+
+    // 3. Lookup the recipe using our explicit generic types
+    Optional<RecipeHolder<WorkbenchRecipe>> recipeHolder = recipeManager
+        .getRecipeFor(entity.getWorkbenchRecipeType(), input, level);
+
+    if (recipeHolder.isPresent()) {
+        WorkbenchRecipe recipe = recipeHolder.get().value();
+        entity.maxProgress = recipe.cookTime();
+
+        if (!entity.hasFuel()) {
+            System.out.println("DEBUG: Failed because hasFuel() is false.");
+        }
+        if (!entity.canFitOutputs(recipeHolder.get().value().results())) {
+            System.out.println("DEBUG: Failed because outputs are full.");
+        }
+
+        boolean hasFuel = entity.hasFuel();
+        boolean canFit = entity.canFitOutputs(recipe.results());
+
+        if (hasFuel && canFit) {
+            entity.progress++;
+            // Only print every 20 ticks (1 second) to avoid console spam
+            if (entity.progress % 20 == 0) {
+                System.out.println("DEBUG: Cooking... Progress is now " + entity.progress);
+            }
+            
+            setChanged(level, pos, state);
+
+            if (entity.progress >= entity.maxProgress) {
+                System.out.println("DEBUG: Progress complete! Triggering craft().");
+                entity.craft(recipe);
+                entity.progress = 0;
+            }
+        } else {
+            // This tells us exactly WHY it stopped
+            if (!hasFuel) {
+                System.out.println("DEBUG: Cooking stalled - NO FUEL (Check LIT state or Fuel Slot)");
+            }
+            if (!canFit) {
+                System.out.println("DEBUG: Cooking stalled - NO SPACE in output slots (3-6)");
+            }
+        }
+    } else {
+        if (!input.getItem(0).isEmpty()) {
+            System.out.println("DEBUG: No recipe found for this input type: " + entity.getWorkbenchRecipeType().toString());
+        }
+        // Reset progress if ingredients are removed
+        if (entity.progress > 0) {
+            entity.progress = 0;
+            setChanged(level, pos, state);
+        }
+    }
+}
+
+    public ItemStack getItem(int slot) { return this.inventory.getItem(slot); }
+
+    public boolean canFitOutputs(List<ItemStack> results) {
+        for (ItemStack result : results) {
+            // If we can't find a home for even one of the results, return false
+            if (findOutputSlot(result, Constants.OUTPUT_START, Constants.OUTPUT_END) == -1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public int findOutputSlot(ItemStack result, int start, int end) {
+        for (int i = start; i <= end; i++) {
+            ItemStack stack = getItem(i);
+            if (stack.isEmpty()) return i;
+            
+            // 1.21.1 Check: Same item + same components + space for more
+            if (ItemStack.isSameItemSameComponents(stack, result) && 
+                stack.getCount() + result.getCount() <= stack.getMaxStackSize()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int getContainerSize() {
+        return this.inventory.getContainerSize();
+    }
+
+    public boolean isEmpty() {
+        return this.inventory.isEmpty();
+    }
+
+    protected void craft(WorkbenchRecipe recipe) {
+        // 1. Consume 1 from each ingredient slot (Slots 1 and 2)
+        this.removeItem(Constants.INPUT_1, 1);
+        this.removeItem(Constants.INPUT_2, 1);
+
+        // 2. Distribute results from the recipe
+        for (ItemStack result : recipe.results()) {
+            if (result.isEmpty()) continue;
+            
+            // Use the constants for the output range (3 to 6)
+            int slot = findOutputSlot(result, Constants.OUTPUT_START, Constants.OUTPUT_END);
+            
+            if (slot != -1) {
+                ItemStack existing = getItem(slot);
+                if (existing.isEmpty()) {
+                    setItem(slot, result.copy());
+                } else {
+                    existing.grow(result.getCount());
+                    // Crucial: SimpleContainer needs to know the stack changed
+                    this.setChanged();
+                }
+            }
+        }
+    }
+
+    public ItemStack removeItem(int slot, int amount) {
+        // SimpleContainer has its own removeItem logic built-in
+        ItemStack result = this.inventory.removeItem(slot, amount);
+        if (!result.isEmpty()) {
+            this.setChanged();
+        }
+        return result;
+    }
+
+    public void setItem(int slot, ItemStack stack) {
+        // Use setItem(), not set()
+        this.inventory.setItem(slot, stack);
+        
+        // Check max stack size
+        if (!stack.isEmpty() && stack.getCount() > stack.getMaxStackSize()) {
+            stack.setCount(stack.getMaxStackSize());
+        }
+        this.setChanged();
+    }
+
+    // Subclasses handle fuel logic (Campfires might return true always, Furnaces check slot 2)
+    protected abstract boolean hasFuel();
+
     /**
- * Sets the workstation's tier and marks the block entity as changed.
- *
- * @param tier the new tier value for this workstation
- */
-public void setTier(int tier) { this.tier = tier; setChanged(); }
+     * Gets the workstation's current tier.
+     *
+     * @return the current tier value
+     */
+        public int getTier() { return tier; }
+        /**
+     * Sets the workstation's tier and marks the block entity as changed.
+     *
+     * @param tier the new tier value for this workstation
+     */
+    public void setTier(int tier) { this.tier = tier; setChanged(); }
 
     /**
      * Collects nearby inventory-containing block entities within the configured scan radius and vertical range.

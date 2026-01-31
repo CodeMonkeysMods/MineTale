@@ -5,15 +5,18 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;
+import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
 import com.tcm.MineTale.block.workbenches.entity.CampfireWorkbenchEntity;
 import com.tcm.MineTale.registry.ModBlockEntities;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
@@ -48,6 +51,14 @@ public class CampfireWorkbench extends AbstractWorkbench<CampfireWorkbenchEntity
     public CampfireWorkbench(Properties properties, Supplier<BlockEntityType<? extends CampfireWorkbenchEntity>> supplier) {
         // isWide = false, isTall = false (1x1 footprint)
         super(properties, supplier, IS_WIDE, IS_TALL);
+    }
+
+    // In your CampfireWorkbenchBlock.java (The Block class)
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        // This connects the Level's ticking system to your static tick method
+        return createTickerHelper(type, ModBlockEntities.CAMPFIRE_WORKBENCH_BE, AbstractWorkbenchEntity::tick);
     }
 
     @Override

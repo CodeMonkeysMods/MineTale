@@ -1,0 +1,13 @@
+{
+  "type": "minetale:campfire_alloying",
+  "cookTime": 600,
+  "ingredients": [
+    "minecraft:porkchop"
+  ],
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:cooked_porkchop"
+    }
+  ]
+}

@@ -11,6 +11,7 @@ import com.tcm.MineTale.registry.ModEntities;
 import com.tcm.MineTale.registry.ModEntityDataSerializers;
 import com.tcm.MineTale.registry.ModItems;
 import com.tcm.MineTale.registry.ModMenuTypes;
+import com.tcm.MineTale.registry.ModRecipes;
 
 public class MineTale implements ModInitializer {
 	public static final String MOD_ID = "minetale";
@@ -29,6 +30,7 @@ public class MineTale implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		ModBlocks.initialize();
+		ModRecipes.initialize();
 		ModBlockEntities.initialize();
 		ModMenuTypes.initialize();
 		ModEntities.initialize();
