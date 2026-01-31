@@ -2,6 +2,8 @@ package com.tcm.MineTale;
 
 import net.fabricmc.api.ModInitializer;
 
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +14,9 @@ import com.tcm.MineTale.registry.ModEntityDataSerializers;
 import com.tcm.MineTale.registry.ModItems;
 import com.tcm.MineTale.registry.ModMenuTypes;
 import com.tcm.MineTale.registry.ModRecipes;
+
+import static com.tcm.MineTale.item.ModCreativeTab.MINETALE_CREATIVE_TAB;
+import static com.tcm.MineTale.item.ModCreativeTab.MINETALE_CREATIVE_TAB_KEY;
 
 public class MineTale implements ModInitializer {
 	public static final String MOD_ID = "minetale";
@@ -35,6 +40,8 @@ public class MineTale implements ModInitializer {
 		ModMenuTypes.initialize();
 		ModEntities.initialize();
 		ModItems.initialize();
+
+		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, MINETALE_CREATIVE_TAB_KEY, MINETALE_CREATIVE_TAB);
 
 		ModEntityDataSerializers.initialize();
 
