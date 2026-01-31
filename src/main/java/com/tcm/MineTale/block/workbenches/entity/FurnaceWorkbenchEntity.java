@@ -6,35 +6,28 @@ import org.jspecify.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
 import com.tcm.MineTale.block.workbenches.menu.FurnaceWorkbenchMenu;
+import com.tcm.MineTale.recipe.WorkbenchRecipe;
 import com.tcm.MineTale.registry.ModBlockEntities;
+import com.tcm.MineTale.registry.ModRecipes;
+import com.tcm.MineTale.util.Constants;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 public class FurnaceWorkbenchEntity extends AbstractWorkbenchEntity {
-    // Inventory Mapping: 
-    // 0     -> Fuel Slots
-    // 1, 2  -> Input Slot
-    // 3-6   -> Output Slots
-    private static final int FUEL_SLOT = 0;
-    private static final int INPUT_1 = 1;
-    private static final int INPUT_2 = 2;
-    private static final int OUTPUT_START = 3;
-    private static final int OUTPUT_END = 6;
-    private final SimpleContainer inventory = new SimpleContainer(7);
-
     private int cookTime;
     private int cookTimeTotal = 200; 
     private int fuelTime;
@@ -123,10 +116,10 @@ public class FurnaceWorkbenchEntity extends AbstractWorkbenchEntity {
         if (level.isClientSide()) return;
 
         boolean changed = false;
-        ItemStack fuel = inventory.getItem(FUEL_SLOT);
-        ItemStack input = !inventory.getItem(INPUT_1).isEmpty()
-            ? inventory.getItem(INPUT_1)
-            : inventory.getItem(INPUT_2);
+        ItemStack fuel = inventory.getItem(Constants.FUEL_SLOT);
+        ItemStack input = !inventory.getItem(Constants.INPUT_1).isEmpty()
+            ? inventory.getItem(Constants.INPUT_1)
+            : inventory.getItem(Constants.INPUT_2);
 
         // TRAIT: Streamline crafting by pulling from nearby chests if input is empty
         if (input.isEmpty() && level.getGameTime() % 20 == 0) {
@@ -210,7 +203,7 @@ public class FurnaceWorkbenchEntity extends AbstractWorkbenchEntity {
             result = new ItemStack(Items.COPPER_INGOT); 
         }
 
-        int outputSlot = findOutputSlot(result);
+        int outputSlot = this.findOutputSlot(result, inventory, Constants.OUTPUT_START, Constants.OUTPUT_END);
         if (outputSlot == -1) return;
         ItemStack output = inventory.getItem(outputSlot);
 
@@ -235,7 +228,12 @@ public class FurnaceWorkbenchEntity extends AbstractWorkbenchEntity {
             for (int i = 0; i < chest.getContainerSize(); i++) {
                 ItemStack stack = chest.getItem(i);
                 if (isOre(stack) || isWood(stack)) {
-                    int inputSlot = inventory.getItem(INPUT_1).isEmpty() ? INPUT_1 : (inventory.getItem(INPUT_2).isEmpty() ? INPUT_2 : -1);
+                    int inputSlot = -1;
+                    if (inventory.getItem(Constants.INPUT_1).isEmpty()) {
+                        inputSlot = Constants.INPUT_1;
+                    } else if (inventory.getItem(Constants.INPUT_2).isEmpty()) {
+                        inputSlot = Constants.INPUT_2;
+                    }
                     if (inputSlot == -1) return;
                     inventory.setItem(inputSlot, stack.split(1));
                     chest.setChanged();
@@ -243,23 +241,6 @@ public class FurnaceWorkbenchEntity extends AbstractWorkbenchEntity {
                 }
             }
         }
-    }
-
-    /**
-     * Finds the first output slot that can accept the given result.
-     *
-     * @param result the item stack to place into an output slot
-     * @return the index of the first suitable output slot between OUTPUT_START and OUTPUT_END, or -1 if none is available
-     */
-    private int findOutputSlot(ItemStack result) {
-        for (int i = OUTPUT_START; i <= OUTPUT_END; i++) {
-            ItemStack out = inventory.getItem(i);
-            if (out.isEmpty() || (ItemStack.isSameItem(out, result)
-                && out.getCount() + result.getCount() <= out.getMaxStackSize())) {
-                return i;
-            }
-        }
-        return -1;
     }
 
     /**
@@ -309,15 +290,45 @@ public class FurnaceWorkbenchEntity extends AbstractWorkbenchEntity {
     }
 
     /**
-     * Create the player-facing menu for this Furnace Workbench block entity.
-     *
-     * @param syncId         the window id used to synchronize client and server for this menu
-     * @param playerInventory the player's inventory view passed to the menu
-     * @param player         the player opening the menu
-     * @return               the FurnaceWorkbenchMenu instance for this block entity, or `null` if a menu cannot be created
-     */
+         * Create a container menu that allows a player to interact with this furnace workbench.
+         *
+         * @param syncId          window id used to synchronize the menu between client and server
+         * @param playerInventory the player's inventory view passed into the menu
+         * @param player          the player opening the menu
+         * @return                the workbench's {@link AbstractContainerMenu}, or {@code null} if a menu cannot be created
+         */
     @Override
     public @Nullable AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
         return new FurnaceWorkbenchMenu(syncId, playerInventory, this.inventory, this.data);
+    }
+
+    /**
+     * Identifies the recipe type used by this furnace-style workbench.
+     *
+     * @return the RecipeType for furnace workbench recipes (ModRecipes.FURNACE_TYPE)
+     */
+    @Override
+    public RecipeType<WorkbenchRecipe> getWorkbenchRecipeType() {
+        return ModRecipes.FURNACE_TYPE;
+    }
+
+    /**
+     * Checks whether the workbench is lit and has a fuel item available.
+     *
+     * Returns false if the block entity is not attached to a level.
+     *
+     * @return `true` if the block's `LIT` property is present and true and the configured fuel slot is non-empty, `false` otherwise.
+     */
+    @Override
+    protected boolean hasFuel() {
+        if (this.level == null) return false;
+        
+        // Check if block is lit
+        BlockState state = this.level.getBlockState(this.worldPosition);
+        boolean isLit = state.hasProperty(BlockStateProperties.LIT) && state.getValue(BlockStateProperties.LIT);
+        
+        boolean hasFuelItem = !this.getItem(Constants.FUEL_SLOT).isEmpty();
+        
+        return isLit && hasFuelItem;
     }
 }

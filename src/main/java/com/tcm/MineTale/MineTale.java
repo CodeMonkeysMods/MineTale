@@ -13,6 +13,7 @@ import com.tcm.MineTale.registry.ModEntities;
 import com.tcm.MineTale.registry.ModEntityDataSerializers;
 import com.tcm.MineTale.registry.ModItems;
 import com.tcm.MineTale.registry.ModMenuTypes;
+import com.tcm.MineTale.registry.ModRecipes;
 
 import static com.tcm.MineTale.item.ModCreativeTab.MINETALE_CREATIVE_TAB;
 import static com.tcm.MineTale.item.ModCreativeTab.MINETALE_CREATIVE_TAB_KEY;
@@ -34,6 +35,7 @@ public class MineTale implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		ModBlocks.initialize();
+		ModRecipes.initialize();
 		ModBlockEntities.initialize();
 		ModMenuTypes.initialize();
 		ModEntities.initialize();

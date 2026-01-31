@@ -5,23 +5,22 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;
+import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
 import com.tcm.MineTale.block.workbenches.entity.CampfireWorkbenchEntity;
 import com.tcm.MineTale.registry.ModBlockEntities;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -44,16 +43,33 @@ public class CampfireWorkbench extends AbstractWorkbench<CampfireWorkbenchEntity
     }
 
     /**
-     * Creates a CampfireWorkbench with the given block properties and block-entity type supplier.
+     * Constructs a CampfireWorkbench using the provided block properties and block-entity type supplier.
      *
-     * @param properties the block's properties
-     * @param supplier   supplier that provides the BlockEntityType for this workbench
+     * @param properties block properties to apply to this workbench
+     * @param supplier   supplier that provides the BlockEntityType for the CampfireWorkbenchEntity
      */
     public CampfireWorkbench(Properties properties, Supplier<BlockEntityType<? extends CampfireWorkbenchEntity>> supplier) {
         // isWide = false, isTall = false (1x1 footprint)
         super(properties, supplier, IS_WIDE, IS_TALL);
     }
 
+    /**
+     * Provides a ticker that updates campfire workbench block entities each tick.
+     *
+     * @return a BlockEntityTicker that invokes AbstractWorkbenchEntity.tick for CampfireWorkbenchEntity instances, or `null` if the supplied block entity type does not match the campfire workbench type.
+     */
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        // This connects the Level's ticking system to your static tick method
+        return createTickerHelper(type, ModBlockEntities.CAMPFIRE_WORKBENCH_BE, AbstractWorkbenchEntity::tick);
+    }
+
+    /**
+     * The codec used to serialize and deserialize this CampfireWorkbench type.
+     *
+     * @return the MapCodec for this CampfireWorkbench
+     */
     @Override
     protected MapCodec<? extends CampfireWorkbench> codec() {
         return CODEC;
@@ -84,49 +100,18 @@ public class CampfireWorkbench extends AbstractWorkbench<CampfireWorkbenchEntity
     }
 
     /**
-     * Creates and returns the block entity for this block only when the block represents the master
-     * position (the lower half and not of type RIGHT).
+     * Create a block entity for the master block of this workbench.
      *
-     * @return the created BlockEntity when this block is the master (HALF == LOWER and TYPE != RIGHT), or `null` otherwise
+     * Only the master block of the multi-block workbench receives an entity; other positions return {@code null}.
+     *
+     * @return the block entity for the master block ({@link CampfireWorkbenchEntity}), or {@code null} if this position does not host an entity
      */
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        // Only spawn the entity at the "Master" position (LOWER + LEFT or LOWER + SINGLE)
-        if (state.getValue(HALF) == DoubleBlockHalf.LOWER && state.getValue(TYPE) != ChestType.RIGHT) {
-            return blockEntityType.get().create(pos, state);
-        }
-        return null;
-    }
-
-    /**
-     * Handles a player's interaction with the workbench when no item is used.
-     *
-     * <p>On the client this acknowledges the interaction. On the server this method
-     * is a hook for workbench-specific handling; if the workbench processes the
-     * interaction it will consume it, otherwise the interaction is passed to other handlers.</p>
-     *
-     * @param state the block state of the workbench
-     * @param level the world in which the interaction occurs
-     * @param pos   the position of the interacted block
-     * @param player the player performing the interaction
-     * @param hit   the hit result describing the interaction point
-     * @return {@code InteractionResult.SUCCESS} on client, {@code InteractionResult.CONSUME} if handled by the workbench, or {@code InteractionResult.PASS} otherwise
-     */
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (level.isClientSide()) return InteractionResult.SUCCESS;
-
-        // BlockPos masterPos = getMasterPos(state, pos);
-        // BlockEntity be = level.getBlockEntity(masterPos);
-
-        // if (be instanceof AbstractWorkbenchEntity) {
-        //     // Open UI or handle Recycling logic here
-        //     // Example: if player is holding a tool, try to recycle it
-        //     return InteractionResult.CONSUME;
-        // }
-
-        return InteractionResult.PASS;
+        // AbstractWorkbench logic ensures only the Master block gets the entity.
+        // We override it here to point specifically to our Furnace entity.
+        return super.newBlockEntity(pos, state);
     }
 
     /**

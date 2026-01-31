@@ -2,6 +2,7 @@ package com.tcm.MineTale.registry;
 
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.menu.FurnaceWorkbenchMenu;
+import com.tcm.MineTale.block.workbenches.menu.CampfireWorkbenchMenu;
 
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -15,6 +16,11 @@ public class ModMenuTypes {
     public static final MenuType<FurnaceWorkbenchMenu> FURNACE_WORKBENCH_MENU = register(
         "furnace_workbench_menu", 
         FurnaceWorkbenchMenu::new
+    );
+    
+    public static final MenuType<CampfireWorkbenchMenu> CAMPFIRE_WORKBENCH_MENU = register(
+        "campfire_workbench_menu", 
+        CampfireWorkbenchMenu::new
     );
     
     /**
