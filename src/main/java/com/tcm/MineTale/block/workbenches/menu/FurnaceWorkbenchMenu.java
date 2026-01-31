@@ -13,9 +13,9 @@ public class FurnaceWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     private static final int containerDataSize = 4;
 
     /**
-     * Client-side constructor that creates a FurnaceWorkbenchMenu backed by a new internal container and container data.
+     * Creates a client-side FurnaceWorkbenchMenu with a new internal container and container data.
      *
-     * @param syncId         the window sync id assigned by the client
+     * @param syncId          the window synchronization id assigned by the client
      * @param playerInventory the player's inventory to attach to this menu
      */
     public FurnaceWorkbenchMenu(int syncId, Inventory playerInventory) {

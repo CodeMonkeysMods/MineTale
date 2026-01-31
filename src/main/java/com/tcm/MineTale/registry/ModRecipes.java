@@ -24,6 +24,9 @@ public class ModRecipes {
     public static final RecipeSerializer<WorkbenchRecipe> CAMPFIRE_SERIALIZER = 
         new WorkbenchRecipe.Serializer(CAMPFIRE_TYPE);
 
+    /**
+     * Registers the furnace and campfire alloying recipe types and their serializers into the built-in registries.
+     */
     public static void initialize() {
         // Register the Furnace-flavored version
         register("furnace_alloying", FURNACE_TYPE, FURNACE_SERIALIZER);
@@ -32,11 +35,24 @@ public class ModRecipes {
         register("campfire_alloying", CAMPFIRE_TYPE, CAMPFIRE_SERIALIZER);
     }
 
+    /**
+     * Registers a recipe type and its serializer in the game's recipe registries under this mod's namespace.
+     *
+     * @param name       the registry path name to use (combined with the mod ID)
+     * @param type       the recipe type to register
+     * @param serializer the recipe serializer to register
+     */
     private static void register(String name, RecipeType<?> type, RecipeSerializer<?> serializer) {
         Registry.register(BuiltInRegistries.RECIPE_TYPE, Identifier.fromNamespaceAndPath(MineTale.MOD_ID, name), type);
         Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, Identifier.fromNamespaceAndPath(MineTale.MOD_ID, name), serializer);
     }
 
+    /**
+     * Create a RecipeType identified by the given name.
+     *
+     * @param name the identifier to associate with the recipe type; returned by its {@code toString()}
+     * @return a RecipeType whose {@code toString()} returns the provided name
+     */
     private static <T extends Recipe<?>> RecipeType<T> createType(String name) {
         return new RecipeType<>() { @Override public String toString() { return name; } };
     }

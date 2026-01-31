@@ -5,6 +5,11 @@ package com.tcm.MineTale.util;
  */
 public final class Constants {
 
+    /**
+     * Prevents instantiation of this utility class.
+     *
+     * @throws UnsupportedOperationException always thrown to enforce non-instantiability
+     */
     private Constants() {
         throw new UnsupportedOperationException("Utility class");
     }

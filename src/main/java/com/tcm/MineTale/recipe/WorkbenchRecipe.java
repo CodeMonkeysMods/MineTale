@@ -132,6 +132,16 @@ public record WorkbenchRecipe(
     RecipeSerializer<WorkbenchRecipe> recipeSerializer
 ) implements Recipe<WorkbenchRecipeInput> {
 
+    /**
+     * Determines whether the given crafting input matches this recipe's ingredient requirements.
+     *
+     * @param input the two-slot workbench input to test
+     * @param level the world context (unused for matching but provided by the recipe API)
+     * @return `true` if the input satisfies this recipe's ingredients; `false` otherwise.
+     *         For recipes with one ingredient the second slot must be empty; for recipes with two
+     *         ingredients both slots must match their respective ingredients. An empty ingredient
+     *         list always fails to match.
+     */
     @Override
     public boolean matches(WorkbenchRecipeInput input, Level level) {
         if (ingredients.isEmpty()) return false;
@@ -152,34 +162,66 @@ public record WorkbenchRecipe(
         }
     }
 
+    /**
+     * Produce the recipe's resulting ItemStack for the given input.
+     *
+     * @param input the recipe input containing the crafting slot ItemStacks
+     * @param provider a registry/lookup provider (passed through by caller; not used)
+     * @return `ItemStack.EMPTY` if no results are defined, otherwise a defensive copy of the first result
+     */
     @Override
     public ItemStack assemble(WorkbenchRecipeInput input, HolderLookup.Provider provider) {
         // Return a copy of the first result for vanilla compatibility
         return results.isEmpty() ? ItemStack.EMPTY : results.get(0).copy();
     }
 
+    /**
+     * Retrieves the serializer associated with this WorkbenchRecipe.
+     *
+     * @return the RecipeSerializer used to serialize and deserialize this recipe
+     */
     @Override
     public RecipeSerializer<? extends Recipe<WorkbenchRecipeInput>> getSerializer() {
         return this.recipeSerializer;
     }
 
+    /**
+     * Retrieves the recipe type associated with this workbench recipe.
+     *
+     * @return the RecipeType instance representing this recipe's type
+     */
     @Override
     public RecipeType<? extends Recipe<WorkbenchRecipeInput>> getType() {
         return this.recipeType;
     }
 
+    /**
+     * Provide placement guidance for the recipe book based on this recipe's ingredients.
+     *
+     * @return a PlacementInfo describing how the ingredients should be arranged in the recipe UI
+     */
     @Override
     public PlacementInfo placementInfo() {
         // Tells the recipe book how to place these items
         return PlacementInfo.create(this.ingredients);
     }
 
+    /**
+     * Indicates the recipe is not associated with any vanilla recipe book category.
+     *
+     * @return `null` to indicate the recipe should not appear in the vanilla recipe book
+     */
     @Override
     public RecipeBookCategory recipeBookCategory() {
         // Using null as we are using a custom workbench
         return null;
     }
 
+    /**
+     * Provides recipe displays for the recipe book UI.
+     *
+     * @return an empty list, indicating no recipe displays are provided for the recipe book
+     */
     @Override
     public List<RecipeDisplay> display() {
         // Used for the recipe book UI display
@@ -193,6 +235,15 @@ public record WorkbenchRecipe(
         private final MapCodec<WorkbenchRecipe> codec;
         private final StreamCodec<RegistryFriendlyByteBuf, WorkbenchRecipe> streamCodec;
 
+        /**
+         * Creates a serializer for WorkbenchRecipe and initializes its data and binary codecs.
+         *
+         * The constructed codec validates that the recipe contains 1 or 2 ingredients, 1 to 4 result stacks,
+         * and provides a default cookTime of 200 when absent. The stream codec mirrors the same fields
+         * for binary (network/packet) serialization.
+         *
+         * @param recipeType the RecipeType associated with recipes produced/deserialized by this serializer
+         */
         public Serializer(RecipeType<WorkbenchRecipe> recipeType) {
             this.recipeType = recipeType;
 
@@ -218,11 +269,21 @@ public record WorkbenchRecipe(
             );
         }
 
+        /**
+         * Provides the MapCodec used to serialize and deserialize WorkbenchRecipe instances.
+         *
+         * @return the MapCodec for encoding and decoding WorkbenchRecipe objects
+         */
         @Override
         public MapCodec<WorkbenchRecipe> codec() {
             return codec;
         }
 
+        /**
+         * Provides the binary stream codec used to serialize and deserialize WorkbenchRecipe instances.
+         *
+         * @return the StreamCodec that encodes and decodes WorkbenchRecipe objects to and from a RegistryFriendlyByteBuf
+         */
         @Override
         public StreamCodec<RegistryFriendlyByteBuf, WorkbenchRecipe> streamCodec() {
             return streamCodec;

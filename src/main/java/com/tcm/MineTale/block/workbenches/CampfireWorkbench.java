@@ -43,17 +43,21 @@ public class CampfireWorkbench extends AbstractWorkbench<CampfireWorkbenchEntity
     }
 
     /**
-     * Creates a CampfireWorkbench with the given block properties and block-entity type supplier.
+     * Constructs a CampfireWorkbench using the provided block properties and block-entity type supplier.
      *
-     * @param properties the block's properties
-     * @param supplier   supplier that provides the BlockEntityType for this workbench
+     * @param properties block properties to apply to this workbench
+     * @param supplier   supplier that provides the BlockEntityType for the CampfireWorkbenchEntity
      */
     public CampfireWorkbench(Properties properties, Supplier<BlockEntityType<? extends CampfireWorkbenchEntity>> supplier) {
         // isWide = false, isTall = false (1x1 footprint)
         super(properties, supplier, IS_WIDE, IS_TALL);
     }
 
-    // In your CampfireWorkbenchBlock.java (The Block class)
+    /**
+     * Provides a ticker that updates campfire workbench block entities each tick.
+     *
+     * @return a BlockEntityTicker that invokes AbstractWorkbenchEntity.tick for CampfireWorkbenchEntity instances, or `null` if the supplied block entity type does not match the campfire workbench type.
+     */
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
@@ -61,6 +65,11 @@ public class CampfireWorkbench extends AbstractWorkbench<CampfireWorkbenchEntity
         return createTickerHelper(type, ModBlockEntities.CAMPFIRE_WORKBENCH_BE, AbstractWorkbenchEntity::tick);
     }
 
+    /**
+     * The codec used to serialize and deserialize this CampfireWorkbench type.
+     *
+     * @return the MapCodec for this CampfireWorkbench
+     */
     @Override
     protected MapCodec<? extends CampfireWorkbench> codec() {
         return CODEC;
@@ -91,9 +100,11 @@ public class CampfireWorkbench extends AbstractWorkbench<CampfireWorkbenchEntity
     }
 
     /**
-     * Create the block entity for this block; only the master block of the multi-block workbench receives an entity.
+     * Create a block entity for the master block of this workbench.
      *
-     * @return the created {@link BlockEntity} for the master block, or `null` if this position does not host an entity
+     * Only the master block of the multi-block workbench receives an entity; other positions return {@code null}.
+     *
+     * @return the block entity for the master block ({@link CampfireWorkbenchEntity}), or {@code null} if this position does not host an entity
      */
     @Nullable
     @Override

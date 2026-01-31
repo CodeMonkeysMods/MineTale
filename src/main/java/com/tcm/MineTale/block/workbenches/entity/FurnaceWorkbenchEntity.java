@@ -285,23 +285,35 @@ public class FurnaceWorkbenchEntity extends AbstractWorkbenchEntity {
     }
 
     /**
-     * Create the player-facing menu for this Furnace Workbench block entity.
-     *
-     * @param syncId         the window id used to synchronize client and server for this menu
-     * @param playerInventory the player's inventory view passed to the menu
-     * @param player         the player opening the menu
-     * @return               the FurnaceWorkbenchMenu instance for this block entity, or `null` if a menu cannot be created
-     */
+         * Create a container menu that allows a player to interact with this furnace workbench.
+         *
+         * @param syncId          window id used to synchronize the menu between client and server
+         * @param playerInventory the player's inventory view passed into the menu
+         * @param player          the player opening the menu
+         * @return                the workbench's {@link AbstractContainerMenu}, or {@code null} if a menu cannot be created
+         */
     @Override
     public @Nullable AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
         return new FurnaceWorkbenchMenu(syncId, playerInventory, this.inventory, this.data);
     }
 
+    /**
+     * Identifies the recipe type used by this furnace-style workbench.
+     *
+     * @return the RecipeType for furnace workbench recipes (ModRecipes.FURNACE_TYPE)
+     */
     @Override
     public RecipeType<WorkbenchRecipe> getWorkbenchRecipeType() {
         return ModRecipes.FURNACE_TYPE;
     }
 
+    /**
+     * Checks whether the workbench is lit and has a fuel item available.
+     *
+     * Returns false if the block entity is not attached to a level.
+     *
+     * @return `true` if the block's `LIT` property is present and true and the configured fuel slot is non-empty, `false` otherwise.
+     */
     @Override
     protected boolean hasFuel() {
         if (this.level == null) return false;

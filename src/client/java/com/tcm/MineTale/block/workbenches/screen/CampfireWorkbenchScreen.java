@@ -15,9 +15,9 @@ public class CampfireWorkbenchScreen extends AbstractContainerScreen<CampfireWor
         Identifier.withDefaultNamespace("textures/gui/container/furnace.png");
 
     /**
-     * Creates a new furnace workbench screen for the given menu, player inventory, and title.
+     * Creates a campfire workbench screen for the provided menu, player inventory, and title.
      *
-     * @param menu      the container menu that provides slots and syncs state for this screen
+     * @param menu      the container menu that provides slots and synchronizes state for this screen
      * @param inventory the player's inventory to display and interact with
      * @param title     the title component shown at the top of the screen
      */
@@ -35,10 +35,10 @@ public class CampfireWorkbenchScreen extends AbstractContainerScreen<CampfireWor
     }
 
     /**
-    * Draws the furnace workbench background texture onto the screen.
+    * Renders the campfire workbench background texture at the screen's top-left position.
     *
     * @param guiGraphics the graphics context used for drawing
-    * @param f           partial tick time used for interpolation
+    * @param f           partial ticks for interpolation
     * @param i           current mouse x position
     * @param j           current mouse y position
     */
@@ -49,13 +49,13 @@ public class CampfireWorkbenchScreen extends AbstractContainerScreen<CampfireWor
    }
 
     /**
-     * Renders the furnace workbench screen, drawing its background, contents, and tooltips.
-     *
-     * @param graphics the graphics context used for rendering
-     * @param mouseX   the current mouse X coordinate
-     * @param mouseY   the current mouse Y coordinate
-     * @param delta    the frame time delta (partial tick) used for animated rendering
-     */
+         * Renders the campfire workbench screen, drawing its background, contents, and tooltips.
+         *
+         * @param graphics the graphics context used for rendering
+         * @param mouseX   the current mouse X coordinate
+         * @param mouseY   the current mouse Y coordinate
+         * @param delta    the frame time delta (partial tick) used for animated rendering
+         */
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         renderBackground(graphics, mouseX, mouseY, delta);
