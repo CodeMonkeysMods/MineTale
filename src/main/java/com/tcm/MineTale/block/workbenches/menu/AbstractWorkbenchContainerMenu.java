@@ -21,13 +21,12 @@ public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMe
     private final ContainerData data;
 
     /**
-     * Creates a workbench container menu backed by the given inventory and sync data, sets up slots
-     * (fuel slot, two inputs, four result slots) and binds player inventory/hotbar and data for progress syncing.
+     * Initializes a workbench container menu backed by the given inventory and sync data, validates sizes, opens the container, sets up the fuel slot, two input slots and four result slots, binds the player's inventory and hotbar, and registers data for cook/burn progress synchronization.
      *
-     * @param menuType the menu type (may be null for dynamic registration)
+     * @param menuType the menu type; may be null for dynamic registration
      * @param syncId the window synchronization id
-     * @param container the underlying container inventory for the workbench
-     * @param data the container data used to synchronize cook and burn progress
+     * @param container the underlying workbench inventory
+     * @param data container data used to synchronize cook and burn progress
      * @param containerSize expected size of {@code container}; validated by this constructor
      * @param containerDataSize expected size of {@code data}; validated by this constructor
      * @param playerInventory the player's inventory used to add player slots and to identify the player for result slots
