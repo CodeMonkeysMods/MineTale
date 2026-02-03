@@ -43,7 +43,7 @@ public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMe
         container.startOpen(playerInventory.player);
 
         // 1. Fuel Slot (Center-ish bottom)
-        this.addSlot(new Slot(container, Constants.FUEL_SLOT, 80, 53) {
+        this.addSlot(new Slot(container, Constants.FUEL_SLOT, 44, 53) {
             /**
              * Determines whether the given item stack is allowed in the fuel slot.
              *
@@ -57,14 +57,14 @@ public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMe
         });
 
         // 2. Two Input Slots (Stacked on the left)
-        this.addSlot(new Slot(container, Constants.INPUT_1, 44, 17));
-        this.addSlot(new Slot(container, Constants.INPUT_2, 44, 35));
+        this.addSlot(new Slot(container, Constants.INPUT_1, 35, 17)); //LEFT
+        this.addSlot(new Slot(container, Constants.INPUT_2, 53, 17)); //RIGHT
 
         // 3. Four Output Slots (2x2 Grid on the right)
-        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, Constants.OUTPUT_START, 116, 21));
-        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, Constants.OUTPUT_START + 1, 134, 21));
-        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, Constants.OUTPUT_END - 1, 116, 39));
-        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, Constants.OUTPUT_END, 134, 39));
+        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, Constants.OUTPUT_START, 107, 26)); //TOP LEFT
+        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, Constants.OUTPUT_START + 1, 125, 26)); //TOP RIGHT
+        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, Constants.OUTPUT_END - 1, 107, 44)); //BOTTOM LEFT
+        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, Constants.OUTPUT_END, 125, 44)); //BOTTOM RIGHT
 
         // --- PLAYER INVENTORY ---
         addPlayerInventory(playerInventory);

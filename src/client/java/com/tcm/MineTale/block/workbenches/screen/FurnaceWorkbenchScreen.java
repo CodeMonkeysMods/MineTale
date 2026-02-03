@@ -1,5 +1,6 @@
 package com.tcm.MineTale.block.workbenches.screen;
 
+import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.menu.FurnaceWorkbenchMenu;
 
 import net.minecraft.client.gui.GuiGraphics;
@@ -11,8 +12,7 @@ import net.minecraft.network.chat.Component;
 
 public class FurnaceWorkbenchScreen extends AbstractContainerScreen<FurnaceWorkbenchMenu> {
     private static final Identifier TEXTURE = 
-        // Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "textures/gui/container/furnace_workbench.png");
-        Identifier.withDefaultNamespace("textures/gui/container/furnace.png");
+        Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "textures/gui/container/furnace_workbench.png");
 
     /**
      * Creates a new furnace workbench screen for the given menu, player inventory, and title.
