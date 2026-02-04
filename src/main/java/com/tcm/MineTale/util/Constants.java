@@ -15,14 +15,6 @@ public final class Constants {
     }
 
     // Input & Fuel
-    public static final int FUEL_SLOT = 0;
-    public static final int INPUT_1 = 1;
-    public static final int INPUT_2 = 2;
-
-    // Output range
-    public static final int OUTPUT_START = 3;
-    public static final int OUTPUT_END = 6;
-    
-    // Derived constant for convenience
-    public static final int TOTAL_SLOTS = 7; 
+    public static final int FUEL_SLOT = 5;
+    public static final int INPUT_START = 0;
 }

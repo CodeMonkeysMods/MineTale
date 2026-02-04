@@ -16,6 +16,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 
 public class ModRecipeProvider extends FabricRecipeProvider {
@@ -53,6 +54,7 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 					.output(new ItemStack(Items.COOKED_PORKCHOP))
 					.time(10) // Campfires usually take longer (30 seconds)
 					.unlockedBy("has_porkchop", has(Items.PORKCHOP))
+					.category(CookingBookCategory.FOOD)
 					.save(exporter, Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "campfire_pork_cooking"));
 			}
 		};

@@ -71,9 +71,9 @@ public class FurnaceWorkbenchEntity extends AbstractFurnaceWorkbenchEntity {
      * @param pos   the block position of the entity
      * @param state the block state at that position
      */
-    public FurnaceWorkbenchEntity(ModTiers.FurnaceTier tier, BlockPos pos, BlockState state) {
+    public FurnaceWorkbenchEntity(ModTiers.FurnaceTier tier, BlockPos pos, BlockState state, int inputEnd, int outputEnd) {
         // Dynamically fetch the BlockEntityType from your registry map using the tier key
-        super(ModTiers.TIER_MAP.get(tier), pos, state);
+        super(ModTiers.TIER_MAP.get(tier), pos, state, inputEnd, outputEnd);
         this.tier = tier.id();
         
         // You can now set scanRadius dynamically from the record 
@@ -82,7 +82,7 @@ public class FurnaceWorkbenchEntity extends AbstractFurnaceWorkbenchEntity {
 
         this.setCookTimeTotal(tier.cookTime());
     }
-
+    
     /**
          * Create a container menu that allows a player to interact with this furnace workbench.
          *
@@ -93,6 +93,6 @@ public class FurnaceWorkbenchEntity extends AbstractFurnaceWorkbenchEntity {
          */
     @Override
     public @Nullable AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
-        return new FurnaceWorkbenchMenu(syncId, playerInventory, this.inventory, this.data);
+        return new FurnaceWorkbenchMenu(syncId, playerInventory, this.inventory, this.data, this);
     }
 }

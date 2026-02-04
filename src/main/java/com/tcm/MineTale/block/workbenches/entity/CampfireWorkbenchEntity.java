@@ -178,7 +178,7 @@ public class CampfireWorkbenchEntity extends AbstractWorkbenchEntity {
      */
     @Override
     public @Nullable AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
-        return new CampfireWorkbenchMenu(syncId, playerInventory, this.inventory, this.data);
+        return new CampfireWorkbenchMenu(syncId, playerInventory, this.inventory, this.data, this);
     }
 
     /**

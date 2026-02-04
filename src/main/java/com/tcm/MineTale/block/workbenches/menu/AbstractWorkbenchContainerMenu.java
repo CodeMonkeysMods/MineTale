@@ -2,23 +2,33 @@ package com.tcm.MineTale.block.workbenches.menu;
 
 import org.jspecify.annotations.Nullable;
 
+import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
 import com.tcm.MineTale.util.Constants;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.entity.player.StackedItemContents;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.FurnaceResultSlot;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.StackedContentsCompatible;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
-public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMenu {
-    private final Container container;
+public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu implements StackedContentsCompatible {
+    protected final Container container;
     private final ContainerData data;
+    
+    protected final int inputEnd;
+    protected final int outputEnd;
+
+    protected final Inventory playerInventory;
 
     /**
      * Creates a workbench container menu backed by the given inventory and sync data, sets up slots
@@ -32,15 +42,37 @@ public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMe
      * @param containerDataSize expected size of {@code data}; validated by this constructor
      * @param playerInventory the player's inventory used to add player slots and to identify the player for result slots
      */
-    public AbstractWorkbenchContainerMenu(@Nullable MenuType<?> menuType, int syncId, Container container, ContainerData data, int containerSize, int containerDataSize, Inventory playerInventory) {
+    public AbstractWorkbenchContainerMenu(@Nullable MenuType<?> menuType, int syncId, Container container, ContainerData data, int containerDataSize, Inventory playerInventory, int inputEnd, int outputEnd) {
         super(menuType, syncId);
 
-        checkContainerSize(container, containerSize);
+        this.outputEnd = outputEnd;
+        this.inputEnd = inputEnd;
+
+        checkContainerSize(container, outputEnd + 1);
         checkContainerDataCount(data, containerDataSize);
         this.container = container;
         this.data = data;
+        this.playerInventory = playerInventory;
 
         container.startOpen(playerInventory.player);
+
+        // 2. Two Input Slots (Stacked on the left)
+        this.addSlot(new Slot(container, Constants.INPUT_START, 35, 17) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                // If this logic is too restrictive (e.g., checking for fuel only), 
+                // the Recipe Book simulation will fail.
+                return true; 
+            }
+        }); //LEFT
+        this.addSlot(new Slot(container, this.inputEnd, 53, 17) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                // If this logic is too restrictive (e.g., checking for fuel only), 
+                // the Recipe Book simulation will fail.
+                return true; 
+            }
+        }); //RIGHT
 
         // 1. Fuel Slot (Center-ish bottom)
         this.addSlot(new Slot(container, Constants.FUEL_SLOT, 44, 53) {
@@ -56,15 +88,12 @@ public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMe
             }
         });
 
-        // 2. Two Input Slots (Stacked on the left)
-        this.addSlot(new Slot(container, Constants.INPUT_1, 35, 17)); //LEFT
-        this.addSlot(new Slot(container, Constants.INPUT_2, 53, 17)); //RIGHT
 
         // 3. Four Output Slots (2x2 Grid on the right)
-        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, Constants.OUTPUT_START, 107, 26)); //TOP LEFT
-        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, Constants.OUTPUT_START + 1, 125, 26)); //TOP RIGHT
-        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, Constants.OUTPUT_END - 1, 107, 44)); //BOTTOM LEFT
-        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, Constants.OUTPUT_END, 125, 44)); //BOTTOM RIGHT
+        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, this.inputEnd + 1, 107, 26)); //TOP LEFT
+        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, this.inputEnd + 2, 125, 26)); //TOP RIGHT
+        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, this.outputEnd - 1, 107, 44)); //BOTTOM LEFT
+        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, this.outputEnd, 125, 44)); //BOTTOM RIGHT
 
         // --- PLAYER INVENTORY ---
         addPlayerInventory(playerInventory);
@@ -166,7 +195,7 @@ public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMe
             itemStack = itemStack2.copy();
 
             // From Furnace to Player
-            int containerSlots = Constants.TOTAL_SLOTS;
+            int containerSlots = this.outputEnd + 1;
             int playerStart = containerSlots;
             int playerEnd = playerStart + 36;
 
@@ -183,7 +212,7 @@ public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMe
                     if (!this.moveItemStackTo(itemStack2, Constants.FUEL_SLOT, Constants.FUEL_SLOT + 1, false)) return ItemStack.EMPTY;
                 } 
                 // Otherwise, try inputs
-                else if (!this.moveItemStackTo(itemStack2, Constants.INPUT_1, Constants.INPUT_2 + 1, false)) {
+                else if (!this.moveItemStackTo(itemStack2, Constants.INPUT_START, this.outputEnd + 1, false)) {
                     return ItemStack.EMPTY;
                 }
             }
@@ -195,5 +224,43 @@ public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMe
             }
         }
         return itemStack;
+    }
+
+    public abstract @Nullable AbstractWorkbenchEntity getBlockEntity();
+
+    @Override
+    public RecipeBookMenu.PostPlaceAction handlePlacement(boolean shiftDown, boolean bl2, RecipeHolder<?> recipe, ServerLevel serverLevel, Inventory playerInventory) {
+        // // 1. Logic to move items from the Player Inventory to the Furnace Slots
+        // // Since we are in a furnace-style menu, we generally want to fill the 'active' slot.
+        // boolean wasPlaced = this.placeRecipe(recipe, shiftDown, playerInventory);
+
+        // // 2. Trigger your Block Entity to fill remaining empty queue slots from nearby chests
+        // AbstractWorkbenchEntity be = getBlockEntity();
+        // if (be != null && be instanceof AbstractFurnaceWorkbenchEntity furnaceWorkbenchEntity && recipe.value() instanceof WorkbenchRecipe workbenchRecipe) {
+        //     furnaceWorkbenchEntity.fulfillRecipeFromNearby(workbenchRecipe);
+        // }
+
+        // // 3. Return the result. NOTIFY_PLAYER tells the client to play the 'click' sound.
+        // return wasPlaced ? PostPlaceAction.PLACE_GHOST_RECIPE : PostPlaceAction.NOTHING;
+        return PostPlaceAction.PLACE_GHOST_RECIPE;
+    }
+
+    @Override
+    public void fillStackedContents(StackedItemContents contents) {
+        // You MUST manually add the items from your SimpleContainer 
+        // to the contents for the recipe book to "simulate" correctly.
+        for (int i = 0; i < this.container.getContainerSize(); i++) {
+            contents.accountStack(this.container.getItem(i));
+        }
+    }
+
+    @Override
+    public void fillCraftSlotsStackedContents(StackedItemContents stackedItemContents) {
+        // This feeds the recipe book the items it needs to 'light up' the buttons
+        this.playerInventory.fillStackedContents(stackedItemContents); 
+        // Also include items already in the furnace
+        if (this.container instanceof StackedContentsCompatible compatible) {
+            compatible.fillStackedContents(stackedItemContents);
+        }
     }
 }

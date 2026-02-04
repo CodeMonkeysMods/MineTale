@@ -47,7 +47,7 @@ public class ModBlockEntities {
 
         BlockEntityType<FurnaceWorkbenchEntity> type = register(
             tier.id() + "_furnace_be",
-            (pos, state) -> new FurnaceWorkbenchEntity(tier, pos, state),
+            (pos, state) -> new FurnaceWorkbenchEntity(tier, pos, state, 2, 6),
             block
         );
         ModTiers.TIER_MAP.put(tier, type);

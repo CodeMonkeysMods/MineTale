@@ -1,6 +1,7 @@
 {
   "type": "minetale:campfire_alloying",
-  "cookTime": 600,
+  "category": "food",
+  "cookTime": 10,
   "ingredients": [
     "minecraft:porkchop"
   ],

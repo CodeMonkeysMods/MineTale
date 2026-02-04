@@ -31,7 +31,7 @@ public abstract class AbstractWorkbenchEntity extends BlockEntity implements Men
     protected double scanRadius = 5.0;
 
     // Slot Mapping: 0-1 Inputs, 2 Fuel, 3-6 Outputs
-    protected final SimpleContainer inventory = new SimpleContainer(Constants.TOTAL_SLOTS);
+    protected final SimpleContainer inventory = new SimpleContainer(7);
     protected int progress = 0;
     protected int maxProgress = 200;
 
@@ -72,13 +72,13 @@ public static void tick(Level level, BlockPos pos, BlockState state, AbstractWor
     // 1. Create the input wrapper using the internal SimpleContainer
     // Slot 1 = Input A, Slot 2 = Input B
     WorkbenchRecipeInput input = new WorkbenchRecipeInput(
-        entity.inventory.getItem(Constants.INPUT_1), 
-        entity.inventory.getItem(Constants.INPUT_2)
+        entity.inventory.getItem(Constants.INPUT_START), 
+        entity.inventory.getItem(2)
     );
 
     // DEBUG 1: Is the machine even seeing the pork?
-    if (!entity.inventory.getItem(Constants.INPUT_1).isEmpty()) {
-        System.out.println("Slot 1 (Input) contains: " + entity.inventory.getItem(Constants.INPUT_1).getItem().toString());
+    if (!entity.inventory.getItem(Constants.INPUT_START).isEmpty()) {
+        System.out.println("Slot 1 (Input) contains: " + entity.inventory.getItem(Constants.INPUT_START).getItem().toString());
     }
 
     if (!entity.inventory.getItem(Constants.FUEL_SLOT).isEmpty()) {
@@ -159,7 +159,7 @@ public ItemStack getItem(int slot) { return this.inventory.getItem(slot); }
     public boolean canFitOutputs(List<ItemStack> results) {
         for (ItemStack result : results) {
             // If we can't find a home for even one of the results, return false
-            if (findOutputSlot(result, Constants.OUTPUT_START, Constants.OUTPUT_END) == -1) {
+            if (findOutputSlot(result, 3, 6) == -1) {
                 return false;
             }
         }
@@ -220,15 +220,15 @@ public ItemStack getItem(int slot) { return this.inventory.getItem(slot); }
      */
     protected void craft(WorkbenchRecipe recipe) {
         // 1. Consume 1 from each ingredient slot (Slots 1 and 2)
-        this.removeItem(Constants.INPUT_1, 1);
-        this.removeItem(Constants.INPUT_2, 1);
+        this.removeItem(Constants.INPUT_START, 1);
+        this.removeItem(2, 1);
 
         // 2. Distribute results from the recipe
         for (ItemStack result : recipe.results()) {
             if (result.isEmpty()) continue;
             
             // Use the constants for the output range (3 to 6)
-            int slot = findOutputSlot(result, Constants.OUTPUT_START, Constants.OUTPUT_END);
+            int slot = findOutputSlot(result, 3, 6);
             
             if (slot != -1) {
                 ItemStack existing = getItem(slot);

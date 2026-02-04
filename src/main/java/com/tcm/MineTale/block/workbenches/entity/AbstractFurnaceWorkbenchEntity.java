@@ -12,6 +12,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -25,145 +26,92 @@ public abstract class AbstractFurnaceWorkbenchEntity extends AbstractWorkbenchEn
     private int cookTimeTotal = 200; 
     private int fuelTime;
 
-    public AbstractFurnaceWorkbenchEntity(BlockEntityType<FurnaceWorkbenchEntity> type, BlockPos pos, BlockState state) {
+    // Defined by the subclass via constructor
+    protected final int inputEnd;
+    protected final int outputEnd;
+
+    public AbstractFurnaceWorkbenchEntity(BlockEntityType<? extends AbstractFurnaceWorkbenchEntity> type, BlockPos pos, BlockState state, int inputEnd, int outputEnd) {
         super(type, pos, state);
+        this.inputEnd = inputEnd;
+        this.outputEnd = outputEnd;
     }
 
-    public int getFuelTime() {
-        return this.fuelTime;
-    }
+    // --- Getters and Setters ---
+    public int getFuelTime() { return this.fuelTime; }
+    public void setFuelTime(int t) { this.fuelTime = t; }
+    public int getCookTime() { return this.cookTime; }
+    public void setCookTime(int t) { this.cookTime = t; }
+    public int getCookTimeTotal() { return this.cookTimeTotal; }
+    public void setCookTimeTotal(int t) { this.cookTimeTotal = t; }
 
-    public void setFuelTime(int t) {
-        this.fuelTime = t;
-    }
-
-    public int getCookTime() {
-        return this.cookTime;
-    }
-
-    public void setCookTime(int t) {
-        this.cookTime = t;
-    }
-
-    public int getCookTimeTotal() {
-        return this.cookTimeTotal;
-    }
-
-    public void setCookTimeTotal(int t) {
-        this.cookTimeTotal = t;
-    }
-
-    /**
-     * Performs server-side per-tick processing for the furnace workbench: attempts to pull input items from nearby
-     * containers, manages fuel consumption, advances smelting progress according to workbench tier, and produces output
-     * when a smelt cycle completes.
-     *
-     * <p>Behavioral notes:
-     * - Runs only on the server side.
-     * - When input is empty, attempts to pull a single eligible input item from nearby inventories once every 20 game ticks.
-     * - Workbench tier reduces the required cook duration; cooking advances while fuel is available and is reset when smelting is not possible.
-     * - Consumes fuel items to refill internal fuel time, decrements fuel time each tick, increments cook progress, and invokes smeltItem(...) when a cycle finishes.
-     * - Marks the block entity changed if any inventory or internal state is modified.</p>
-     *
-     * @param level the world in which the workbench exists
-     * @param pos   the block position of the workbench
-     * @param state the current block state of the workbench
-     */
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (level.isClientSide()) return;
 
         boolean changed = false;
-        ItemStack fuel = inventory.getItem(Constants.FUEL_SLOT);
-        ItemStack input = !inventory.getItem(Constants.INPUT_1).isEmpty()
-            ? inventory.getItem(Constants.INPUT_1)
-            : inventory.getItem(Constants.INPUT_2);
-
-        // TRAIT: Streamline crafting by pulling from nearby chests if input is empty
-        if (input.isEmpty() && level.getGameTime() % 20 == 0) {
-            pullFromNearbyChests();
+        
+        // 1. Shift queue forward so the next item is ready to smelt
+        if (shiftQueueForward()) {
+            changed = true;
         }
 
-        if (canSmelt(input)) {
-            // TRAIT: Upgrade System - Higher tier = faster smelting
-            // Tier 1: 200 ticks, Tier 2: 150 ticks, Tier 3: 100 ticks...
+        ItemStack activeInput = inventory.getItem(Constants.INPUT_START);
+        ItemStack fuel = inventory.getItem(Constants.FUEL_SLOT);
+
+        // 2. Processing logic (Pulling from chests removed from here)
+        if (canSmelt(activeInput)) {
             int speedBoost = (this.tier - 1) * 50;
             int currentTotal = Math.max(20, this.cookTimeTotal - speedBoost);
 
-            if (fuelTime > 0 || !fuel.isEmpty()) {
-                if (fuelTime <= 0 && consumeFuel(fuel)) {
+            if (this.fuelTime > 0 || !fuel.isEmpty()) {
+                if (this.fuelTime <= 0 && consumeFuel(fuel)) {
                     changed = true;
                 }
 
-                if (fuelTime > 0) {
-                    fuelTime--;
-                    cookTime++;
-                    if (cookTime >= currentTotal) {
-                        smeltItem(input);
-                        cookTime = 0;
+                if (this.fuelTime > 0) {
+                    this.fuelTime--;
+                    this.cookTime++;
+                    if (this.cookTime >= currentTotal) {
+                        smeltItem(activeInput);
+                        this.cookTime = 0;
                         changed = true;
                     }
                 }
             }
         } else {
-            cookTime = 0;
+            this.cookTime = 0;
         }
 
         if (changed) setChanged();
     }
 
     /**
-     * Determines whether the provided stack is a valid smelting input (ore or log).
-     *
-     * @param input the item stack to test
-     * @return `true` if the stack represents an ore or a log, `false` otherwise
+     * Iterates through the queue range. If a slot is empty, it pulls the item 
+     * from the slot behind it.
      */
-    private boolean canSmelt(ItemStack input) {
-        if (input.isEmpty()) return false;
-        // Logic: Check if it's an ore (Copper to Adamantite) or Logs for Charcoal
-        return isOre(input) || isWood(input);
-    }
+    private boolean shiftQueueForward() {
+        boolean moved = false;
+        // Start from the front and pull from the back
+        for (int i = Constants.INPUT_START; i < this.inputEnd; i++) {
+            ItemStack current = inventory.getItem(i);
+            ItemStack next = inventory.getItem(i + 1);
 
-    /**
-     * Consume one unit of the provided fuel item and set the internal fuel timer when the item is an accepted fuel.
-     *
-     * Accepted fuels: sticks, string (fibres), or any item recognized as wood.
-     *
-     * @param fuel the ItemStack to attempt to consume; one item will be removed if accepted
-     * @return `true` if a fuel unit was consumed and the internal fuel time was set to 100, `false` otherwise
-     */
-    private boolean consumeFuel(ItemStack fuel) {
-        // TRAIT: Use fibres (string), sticks, or logs
-        if (fuel.is(Items.STICK) || fuel.is(Items.STRING) || isWood(fuel)) {
-            this.fuelTime = 100; // Assign burn time
-            fuel.shrink(1);
-            return true;
+            if (current.isEmpty() && !next.isEmpty()) {
+                inventory.setItem(i, next.copy());
+                inventory.setItem(i + 1, ItemStack.EMPTY);
+                moved = true;
+            }
         }
-        return false;
+        return moved;
     }
 
-    /**
-     * Smelts a single input item into its output and deposits the result into an available output slot.
-     *
-     * <p>If the input is wood, produces charcoal; otherwise produces a copper ingot (placeholder for ore-to-ingot mapping).
-     * The method finds a suitable output slot and either places the result there or increases the existing stack; if no
-     * output slot is available the method does nothing. The input stack is reduced by one on successful smelting.
-     *
-     * @param input the ItemStack to smelt; one item will be consumed from this stack when smelting occurs
-     */
     private void smeltItem(ItemStack input) {
-        ItemStack result;
-        // TRAIT: Logs yield Charcoal
-        if (isWood(input)) {
-            result = new ItemStack(Items.CHARCOAL);
-        } else {
-            // Placeholder: Replace with your actual Ore-to-Ingot logic
-            result = new ItemStack(Items.COPPER_INGOT); 
-        }
+        ItemStack result = isWood(input) ? new ItemStack(Items.CHARCOAL) : new ItemStack(Items.COPPER_INGOT);
 
-        int outputSlot = this.findOutputSlot(result, inventory, Constants.OUTPUT_START, Constants.OUTPUT_END);
+        // Uses your existing findOutputSlot logic
+        int outputSlot = this.findOutputSlot(result, inventory, this.inputEnd + 1, this.outputEnd);
         if (outputSlot == -1) return;
+        
         ItemStack output = inventory.getItem(outputSlot);
-
         if (output.isEmpty()) {
             inventory.setItem(outputSlot, result.copy());
         } else if (ItemStack.isSameItem(output, result)) {
@@ -173,106 +121,87 @@ public abstract class AbstractFurnaceWorkbenchEntity extends AbstractWorkbenchEn
     }
 
     /**
-     * Attempts to move a single ore or wood item from nearby inventories into this entity's input slots.
-     *
-     * If INPUT_1 is empty that slot is filled first; otherwise INPUT_2 is used. If neither input slot is
-     * available or no matching item is found, the method does nothing. When an item is moved, the source
-     * container is marked changed.
+     * CALLED BY SCREENHANDLER / RECIPE BOOK
+     * Searches nearby chests for items matching the selected recipe and 
+     * fills any empty slots in the queue.
      */
-    private void pullFromNearbyChests() {
+    public void fulfillRecipeFromNearby(WorkbenchRecipe recipe) {
+        if (this.level == null || this.level.isClientSide()) return;
+
+        // Assuming your WorkbenchRecipe has a method to get its input ingredient
+        // If it's a standard furnace-style recipe, it likely has one ingredient.
+        Ingredient ingredient = recipe.ingredients().get(0); 
         List<Container> nearby = this.getNearbyInventories();
-        for (Container chest : nearby) {
-            for (int i = 0; i < chest.getContainerSize(); i++) {
-                ItemStack stack = chest.getItem(i);
-                if (isOre(stack) || isWood(stack)) {
-                    int inputSlot = -1;
-                    if (inventory.getItem(Constants.INPUT_1).isEmpty()) {
-                        inputSlot = Constants.INPUT_1;
-                    } else if (inventory.getItem(Constants.INPUT_2).isEmpty()) {
-                        inputSlot = Constants.INPUT_2;
+
+        // Iterate through our queue slots
+        for (int slot = Constants.INPUT_START; slot <= this.inputEnd; slot++) {
+            // Only try to fill if the slot is currently empty
+            if (inventory.getItem(slot).isEmpty()) {
+                
+                // Look through nearby chests
+                for (Container chest : nearby) {
+                    for (int i = 0; i < chest.getContainerSize(); i++) {
+                        ItemStack stackInChest = chest.getItem(i);
+                        
+                        if (!stackInChest.isEmpty() && ingredient.test(stackInChest)) {
+                            // Take 1 (or a full stack if you prefer) and put it in the queue
+                            inventory.setItem(slot, stackInChest.split(1));
+                            chest.setChanged();
+                            this.setChanged();
+                            
+                            // Break to next queue slot once this one is filled
+                            break; 
+                        }
                     }
-                    if (inputSlot == -1) return;
-                    inventory.setItem(inputSlot, stack.split(1));
-                    chest.setChanged();
-                    return;
+                    // If we filled the slot, stop looking at other chests for this specific slot
+                    if (!inventory.getItem(slot).isEmpty()) break;
                 }
             }
         }
     }
 
-    /**
-     * Determines whether the provided item stack is a supported ore.
-     *
-     * @param stack the item stack to test
-     * @return `true` if the stack is a supported ore (currently `Items.RAW_COPPER`), `false` otherwise
-     */
-    private boolean isOre(ItemStack stack) { return stack.is(Items.RAW_COPPER); /* Add more ores */ }
-    /**
-     * Determines whether the given item stack represents a wood log item.
-     *
-     * @param stack the item stack to inspect
-     * @return `true` if the stack's item is a wood log, `false` otherwise
-     */
+    private boolean consumeFuel(ItemStack fuel) {
+        if (fuel.is(Items.STICK) || fuel.is(Items.STRING) || isWood(fuel)) {
+            this.fuelTime = 100; 
+            fuel.shrink(1);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean canSmelt(ItemStack input) {
+        return !input.isEmpty() && (isOre(input) || isWood(input));
+    }
+
+    private boolean isOre(ItemStack stack) { return stack.is(Items.RAW_COPPER); }
     private boolean isWood(ItemStack stack) { return stack.is(ItemTags.LOGS_THAT_BURN); }
 
-    /**
-     * Persist entity-specific state into the provided ValueOutput.
-     *
-     * Stores the workbench's tier as "WorkbenchTier" and its scan radius as "ScanRadius"
-     * using type-safe Codecs.
-     *
-     * @param valueOutput the output writer used to serialize this entity's fields
-     */
     @Override
     protected void saveAdditional(ValueOutput valueOutput) {
         super.saveAdditional(valueOutput);
-        // store() uses Codecs for type safety
+        valueOutput.store("CookTime", Codec.INT, this.cookTime);
+        valueOutput.store("FuelTime", Codec.INT, this.fuelTime);
         valueOutput.store("WorkbenchTier", Codec.INT, this.tier);
-        valueOutput.store("ScanRadius", Codec.DOUBLE, this.scanRadius);
     }
 
-    /**
-     * Restores workbench-specific state from persistent storage and applies defaults when keys are absent.
-     *
-     * Delegates to the superclass load logic, then reads:
-     * - "WorkbenchTier" (int) into {@code tier}, defaulting to {@code 1} if missing.
-     * - "ScanRadius" (double) into {@code scanRadius}, defaulting to {@code 5.0} if missing.
-     */
     @Override
     protected void loadAdditional(ValueInput valueInput) {
         super.loadAdditional(valueInput);
-        // read() returns an Optional
+        this.cookTime = valueInput.read("CookTime", Codec.INT).orElse(0);
+        this.fuelTime = valueInput.read("FuelTime", Codec.INT).orElse(0);
         this.tier = valueInput.read("WorkbenchTier", Codec.INT).orElse(1);
-        this.scanRadius = valueInput.read("ScanRadius", Codec.DOUBLE).orElse(5.0);
     }
 
-    /**
-     * Identifies the recipe type used by this furnace-style workbench.
-     *
-     * @return the RecipeType for furnace workbench recipes (ModRecipes.FURNACE_TYPE)
-     */
     @Override
     public RecipeType<WorkbenchRecipe> getWorkbenchRecipeType() {
         return ModRecipes.FURNACE_TYPE;
     }
 
-    /**
-     * Checks whether the workbench is lit and has a fuel item available.
-     *
-     * Returns false if the block entity is not attached to a level.
-     *
-     * @return `true` if the block's `LIT` property is present and true and the configured fuel slot is non-empty, `false` otherwise.
-     */
     @Override
     protected boolean hasFuel() {
         if (this.level == null) return false;
-        
-        // Check if block is lit
         BlockState state = this.level.getBlockState(this.worldPosition);
         boolean isLit = state.hasProperty(BlockStateProperties.LIT) && state.getValue(BlockStateProperties.LIT);
-        
-        boolean hasFuelItem = !this.getItem(Constants.FUEL_SLOT).isEmpty();
-        
-        return isLit && hasFuelItem;
+        return isLit || this.fuelTime > 0;
     }
 }
