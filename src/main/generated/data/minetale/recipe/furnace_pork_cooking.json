@@ -1,5 +1,5 @@
 {
-  "type": "minetale:furnace_alloying",
+  "type": "minetale:furnace_recipe_type",
   "cookTime": 10,
   "ingredients": [
     "minecraft:porkchop"

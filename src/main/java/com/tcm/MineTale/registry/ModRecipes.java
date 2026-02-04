@@ -13,8 +13,8 @@ import net.minecraft.world.item.crafting.RecipeType;
 public class ModRecipes {
 
     // 1. Define the Types (The "Where")
-    public static final RecipeType<WorkbenchRecipe> FURNACE_TYPE = createType("furnace_alloying");
-    public static final RecipeType<WorkbenchRecipe> CAMPFIRE_TYPE = createType("campfire_alloying");
+    public static final RecipeType<WorkbenchRecipe> FURNACE_TYPE = createType("furnace_recipe_type");
+    public static final RecipeType<WorkbenchRecipe> CAMPFIRE_TYPE = createType("campfire_recipe_type");
     
     // 2. Define the Serializers (The "How")
     // We pass the specific Type into the Serializer's constructor
@@ -24,15 +24,12 @@ public class ModRecipes {
     public static final RecipeSerializer<WorkbenchRecipe> CAMPFIRE_SERIALIZER = 
         new WorkbenchRecipe.Serializer(CAMPFIRE_TYPE);
 
-    /**
-     * Registers the furnace and campfire alloying recipe types and their serializers into the built-in registries.
-     */
     public static void initialize() {
         // Register the Furnace-flavored version
-        register("furnace_alloying", FURNACE_TYPE, FURNACE_SERIALIZER);
+        register(FURNACE_TYPE.toString(), FURNACE_TYPE, FURNACE_SERIALIZER);
         
         // Register the Campfire-flavored version
-        register("campfire_alloying", CAMPFIRE_TYPE, CAMPFIRE_SERIALIZER);
+        register(CAMPFIRE_TYPE.toString(), CAMPFIRE_TYPE, CAMPFIRE_SERIALIZER);
     }
 
     /**

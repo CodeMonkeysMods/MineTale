@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeBookCategories;
 import net.minecraft.network.chat.Component;
 
 // FurnaceScreen
@@ -45,7 +44,7 @@ public class CampfireWorkbenchScreen extends AbstractRecipeBookScreen<CampfireWo
         
         // CHANGE THIS: Replace CRAFTING_MISC with your custom category
         List<RecipeBookComponent.TabInfo> tabs = List.of(
-            new RecipeBookComponent.TabInfo(tabIcon.getItem(), ModRecipeDisplay.CAMPFIRE_ALLOYING_SEARCH)
+            new RecipeBookComponent.TabInfo(tabIcon.getItem(), ModRecipeDisplay.CAMPFIRE_SEARCH)
         );
 
         return new MineTaleRecipeBookComponent(menu, tabs);

@@ -39,7 +39,7 @@ public class MineTaleRecipeBookComponent extends RecipeBookComponent<RecipeBookM
         recipeCollection.selectRecipes(stackedItemContents, (recipeDisplay) -> {
         // Only allow recipes that use your custom Workbench display type
         // This effectively filters out vanilla CraftingRecipeDisplays (the boats)
-            return recipeDisplay.type() == ModRecipeDisplay.WORKBENCH_ALLOYING_TYPE;
+            return recipeDisplay.type() == ModRecipeDisplay.WORKBENCH_TYPE;
         });
     }
 

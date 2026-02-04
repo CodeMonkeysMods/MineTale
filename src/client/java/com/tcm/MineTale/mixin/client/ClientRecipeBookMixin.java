@@ -18,7 +18,7 @@ public abstract class ClientRecipeBookMixin {
     private static void minetale$addCustomCategory(RecipeHolder<?> recipe, CallbackInfoReturnable<RecipeBookCategory> cir) {
         if (recipe.value().getType() == ModRecipes.FURNACE_SERIALIZER) {
             // This tells the search engine to put your recipes into your custom tab
-            cir.setReturnValue(ModRecipeDisplay.CAMPFIRE_ALLOYING_SEARCH);
+            cir.setReturnValue(ModRecipeDisplay.CAMPFIRE_SEARCH);
         }
     }
 }

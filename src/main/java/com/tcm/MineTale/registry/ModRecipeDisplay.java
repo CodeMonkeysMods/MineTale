@@ -21,24 +21,24 @@ public class ModRecipeDisplay {
 		(ingredients, result, craftingStation) -> new WorkbenchRecipeDisplay(ingredients, result, craftingStation)
 	);
 
-    public static final RecipeDisplay.Type<WorkbenchRecipeDisplay> WORKBENCH_ALLOYING_TYPE = 
+    public static final RecipeDisplay.Type<WorkbenchRecipeDisplay> WORKBENCH_TYPE = 
         new RecipeDisplay.Type<>(WorkbenchRecipeDisplay.CODEC, STREAM_CODEC);
 
-    public static final RecipeBookCategory CAMPFIRE_ALLOYING_SEARCH = new RecipeBookCategory();
+    public static final RecipeBookCategory CAMPFIRE_SEARCH = new RecipeBookCategory();
 
     public static void initialize() {
         // Register the Display TYPE
         Registry.register(
             BuiltInRegistries.RECIPE_DISPLAY, 
-            Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "workbench_alloying"), 
-            WORKBENCH_ALLOYING_TYPE
+            Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "workbench_recipe_display"), 
+            WORKBENCH_TYPE
         );
 
         // Register the Category
         Registry.register(
             BuiltInRegistries.RECIPE_BOOK_CATEGORY, 
-            Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "campfire_alloying_search"), 
-            CAMPFIRE_ALLOYING_SEARCH
+            Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "campfire_recipe_book_category"), 
+            CAMPFIRE_SEARCH
         );
     }
 }

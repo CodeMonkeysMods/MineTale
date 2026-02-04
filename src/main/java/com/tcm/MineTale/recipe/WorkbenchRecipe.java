@@ -62,7 +62,6 @@ public record WorkbenchRecipe(
             return matchesA || matchesB;
         } 
         
-        // If the recipe has 2 ingredients (for future alloying/combining)
         if (ingredients.size() == 2) {
             Ingredient secondIngredient = ingredients.get(1);
             return (recipeIngredient.test(slotA) && secondIngredient.test(slotB)) ||
@@ -124,7 +123,7 @@ public record WorkbenchRecipe(
     @Override
     public RecipeBookCategory recipeBookCategory() {
         // Using null as we are using a custom workbench
-        return ModRecipeDisplay.CAMPFIRE_ALLOYING_SEARCH;
+        return ModRecipeDisplay.CAMPFIRE_SEARCH;
     }
 
     @Override

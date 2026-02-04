@@ -43,7 +43,7 @@ public record WorkbenchRecipeDisplay(List<SlotDisplay> ingredients,
     @Override
     public RecipeDisplay.Type<WorkbenchRecipeDisplay> type() {
         // We will register this next
-        return ModRecipeDisplay.WORKBENCH_ALLOYING_TYPE;
+        return ModRecipeDisplay.WORKBENCH_TYPE;
     }
 
     @Override

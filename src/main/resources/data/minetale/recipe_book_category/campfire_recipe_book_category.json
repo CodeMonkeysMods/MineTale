@@ -1,0 +1,6 @@
+{
+  "category": "minetale:campfire_recipe_book_category",
+  "recipe_types": [
+    "minetale:campfire_recipe_type" 
+  ]
+}

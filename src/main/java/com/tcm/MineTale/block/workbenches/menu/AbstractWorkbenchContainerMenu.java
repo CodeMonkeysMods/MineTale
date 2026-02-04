@@ -294,8 +294,7 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
     @Override
     public RecipeBookMenu.PostPlaceAction handlePlacement(boolean placeAll, boolean isSpecial, RecipeHolder<?> recipe, ServerLevel serverLevel, Inventory inventory
 	) {
-        if (recipe.value() instanceof WorkbenchRecipe workbenchRecipe) {
-            
+        if (recipe.value() instanceof WorkbenchRecipe) {
             @SuppressWarnings("unchecked")
             RecipeHolder<WorkbenchRecipe> castRecipe = (RecipeHolder<WorkbenchRecipe>) recipe;
             // 2. Call the static placeRecipe method
