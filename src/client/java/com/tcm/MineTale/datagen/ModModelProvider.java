@@ -7,8 +7,21 @@ import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 
 public class ModModelProvider extends FabricModelProvider {
-    public ModModelProvider(FabricDataOutput output) { super(output); }
+    /**
+ * Creates a ModModelProvider using the given Fabric data output.
+ *
+ * @param output the FabricDataOutput used to write generated model and blockstate data
+ */
+public ModModelProvider(FabricDataOutput output) { super(output); }
 
+    /**
+     * Registers block state and model definitions for the mod's log blocks.
+     *
+     * This configures horizontal and vertical log models for each custom log block and, for
+     * WILD_WISTERIA_LOG, also registers the corresponding wood model (WILD_WISTERIA_WOOD).
+     *
+     * @param blockStateModelGenerator the generator used to create block state and model entries
+     */
     @Override
     public void generateBlockStateModels(BlockModelGenerators blockStateModelGenerator) {
         blockStateModelGenerator.woodProvider(ModBlocks.AMBER_LOG).logWithHorizontal(ModBlocks.AMBER_LOG);
@@ -43,6 +56,11 @@ public class ModModelProvider extends FabricModelProvider {
         blockStateModelGenerator.woodProvider(ModBlocks.WILD_WISTERIA_LOG).logWithHorizontal(ModBlocks.WILD_WISTERIA_LOG).wood(ModBlocks.WILD_WISTERIA_WOOD);
     }
 
+    /**
+     * Registers item models for the mod; currently left empty (no item models are generated).
+     *
+     * @param itemModelGenerators generator used to register item models
+     */
     @Override
     public void generateItemModels(ItemModelGenerators itemModelGenerators) {
 
