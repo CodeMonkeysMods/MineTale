@@ -7,10 +7,21 @@ import net.minecraft.core.HolderLookup;
 import java.util.concurrent.CompletableFuture;
 
 public class ModLangProvider extends FabricLanguageProvider {
+    /**
+     * Creates a ModLangProvider configured to generate the mod's language translations.
+     *
+     * @param dataOutput     the FabricDataOutput used to write generated language files
+     * @param registryLookup a CompletableFuture supplying a HolderLookup.Provider for registry lookups during data generation
+     */
     public ModLangProvider(FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registryLookup) {
         super(dataOutput, registryLookup);
     }
 
+    /**
+     * Populates the translation builder with English language entries for MineTale (creative tab title and block names).
+     *
+     * @param translationBuilder the builder used to register translation keys and their English values
+     */
     @Override
     public void generateTranslations(HolderLookup.Provider wrapperLookup, TranslationBuilder translationBuilder) {
         translationBuilder.add("minetale.creative_tab.title", "MineTale Stuffs");
