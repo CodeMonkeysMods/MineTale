@@ -23,7 +23,8 @@
 			"com.tcm.MineTale.MineTaleClient"
 		],
 		"fabric-datagen": [
-			"com.tcm.MineTale.datagen.ModDataGenerator"
+			"com.tcm.MineTale.datagen.ModDataGenerator",
+			"com.tcm.MineTale.MineTaleDataGen"
 		]
 	},
 	"mixins": [

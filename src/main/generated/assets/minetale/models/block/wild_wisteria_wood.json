@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "minetale:block/wild_wisteria_log",
+    "side": "minetale:block/wild_wisteria_log"
+  }
+}

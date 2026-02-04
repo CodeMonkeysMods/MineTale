@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "minetale:block/bamboo_log_deco_top",
+    "side": "minetale:block/bamboo_log_deco"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_horizontal",
+  "textures": {
+    "end": "minetale:block/stormbark_log_top",
+    "side": "minetale:block/stormbark_log"
+  }
+}
