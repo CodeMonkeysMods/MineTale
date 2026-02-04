@@ -15,6 +15,6 @@ public final class Constants {
     }
 
     // Input & Fuel
-    public static final int FUEL_SLOT = 5;
-    public static final int INPUT_START = 0;
+    public static final int FUEL_SLOT = 0;
+    public static final int INPUT_START = 1;
 }

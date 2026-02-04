@@ -6,13 +6,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.tcm.MineTale.registry.ModRecipeDisplay;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CookingBookCategory;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
@@ -28,7 +29,7 @@ public record WorkbenchRecipe(
     int cookTime,
     RecipeType<WorkbenchRecipe> recipeType,
     RecipeSerializer<WorkbenchRecipe> recipeSerializer,
-    CookingBookCategory category
+    CraftingBookCategory category
 ) implements Recipe<WorkbenchRecipeInput> {
 
     /**
@@ -43,22 +44,32 @@ public record WorkbenchRecipe(
      */
     @Override
     public boolean matches(WorkbenchRecipeInput input, Level level) {
-        if (ingredients.isEmpty()) return false;
+        System.out.println("Matches input: " + input);
+        System.out.println("Matches ingredients: " + ingredients);
 
-        // Use .getItem() to get the actual stack from the input
-        ItemStack stackA = input.inputA();
-        ItemStack stackB = input.inputB();
+        if (input == null || ingredients.isEmpty()) return false;
 
-        // Check if slot 0 matches the first ingredient
-        boolean slot0Matches = ingredients.get(0).test(stackA);
+        ItemStack slotA = input.inputA();
+        ItemStack slotB = input.inputB();
+        Ingredient recipeIngredient = ingredients.get(0);
 
-        if (ingredients.size() > 1) {
-            // Recipe needs two items
-            return slot0Matches && ingredients.get(1).test(stackB);
-        } else {
-            // Recipe only needs one item, so Slot B MUST be empty
-            return slot0Matches && stackB.isEmpty();
+        // If the recipe only has 1 ingredient (like your pork recipe)
+        if (ingredients.size() == 1) {
+            // Check if the ingredient matches either slot AND the other slot is empty
+            boolean matchesA = recipeIngredient.test(slotA) && slotB.isEmpty();
+            boolean matchesB = recipeIngredient.test(slotB) && slotA.isEmpty();
+            
+            return matchesA || matchesB;
+        } 
+        
+        // If the recipe has 2 ingredients (for future alloying/combining)
+        if (ingredients.size() == 2) {
+            Ingredient secondIngredient = ingredients.get(1);
+            return (recipeIngredient.test(slotA) && secondIngredient.test(slotB)) ||
+                (recipeIngredient.test(slotB) && secondIngredient.test(slotA));
         }
+
+        return false;
     }
 
     /**
@@ -113,7 +124,12 @@ public record WorkbenchRecipe(
     @Override
     public RecipeBookCategory recipeBookCategory() {
         // Using null as we are using a custom workbench
-        return null;
+        return ModRecipeDisplay.CAMPFIRE_ALLOYING_SEARCH;
+    }
+
+    @Override
+    public CraftingBookCategory category() {
+        return this.category; 
     }
 
     /**
@@ -123,8 +139,9 @@ public record WorkbenchRecipe(
      */
     @Override
     public List<RecipeDisplay> display() {
-        // Used for the recipe book UI display
-        return List.of();
+        // Every time the client asks for this recipe's "looks", 
+        // we provide our custom display.
+        return List.of(new WorkbenchRecipeDisplay(this));
     }
 
     // --- SERIALIZER ---
@@ -146,6 +163,7 @@ public record WorkbenchRecipe(
         public Serializer(RecipeType<WorkbenchRecipe> recipeType) {
             this.recipeType = recipeType;
 
+            // 1. Updated MapCodec to use CraftingBookCategory
             this.codec = RecordCodecBuilder.mapCodec(inst -> inst.group(
                 Ingredient.CODEC.listOf()
                     .validate(list -> list.size() >= 1 && list.size() <= 2 
@@ -158,14 +176,17 @@ public record WorkbenchRecipe(
                         : DataResult.error(() -> "Results must be between 1 and 4"))
                     .fieldOf("results").forGetter(WorkbenchRecipe::results),
                 Codec.INT.optionalFieldOf("cookTime", 200).forGetter(WorkbenchRecipe::cookTime),
-                CookingBookCategory.CODEC.optionalFieldOf("category", CookingBookCategory.MISC).forGetter(WorkbenchRecipe::category)
+                // Changed CookingBookCategory to CraftingBookCategory
+                CraftingBookCategory.CODEC.optionalFieldOf("category", CraftingBookCategory.MISC).forGetter(WorkbenchRecipe::category)
             ).apply(inst, (ing, res, time, cat) -> new WorkbenchRecipe(ing, res, time, this.recipeType, this, cat)));
 
+            // 2. Updated StreamCodec to use CraftingBookCategory
             this.streamCodec = StreamCodec.composite(
                 Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()), WorkbenchRecipe::ingredients,
                 ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()), WorkbenchRecipe::results,
                 ByteBufCodecs.VAR_INT, WorkbenchRecipe::cookTime,
-                CookingBookCategory.STREAM_CODEC, WorkbenchRecipe::category,
+                // Changed CookingBookCategory to CraftingBookCategory
+                CraftingBookCategory.STREAM_CODEC, WorkbenchRecipe::category,
                 (ing, res, time, cat) -> new WorkbenchRecipe(ing, res, time, this.recipeType, this, cat)
             );
         }

@@ -1,5 +1,5 @@
 {
-  "type": "minetale:campfire_alloying",
+  "type": "minetale:furnace_alloying",
   "cookTime": 10,
   "ingredients": [
     "minecraft:porkchop"

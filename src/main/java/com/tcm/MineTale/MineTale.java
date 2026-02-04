@@ -1,7 +1,7 @@
 package com.tcm.MineTale;
 
 import net.fabricmc.api.ModInitializer;
-
+import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import org.slf4j.Logger;
@@ -13,6 +13,7 @@ import com.tcm.MineTale.registry.ModEntities;
 import com.tcm.MineTale.registry.ModEntityDataSerializers;
 import com.tcm.MineTale.registry.ModItems;
 import com.tcm.MineTale.registry.ModMenuTypes;
+import com.tcm.MineTale.registry.ModRecipeDisplay;
 import com.tcm.MineTale.registry.ModRecipes;
 
 import static com.tcm.MineTale.item.ModCreativeTab.MINETALE_CREATIVE_TAB;
@@ -50,9 +51,15 @@ public class MineTale implements ModInitializer {
 		// 5. Recipes last - These depend on Items, Blocks, and Entities existing
 		ModRecipes.initialize();
 
+		// ADD THIS HERE
+        ModRecipeDisplay.initialize();
+
 		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, MINETALE_CREATIVE_TAB_KEY, MINETALE_CREATIVE_TAB);
 
 		ModEntityDataSerializers.initialize();
+
+		RecipeSynchronization.synchronizeRecipeSerializer(ModRecipes.FURNACE_SERIALIZER);
+		// This helps the search bar "see" items in your custom categories
 
 		LOGGER.info("Hello Fabric world!");
 	}

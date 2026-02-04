@@ -3,7 +3,9 @@ package com.tcm.MineTale.block.workbenches.menu;
 import org.jspecify.annotations.Nullable;
 
 import com.tcm.MineTale.block.workbenches.entity.AbstractFurnaceWorkbenchEntity;
+import com.tcm.MineTale.recipe.WorkbenchRecipeInput;
 import com.tcm.MineTale.registry.ModMenuTypes;
+import com.tcm.MineTale.util.Constants;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -54,5 +56,15 @@ public class FurnaceWorkbenchMenu extends AbstractWorkbenchContainerMenu {
         // Tells the game which tab/category of the recipe book to save your settings under.
         // Even though it's a custom furnace, using FURNACE ensures it behaves like one.
         return RecipeBookType.FURNACE;
+    }
+
+    @Override
+    public WorkbenchRecipeInput createRecipeInput() {
+        // We grab the items currently sitting in the container at indices 0 and 1
+        // These correspond to the "Left" and "Right" input slots added in your constructor
+        return new WorkbenchRecipeInput(
+            this.container.getItem(Constants.INPUT_START), 
+            this.container.getItem(this.inputEnd)
+        );
     }
 }

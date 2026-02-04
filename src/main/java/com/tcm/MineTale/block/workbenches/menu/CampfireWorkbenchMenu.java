@@ -3,6 +3,7 @@ package com.tcm.MineTale.block.workbenches.menu;
 import org.jspecify.annotations.Nullable;
 
 import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
+import com.tcm.MineTale.recipe.WorkbenchRecipeInput;
 import com.tcm.MineTale.registry.ModMenuTypes;
 import com.tcm.MineTale.util.Constants;
 
@@ -62,6 +63,16 @@ public class CampfireWorkbenchMenu extends AbstractWorkbenchContainerMenu {
 
     @Override
     public RecipeBookType getRecipeBookType() {
-        return RecipeBookType.FURNACE;
+        return RecipeBookType.CRAFTING;
+    }
+    
+    @Override
+    public WorkbenchRecipeInput createRecipeInput() {
+        // We grab the items currently sitting in the container at indices 0 and 1
+        // These correspond to the "Left" and "Right" input slots added in your constructor
+        return new WorkbenchRecipeInput(
+            this.container.getItem(Constants.INPUT_START), 
+            this.container.getItem(this.inputEnd)
+        );
     }
 }

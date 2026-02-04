@@ -1,3 +1,5 @@
 // 1.21.11	-999999999-01-01T00:00:00	MineTale/minetaleModRecipeProvider
 dcc5dac31dc51d16b53e14666f87d47297089c0d data/minetale/advancement/recipes/campfire_pork_cooking.json
-751394b2de2b8d65df4ffd587bf371f4b0bf81fd data/minetale/recipe/campfire_pork_cooking.json
+dd19aa0d10f93fd31ca88ddad6ab59e1414c54dc data/minetale/advancement/recipes/furnace_pork_cooking.json
+c6b30105a7233e86c89fb513bd0c839b64fae640 data/minetale/recipe/campfire_pork_cooking.json
+8c3ca9c30df9ace65513e270fdff5f9e92aec069 data/minetale/recipe/furnace_pork_cooking.json
