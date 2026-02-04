@@ -25,6 +25,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -36,6 +37,7 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
     private final List<Ingredient> ingredients = new ArrayList<>();
     private final List<ItemStack> results = new ArrayList<>();
     private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
+    private CraftingBookCategory category = CraftingBookCategory.MISC;
     private int cookTime = 200;
     @Nullable private String group;
 
@@ -49,14 +51,16 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
  * @return a MapCodec for WorkbenchRecipe that reads/writes ingredients, results, and cookTime and produces WorkbenchRecipe instances tied to the given type and serializer
  */
 public static final MapCodec<WorkbenchRecipe> CODEC(RecipeType<WorkbenchRecipe> type, RecipeSerializer<WorkbenchRecipe> serializer) {
-    return RecordCodecBuilder.mapCodec(inst -> inst.group(
-        Ingredient.CODEC.listOf().fieldOf("ingredients").forGetter(WorkbenchRecipe::ingredients),
-        ItemStack.STRICT_CODEC.listOf().fieldOf("results").forGetter(WorkbenchRecipe::results),
-        Codec.INT.optionalFieldOf("cookTime", 200).forGetter(WorkbenchRecipe::cookTime)
-    ).apply(inst, (ingredients, results, cookTime) -> 
-        new WorkbenchRecipe(ingredients, results, cookTime, type, serializer)
-    ));
-}
+        return RecordCodecBuilder.mapCodec(inst -> inst.group(
+            Ingredient.CODEC.listOf().fieldOf("ingredients").forGetter(WorkbenchRecipe::ingredients),
+            ItemStack.STRICT_CODEC.listOf().fieldOf("results").forGetter(WorkbenchRecipe::results),
+            Codec.INT.optionalFieldOf("cookTime", 200).forGetter(WorkbenchRecipe::cookTime),
+            // Updated to CraftingBookCategory codec
+            CraftingBookCategory.CODEC.optionalFieldOf("category", CraftingBookCategory.MISC).forGetter(WorkbenchRecipe::category)
+        ).apply(inst, (ingredients, results, cookTime, category) -> 
+            new WorkbenchRecipe(ingredients, results, cookTime, type, serializer, category)
+        ));
+    }
 
     /**
      * Create a new WorkbenchRecipeBuilder configured for a specific recipe type and its serializer.
@@ -88,6 +92,11 @@ public static final MapCodec<WorkbenchRecipe> CODEC(RecipeType<WorkbenchRecipe> 
      */
     public WorkbenchRecipeBuilder input(Ingredient ingredient) {
         this.ingredients.add(ingredient);
+        return this;
+    }
+
+    public WorkbenchRecipeBuilder category(CraftingBookCategory category) {
+        this.category = category;
         return this;
     }
 
@@ -188,7 +197,8 @@ public static final MapCodec<WorkbenchRecipe> CODEC(RecipeType<WorkbenchRecipe> 
                 List.copyOf(results),
                 cookTime,
                 this.type,
-                this.serializer
+                this.serializer,
+                this.category
         );
 
         // 4. Accept the recipe into the generator

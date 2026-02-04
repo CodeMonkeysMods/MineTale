@@ -1,18 +1,27 @@
 package com.tcm.MineTale.block.workbenches.screen;
 
+import java.util.List;
+
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.menu.CampfireWorkbenchMenu;
+import com.tcm.MineTale.recipe.MineTaleRecipeBookComponent;
+import com.tcm.MineTale.registry.ModBlocks;
+import com.tcm.MineTale.registry.ModRecipeDisplay;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.navigation.ScreenPosition;
+import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
+import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 
-public class CampfireWorkbenchScreen extends AbstractContainerScreen<CampfireWorkbenchMenu> {
+public class CampfireWorkbenchScreen extends AbstractRecipeBookScreen<CampfireWorkbenchMenu> {
     private static final Identifier TEXTURE = 
         Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "textures/gui/container/furnace_workbench.png");
+
     /**
      * Creates a campfire workbench screen for the provided menu, player inventory, and title.
      *
@@ -21,7 +30,21 @@ public class CampfireWorkbenchScreen extends AbstractContainerScreen<CampfireWor
      * @param title     the title component shown at the top of the screen
      */
     public CampfireWorkbenchScreen(CampfireWorkbenchMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title);
+        super(menu, createRecipeBookComponent(menu), inventory, title);
+    }
+
+    /**
+     * Static helper to build the component with the custom MineTale tabs 
+     * before the super constructor is called.
+     */
+    private static MineTaleRecipeBookComponent createRecipeBookComponent(CampfireWorkbenchMenu menu) {
+        ItemStack tabIcon = new ItemStack(ModBlocks.CAMPFIRE_WORKBENCH_BLOCK.asItem());
+        
+        List<RecipeBookComponent.TabInfo> tabs = List.of(
+            new RecipeBookComponent.TabInfo(tabIcon.getItem(), ModRecipeDisplay.CAMPFIRE_SEARCH)
+        );
+
+        return new MineTaleRecipeBookComponent(menu, tabs);
     }
 
     /**
@@ -29,8 +52,11 @@ public class CampfireWorkbenchScreen extends AbstractContainerScreen<CampfireWor
      */
     @Override
     protected void init() {
+        // Important: Set your GUI size before super.init()
+        this.imageWidth = 176;
+        this.imageHeight = 166;
+        
         super.init();
-        this.titleLabelX = (this.imageWidth - this.font.width(this.title)) / 2;
     }
 
     /**
@@ -57,8 +83,25 @@ public class CampfireWorkbenchScreen extends AbstractContainerScreen<CampfireWor
          */
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        // 1. Always render the dark background tint first
         renderBackground(graphics, mouseX, mouseY, delta);
+
+        // 3. Call super (this draws your slots and items)
         super.render(graphics, mouseX, mouseY, delta);
+
         renderTooltip(graphics, mouseX, mouseY);
+    }
+
+    @Override
+    protected ScreenPosition getRecipeBookButtonPosition() {
+        // 1. Calculate the start (left) of your workbench GUI
+        int guiLeft = (this.width - this.imageWidth) / 2;
+        
+        // 2. Calculate the top of your workbench GUI
+        int guiTop = (this.height - this.imageHeight) / 2;
+
+        // 3. Standard Vanilla positioning: 
+        // Usually 5 pixels in from the left and 49 pixels up from the center
+        return new ScreenPosition(guiLeft + 5, guiTop + this.imageHeight / 2 - 49);
     }
 }

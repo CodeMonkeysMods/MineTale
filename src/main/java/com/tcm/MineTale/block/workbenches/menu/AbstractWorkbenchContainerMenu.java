@@ -1,24 +1,39 @@
 package com.tcm.MineTale.block.workbenches.menu;
 
+import java.util.List;
+
 import org.jspecify.annotations.Nullable;
 
+import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
+import com.tcm.MineTale.recipe.WorkbenchRecipe;
+import com.tcm.MineTale.recipe.WorkbenchRecipeInput;
 import com.tcm.MineTale.util.Constants;
 
+import net.minecraft.recipebook.ServerPlaceRecipe;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.entity.player.StackedItemContents;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.FurnaceResultSlot;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.StackedContentsCompatible;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
-public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMenu {
-    private final Container container;
+public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu implements StackedContentsCompatible {
+    protected final Container container;
     private final ContainerData data;
+    
+    protected final int inputEnd;
+    protected final int outputEnd;
+
+    protected final Inventory playerInventory;
 
     /**
      * Creates a workbench container menu backed by the given inventory and sync data, sets up slots
@@ -32,13 +47,17 @@ public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMe
      * @param containerDataSize expected size of {@code data}; validated by this constructor
      * @param playerInventory the player's inventory used to add player slots and to identify the player for result slots
      */
-    public AbstractWorkbenchContainerMenu(@Nullable MenuType<?> menuType, int syncId, Container container, ContainerData data, int containerSize, int containerDataSize, Inventory playerInventory) {
+    public AbstractWorkbenchContainerMenu(@Nullable MenuType<?> menuType, int syncId, Container container, ContainerData data, int containerDataSize, Inventory playerInventory, int inputEnd, int outputEnd) {
         super(menuType, syncId);
 
-        checkContainerSize(container, containerSize);
+        this.outputEnd = outputEnd;
+        this.inputEnd = inputEnd;
+
+        checkContainerSize(container, outputEnd + 1);
         checkContainerDataCount(data, containerDataSize);
         this.container = container;
         this.data = data;
+        this.playerInventory = playerInventory;
 
         container.startOpen(playerInventory.player);
 
@@ -57,14 +76,29 @@ public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMe
         });
 
         // 2. Two Input Slots (Stacked on the left)
-        this.addSlot(new Slot(container, Constants.INPUT_1, 35, 17)); //LEFT
-        this.addSlot(new Slot(container, Constants.INPUT_2, 53, 17)); //RIGHT
+        this.addSlot(new Slot(container, Constants.INPUT_START, 35, 17) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                // If this logic is too restrictive (e.g., checking for fuel only), 
+                // the Recipe Book simulation will fail.
+                return true; 
+            }
+        }); //LEFT
+        this.addSlot(new Slot(container, this.inputEnd, 53, 17) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                // If this logic is too restrictive (e.g., checking for fuel only), 
+                // the Recipe Book simulation will fail.
+                return true; 
+            }
+        }); //RIGHT
+
 
         // 3. Four Output Slots (2x2 Grid on the right)
-        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, Constants.OUTPUT_START, 107, 26)); //TOP LEFT
-        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, Constants.OUTPUT_START + 1, 125, 26)); //TOP RIGHT
-        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, Constants.OUTPUT_END - 1, 107, 44)); //BOTTOM LEFT
-        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, Constants.OUTPUT_END, 125, 44)); //BOTTOM RIGHT
+        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, this.inputEnd + 1, 107, 26)); //TOP LEFT
+        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, this.inputEnd + 2, 125, 26)); //TOP RIGHT
+        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, this.outputEnd - 1, 107, 44)); //BOTTOM LEFT
+        this.addSlot(new FurnaceResultSlot(playerInventory.player, container, this.outputEnd, 125, 44)); //BOTTOM RIGHT
 
         // --- PLAYER INVENTORY ---
         addPlayerInventory(playerInventory);
@@ -146,45 +180,41 @@ public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMe
         return this.data.get(0) * 13 / i; // fuelTime
     }
 
-    /**
-         * Performs a shift-click transfer between this container and the player's inventory.
-         *
-         * Moves the clicked stack into the player's inventory if it came from the container, or into the appropriate container
-         * slots if it came from the player's inventory. Fuel items are moved to the fuel slot; all other items are moved to the
-         * input slots. If the transfer cannot be completed, no changes are applied to the source slot.
-         *
-         * @param player the player performing the transfer
-         * @param index  the index of the slot that was shift-clicked
-         * @return the original ItemStack from the clicked slot, or ItemStack.EMPTY if the transfer failed
-         */
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
+
         if (slot != null && slot.hasItem()) {
             ItemStack itemStack2 = slot.getItem();
             itemStack = itemStack2.copy();
 
-            // From Furnace to Player
-            int containerSlots = Constants.TOTAL_SLOTS;
-            int playerStart = containerSlots;
-            int playerEnd = playerStart + 36;
+            int workbenchSlotsEnd = this.outputEnd + 1; 
 
-            // From Furnace to Player
-            if (index < containerSlots) {
-                if (!this.moveItemStackTo(itemStack2, playerStart, playerEnd, true)) {
+            // CASE 1: Moving from Workbench to Player Inventory
+            if (index < workbenchSlotsEnd) {
+                // Try to move to player inventory (indices 7 to 43)
+                // Use reverse = true to fill the hotbar last (standard vanilla behavior)
+                if (!this.moveItemStackTo(itemStack2, workbenchSlotsEnd, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
             } 
-            // From Player to Furnace
+            // CASE 2: Moving from Player Inventory to Workbench
             else {
-                // If it's fuel, try fuel slot
-                if (isFuel(itemStack2)) {
-                    if (!this.moveItemStackTo(itemStack2, Constants.FUEL_SLOT, Constants.FUEL_SLOT + 1, false)) return ItemStack.EMPTY;
-                } 
-                // Otherwise, try inputs
-                else if (!this.moveItemStackTo(itemStack2, Constants.INPUT_1, Constants.INPUT_2 + 1, false)) {
-                    return ItemStack.EMPTY;
+                if (this.isFuel(itemStack2)) {
+                    // 1. Try the Fuel Slot (Index 0)
+                    if (!this.moveItemStackTo(itemStack2, Constants.FUEL_SLOT, Constants.FUEL_SLOT + 1, false)) {
+                        // 2. If fuel is full, try the Input slots (Indices 1 to 3) as backup
+                        if (!this.moveItemStackTo(itemStack2, Constants.INPUT_START, this.inputEnd + 1, false)) {
+                            return ItemStack.EMPTY;
+                        }
+                    }
+                } else {
+                    // 3. Not fuel? Go straight to Input slots (Indices 1 to 3)
+                    // This ensures Slot 1 is checked BEFORE Slot 2
+                    if (!this.moveItemStackTo(itemStack2, Constants.INPUT_START, this.inputEnd + 1, false)) {
+                        return ItemStack.EMPTY;
+                    }
                 }
             }
 
@@ -193,7 +223,92 @@ public abstract class AbstractWorkbenchContainerMenu extends AbstractContainerMe
             } else {
                 slot.setChanged();
             }
+
+            if (itemStack2.getCount() == itemStack.getCount()) {
+                return ItemStack.EMPTY;
+            }
+
+            slot.onTake(player, itemStack2);
         }
+
         return itemStack;
     }
+
+    public abstract @Nullable AbstractWorkbenchEntity getBlockEntity();
+
+    @Override
+    public RecipeBookMenu.PostPlaceAction handlePlacement(boolean placeAll, boolean isSpecial, RecipeHolder<?> recipe, ServerLevel serverLevel, Inventory inventory
+	) {
+        if (recipe.value() instanceof WorkbenchRecipe) {
+            @SuppressWarnings("unchecked")
+            RecipeHolder<WorkbenchRecipe> castRecipe = (RecipeHolder<WorkbenchRecipe>) recipe;
+            // 2. Call the static placeRecipe method
+            return ServerPlaceRecipe.placeRecipe(
+                new ServerPlaceRecipe.CraftingMenuAccess<WorkbenchRecipe>() {
+                    @Override
+                    public void fillCraftSlotsStackedContents(StackedItemContents contents) {
+                        AbstractWorkbenchContainerMenu.this.fillCraftSlotsStackedContents(contents);
+                    }
+
+                    @Override
+                    public void clearCraftingContent() {
+                        // Instead of setting to EMPTY, return items to player inventory
+                        // This allows the Recipe Book to 'refill' or 'stack' properly
+                        for (int i : new int[]{Constants.INPUT_START, AbstractWorkbenchContainerMenu.this.inputEnd}) {
+                            ItemStack stack = AbstractWorkbenchContainerMenu.this.getSlot(i).getItem();
+                            if (!stack.isEmpty()) {
+                                AbstractWorkbenchContainerMenu.this.playerInventory.placeItemBackInInventory(stack);
+                                AbstractWorkbenchContainerMenu.this.getSlot(i).set(ItemStack.EMPTY);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public boolean recipeMatches(RecipeHolder<WorkbenchRecipe> holder) {
+                        return holder.value().matches(
+                            AbstractWorkbenchContainerMenu.this.createRecipeInput(), 
+                            serverLevel
+                        );
+                    }
+                },
+                1, // Grid Width
+                1, // Grid Height
+                // FIX: Pass Slots 1 and 2 here. 
+                // If Constants.INPUT_START is 1 and inputEnd is 2, this is correct:
+                List.of(this.getSlot(Constants.INPUT_START), this.getSlot(this.inputEnd)), 
+                // Result Slots (3, 4, 5, 6)
+                List.of(this.getSlot(this.inputEnd + 1), this.getSlot(this.inputEnd + 2), 
+                        this.getSlot(this.outputEnd - 1), this.getSlot(this.outputEnd)),
+                inventory,
+                castRecipe,
+                placeAll,
+                false
+            );
+        }
+
+        return PostPlaceAction.NOTHING;
+    }
+
+    @Override
+    public void fillStackedContents(StackedItemContents contents) {
+        // You MUST manually add the items from your SimpleContainer 
+        // to the contents for the recipe book to "simulate" correctly.
+        for (int i = Constants.INPUT_START; i <= this.inputEnd; i++) {
+            contents.accountStack(this.container.getItem(i));
+        }
+    }
+
+    @Override
+    public void fillCraftSlotsStackedContents(StackedItemContents contents) {
+        // 1. Tell the server what is in the player's pockets
+        this.playerInventory.fillStackedContents(contents);
+        
+        // 2. Tell the server what is already in the workbench slots
+        // This allows the server to 'add' to the existing count
+        for (int i = Constants.INPUT_START; i <= this.inputEnd; i++) {
+            contents.accountStack(this.container.getItem(i));
+        }
+    }
+
+    public abstract WorkbenchRecipeInput createRecipeInput();
 }

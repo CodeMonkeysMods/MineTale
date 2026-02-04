@@ -8,6 +8,9 @@ import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.gui.screens.MenuScreens;
 
 public class MineTaleClient implements ClientModInitializer {
+
+	
+
 	/**
 	 * Registers client-side screen factories for custom workbench menu types.
 	 *

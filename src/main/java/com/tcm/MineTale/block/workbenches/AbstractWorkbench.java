@@ -37,16 +37,22 @@ public abstract class AbstractWorkbench<E extends AbstractWorkbenchEntity> exten
     protected final Supplier<BlockEntityType<? extends E>> blockEntityType;
     protected final boolean isWide;
     protected final boolean isTall;
+    protected int tier;
 
-    protected AbstractWorkbench(Properties properties, Supplier<BlockEntityType<? extends E>> supplier, boolean isWide, boolean isTall) {
+    protected AbstractWorkbench(Properties properties, Supplier<BlockEntityType<? extends E>> supplier, boolean isWide, boolean isTall, int tier) {
         super(properties);
         this.blockEntityType = supplier;
         this.isWide = isWide;
         this.isTall = isTall;
+        this.tier = tier;
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(HALF, DoubleBlockHalf.LOWER)
                 .setValue(TYPE, ChestType.SINGLE));
+    }
+
+    public int getTier() {
+        return this.tier;
     }
 
     @Override
@@ -144,29 +150,17 @@ public abstract class AbstractWorkbench<E extends AbstractWorkbenchEntity> exten
         builder.add(FACING, HALF, TYPE);
     }
 
-    /**
-     * Create the block entity for the primary anchor of a multipart workbench.
-     *
-     * @param pos   the position where the block entity would be created
-     * @param state the block state at the position
-     * @return the new block entity when this block is the primary anchor (lower half with TYPE `LEFT` or `SINGLE`), or `null` if this block is a secondary part
-     */
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        // We only want a Block Entity at the 'primary' anchor point of the structure.
-        // For 1x1: HALF=LOWER, TYPE=SINGLE
-        // For 2x1: HALF=LOWER, TYPE=LEFT
-        // For 2x2: HALF=LOWER, TYPE=LEFT
-        
         boolean isLower = state.getValue(HALF) == DoubleBlockHalf.LOWER;
         ChestType type = state.getValue(TYPE);
 
-        // If it's the RIGHT side of a wide block, or the UPPER half of a tall block, return null.
+        // Only the Master block gets the entity
         if (isLower && (type == ChestType.LEFT || type == ChestType.SINGLE)) {
+            // We call create() on the supplier we were given in the constructor
             return this.blockEntityType.get().create(pos, state);
         }
-        
         return null;
     }
 

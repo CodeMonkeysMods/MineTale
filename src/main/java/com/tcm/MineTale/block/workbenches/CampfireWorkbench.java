@@ -39,7 +39,7 @@ public class CampfireWorkbench extends AbstractWorkbench<CampfireWorkbenchEntity
      */
     public CampfireWorkbench(Properties properties) {
         // Hardcode the supplier and sounds here if they never change
-        super(properties, () -> ModBlockEntities.CAMPFIRE_WORKBENCH_BE, IS_WIDE, IS_TALL);
+        super(properties, () -> ModBlockEntities.CAMPFIRE_WORKBENCH_BE, IS_WIDE, IS_TALL, 1);
     }
 
     /**
@@ -50,7 +50,7 @@ public class CampfireWorkbench extends AbstractWorkbench<CampfireWorkbenchEntity
      */
     public CampfireWorkbench(Properties properties, Supplier<BlockEntityType<? extends CampfireWorkbenchEntity>> supplier) {
         // isWide = false, isTall = false (1x1 footprint)
-        super(properties, supplier, IS_WIDE, IS_TALL);
+        super(properties, supplier, IS_WIDE, IS_TALL, 1);
     }
 
     /**
