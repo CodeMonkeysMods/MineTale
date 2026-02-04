@@ -44,9 +44,6 @@ public record WorkbenchRecipe(
      */
     @Override
     public boolean matches(WorkbenchRecipeInput input, Level level) {
-        System.out.println("Matches input: " + input);
-        System.out.println("Matches ingredients: " + ingredients);
-
         if (input == null || ingredients.isEmpty()) return false;
 
         ItemStack slotA = input.inputA();
@@ -122,7 +119,6 @@ public record WorkbenchRecipe(
      */
     @Override
     public RecipeBookCategory recipeBookCategory() {
-        // Using null as we are using a custom workbench
         return ModRecipeDisplay.CAMPFIRE_SEARCH;
     }
 

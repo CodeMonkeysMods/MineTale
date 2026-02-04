@@ -18,7 +18,7 @@ public class ModTiers {
 
     public static FurnaceTier getTierFromInt(int id) {
         return TIER_MAP.keySet().stream()
-            .filter(t -> t.cookTime() == id)
+            .filter(t -> t.id() == id)
             .findFirst()
             .orElse(TIER_1);
     }

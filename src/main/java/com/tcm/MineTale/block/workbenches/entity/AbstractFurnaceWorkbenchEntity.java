@@ -126,8 +126,8 @@ public abstract class AbstractFurnaceWorkbenchEntity extends AbstractWorkbenchEn
      * fills any empty slots in the queue.
      */
     public void fulfillRecipeFromNearby(WorkbenchRecipe recipe) {
-        if (this.level == null || this.level.isClientSide()) return;
-
+        if (this.level == null || this.level.isClientSide() || recipe.ingredients().isEmpty()) return;
+        
         // Assuming your WorkbenchRecipe has a method to get its input ingredient
         // If it's a standard furnace-style recipe, it likely has one ingredient.
         Ingredient ingredient = recipe.ingredients().get(0); 

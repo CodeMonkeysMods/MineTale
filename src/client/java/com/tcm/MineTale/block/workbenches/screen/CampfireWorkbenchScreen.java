@@ -18,8 +18,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 
-// FurnaceScreen
-
 public class CampfireWorkbenchScreen extends AbstractRecipeBookScreen<CampfireWorkbenchMenu> {
     private static final Identifier TEXTURE = 
         Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "textures/gui/container/furnace_workbench.png");
@@ -42,7 +40,6 @@ public class CampfireWorkbenchScreen extends AbstractRecipeBookScreen<CampfireWo
     private static MineTaleRecipeBookComponent createRecipeBookComponent(CampfireWorkbenchMenu menu) {
         ItemStack tabIcon = new ItemStack(ModBlocks.CAMPFIRE_WORKBENCH_BLOCK.asItem());
         
-        // CHANGE THIS: Replace CRAFTING_MISC with your custom category
         List<RecipeBookComponent.TabInfo> tabs = List.of(
             new RecipeBookComponent.TabInfo(tabIcon.getItem(), ModRecipeDisplay.CAMPFIRE_SEARCH)
         );
@@ -60,25 +57,6 @@ public class CampfireWorkbenchScreen extends AbstractRecipeBookScreen<CampfireWo
         this.imageHeight = 166;
         
         super.init();
-
-        // // The component is already created by the constructor, just initialize its UI state
-        // this.recipeBookComponent.init(this.width, this.height, this.minecraft, false);
-        // this.leftPos = this.recipeBookComponent.updateScreenPosition(this.width, this.imageWidth);
-
-        // // Add the toggle button
-        // this.addRenderableWidget(new ImageButton(
-        //     this.leftPos + 5, 
-        //     this.height / 2 - 49, 
-        //     20, 18, 
-        //     RecipeBookComponent.RECIPE_BUTTON_SPRITES, 
-        //     (button) -> {
-        //         this.recipeBookComponent.toggleVisibility();
-        //         this.leftPos = this.recipeBookComponent.updateScreenPosition(this.width, this.imageWidth);
-        //         button.setPosition(this.leftPos + 5, this.height / 2 - 49);
-        //     }
-        // ));
-
-        // this.addWidget(this.recipeBookComponent);
     }
 
     /**
@@ -108,19 +86,8 @@ public class CampfireWorkbenchScreen extends AbstractRecipeBookScreen<CampfireWo
         // 1. Always render the dark background tint first
         renderBackground(graphics, mouseX, mouseY, delta);
 
-        // 2. Add a null check before calling ANY methods on the component
-        // if (this.recipeBookComponent != null) {
-        //     this.recipeBookComponent.render(graphics, mouseX, mouseY, delta);
-        // }
-
         // 3. Call super (this draws your slots and items)
         super.render(graphics, mouseX, mouseY, delta);
-
-        // 4. Ghost recipes and Tooltips also need the null check
-        // if (this.recipeBookComponent != null) {
-        //     this.recipeBookComponent.renderGhostRecipe(graphics, true);
-        //     this.recipeBookComponent.renderTooltip(graphics, this.leftPos, this.topPos, this.hoveredSlot);
-        // }
 
         renderTooltip(graphics, mouseX, mouseY);
     }

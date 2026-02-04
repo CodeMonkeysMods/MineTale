@@ -19,6 +19,7 @@ import net.minecraft.world.inventory.StackedContentsCompatible;
 public class CampfireWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     private static final int containerDataSize = 4;
 
+    @Nullable
     private final AbstractWorkbenchEntity blockEntity;
     
     /**

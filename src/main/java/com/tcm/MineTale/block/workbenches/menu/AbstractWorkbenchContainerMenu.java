@@ -51,7 +51,7 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
         super(menuType, syncId);
 
         this.outputEnd = outputEnd;
-        this.inputEnd = Constants.INPUT_START + 1;
+        this.inputEnd = inputEnd;
 
         checkContainerSize(container, outputEnd + 1);
         checkContainerDataCount(data, containerDataSize);
@@ -180,57 +180,6 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
         return this.data.get(0) * 13 / i; // fuelTime
     }
 
-    /**
-         * Performs a shift-click transfer between this container and the player's inventory.
-         *
-         * Moves the clicked stack into the player's inventory if it came from the container, or into the appropriate container
-         * slots if it came from the player's inventory. Fuel items are moved to the fuel slot; all other items are moved to the
-         * input slots. If the transfer cannot be completed, no changes are applied to the source slot.
-         *
-         * @param player the player performing the transfer
-         * @param index  the index of the slot that was shift-clicked
-         * @return the original ItemStack from the clicked slot, or ItemStack.EMPTY if the transfer failed
-         */
-    // @Override
-    // public ItemStack quickMoveStack(Player player, int index) {
-    //     ItemStack itemStack = ItemStack.EMPTY;
-    //     Slot slot = this.slots.get(index);
-    //     if (slot != null && slot.hasItem()) {
-    //         ItemStack itemStack2 = slot.getItem();
-    //         itemStack = itemStack2.copy();
-
-    //         // From Furnace to Player
-    //         int containerSlots = this.outputEnd + 1;
-    //         int playerStart = containerSlots;
-    //         int playerEnd = playerStart + 36;
-
-    //         // From Furnace to Player
-    //         if (index < containerSlots) {
-    //             if (!this.moveItemStackTo(itemStack2, playerStart, playerEnd, true)) {
-    //                 return ItemStack.EMPTY;
-    //             }
-    //         } 
-    //         // From Player to Furnace
-    //         else {
-    //             // If it's fuel, try fuel slot
-    //             if (isFuel(itemStack2)) {
-    //                 if (!this.moveItemStackTo(itemStack2, Constants.FUEL_SLOT, Constants.FUEL_SLOT + 1, false)) return ItemStack.EMPTY;
-    //             } 
-    //             // Otherwise, try inputs
-    //             else if (!this.moveItemStackTo(itemStack2, Constants.INPUT_START, this.inputEnd, false)) {
-    //                 return ItemStack.EMPTY;
-    //             }
-    //         }
-
-    //         if (itemStack2.isEmpty()) {
-    //             slot.setByPlayer(ItemStack.EMPTY);
-    //         } else {
-    //             slot.setChanged();
-    //         }
-    //     }
-    //     return itemStack;
-    // }
-
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
@@ -240,11 +189,7 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
             ItemStack itemStack2 = slot.getItem();
             itemStack = itemStack2.copy();
 
-            // Indices: 
-            // 0-6: Workbench (0: Fuel, 1-2: Input, 3-6: Output)
-            // 7-33: Player Inventory
-            // 34-42: Player Hotbar
-            int workbenchSlotsEnd = 7; 
+            int workbenchSlotsEnd = this.outputEnd + 1; 
 
             // CASE 1: Moving from Workbench to Player Inventory
             if (index < workbenchSlotsEnd) {
@@ -258,16 +203,16 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
             else {
                 if (this.isFuel(itemStack2)) {
                     // 1. Try the Fuel Slot (Index 0)
-                    if (!this.moveItemStackTo(itemStack2, 0, 1, false)) {
+                    if (!this.moveItemStackTo(itemStack2, Constants.FUEL_SLOT, Constants.FUEL_SLOT + 1, false)) {
                         // 2. If fuel is full, try the Input slots (Indices 1 to 3) as backup
-                        if (!this.moveItemStackTo(itemStack2, 1, 3, false)) {
+                        if (!this.moveItemStackTo(itemStack2, Constants.INPUT_START, this.inputEnd + 1, false)) {
                             return ItemStack.EMPTY;
                         }
                     }
                 } else {
                     // 3. Not fuel? Go straight to Input slots (Indices 1 to 3)
                     // This ensures Slot 1 is checked BEFORE Slot 2
-                    if (!this.moveItemStackTo(itemStack2, 1, 3, false)) {
+                    if (!this.moveItemStackTo(itemStack2, Constants.INPUT_START, this.inputEnd + 1, false)) {
                         return ItemStack.EMPTY;
                     }
                 }
@@ -320,10 +265,6 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
 
                     @Override
                     public boolean recipeMatches(RecipeHolder<WorkbenchRecipe> holder) {
-                        // Use the block entity's logic to see if current inputs match
-                        AbstractWorkbenchContainerMenu.this.getBlockEntity(); // Just to ensure it exists
-                        // Note: Ensure your sub-classes provide createRecipeInput() or similar logic
-                        holder.value().matches(null, serverLevel);
                         return holder.value().matches(
                             AbstractWorkbenchContainerMenu.this.createRecipeInput(), 
                             serverLevel
@@ -352,7 +293,7 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
     public void fillStackedContents(StackedItemContents contents) {
         // You MUST manually add the items from your SimpleContainer 
         // to the contents for the recipe book to "simulate" correctly.
-        for (int i = 0; i < this.container.getContainerSize(); i++) {
+        for (int i = Constants.INPUT_START; i <= this.inputEnd; i++) {
             contents.accountStack(this.container.getItem(i));
         }
     }
@@ -364,7 +305,7 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
         
         // 2. Tell the server what is already in the workbench slots
         // This allows the server to 'add' to the existing count
-        for (int i = 0; i < this.container.getContainerSize(); i++) {
+        for (int i = Constants.INPUT_START; i <= this.inputEnd; i++) {
             contents.accountStack(this.container.getItem(i));
         }
     }

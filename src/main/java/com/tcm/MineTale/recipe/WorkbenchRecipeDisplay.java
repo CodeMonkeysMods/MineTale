@@ -25,7 +25,7 @@ public record WorkbenchRecipeDisplay(List<SlotDisplay> ingredients,
     public WorkbenchRecipeDisplay(WorkbenchRecipe recipe) {
         this(
             recipe.ingredients().stream().map(Ingredient::display).toList(),
-            new SlotDisplay.ItemStackSlotDisplay(recipe.results().get(0)),
+            new SlotDisplay.ItemStackSlotDisplay(recipe.results().isEmpty() ? ItemStack.EMPTY : recipe.results().get(0)),
             new SlotDisplay.ItemStackSlotDisplay(new ItemStack(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1))
         );
     }

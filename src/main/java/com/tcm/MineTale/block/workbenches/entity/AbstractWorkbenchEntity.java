@@ -76,15 +76,6 @@ public static void tick(Level level, BlockPos pos, BlockState state, AbstractWor
         entity.inventory.getItem(2)
     );
 
-    // DEBUG 1: Is the machine even seeing the pork?
-    if (!entity.inventory.getItem(Constants.INPUT_START).isEmpty()) {
-        System.out.println("Slot 1 (Input) contains: " + entity.inventory.getItem(Constants.INPUT_START).getItem().toString());
-    }
-
-    if (!entity.inventory.getItem(Constants.FUEL_SLOT).isEmpty()) {
-        System.out.println("Slot 0 (Fuel) contains: " + entity.inventory.getItem(Constants.FUEL_SLOT).getItem().toString());
-    }
-
     // 2. Fetch the RecipeManager from the server
     if (level.getServer() == null) return;
     var recipeManager = level.getServer().getRecipeManager();
