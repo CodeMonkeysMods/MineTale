@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "minetale:block/wild_wisteria_log_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "minetale:block/wild_wisteria_log"
+    },
+    "axis=z": {
+      "model": "minetale:block/wild_wisteria_log_horizontal",
+      "x": 90
+    }
+  }
+}

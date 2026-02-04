@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "minetale:block/sallow_log_top",
+    "side": "minetale:block/sallow_log"
+  }
+}
