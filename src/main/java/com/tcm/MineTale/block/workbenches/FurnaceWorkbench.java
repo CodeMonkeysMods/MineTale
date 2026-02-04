@@ -1,12 +1,13 @@
 package com.tcm.MineTale.block.workbenches;
 
-import java.util.function.Supplier;
-
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.tcm.MineTale.block.workbenches.entity.FurnaceWorkbenchEntity;
-import com.tcm.MineTale.registry.ModBlockEntities;
+import com.tcm.MineTale.registry.ModTiers;
+import com.tcm.MineTale.registry.ModTiers.FurnaceTier;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -21,26 +22,33 @@ public class FurnaceWorkbench extends AbstractWorkbench<FurnaceWorkbenchEntity> 
     private static final boolean IS_WIDE = true;
     private static final boolean IS_TALL = true;
 
-    public static final MapCodec<FurnaceWorkbench> CODEC = simpleCodec(FurnaceWorkbench::new);
+    public static final MapCodec<FurnaceWorkbench> CODEC = RecordCodecBuilder.mapCodec(instance -> 
+        instance.group(
+            // This handles the standard block properties
+            propertiesCodec(), 
+            // This handles the tier (assuming FurnaceTier is a record/enum with its own codec)
+            Codec.INT.fieldOf("tier").forGetter(block -> block.getTier())
+        ).apply(instance, (props, id) -> new FurnaceWorkbench(props, ModTiers.getTierFromInt(id)))
+    );
 
     /**
      * Creates a FurnaceWorkbench using the default furnace workbench block entity type and a 2×2 footprint.
      *
      * @param properties block properties for this workbench
      */
-    public FurnaceWorkbench(Properties properties) {
-        super(properties, () -> ModBlockEntities.FURNACE_WORKBENCH_BE, IS_WIDE, IS_TALL);
+    public FurnaceWorkbench(Properties properties, FurnaceTier tier) {
+        super(properties, () -> ModTiers.TIER_MAP.get(tier), IS_WIDE, IS_TALL, tier.id());
     }
 
-    /**
-     * Creates a FurnaceWorkbench that uses a custom BlockEntityType supplier and a 2x2 footprint.
-     *
-     * @param properties block properties for this workbench
-     * @param supplier supplies the BlockEntityType to use for the workbench's master block entity
-     */
-    public FurnaceWorkbench(Properties properties, Supplier<BlockEntityType<? extends FurnaceWorkbenchEntity>> supplier) {
-        super(properties, supplier, IS_WIDE, IS_TALL);
-    }
+    // /**
+    //  * Creates a FurnaceWorkbench that uses a custom BlockEntityType supplier and a 2x2 footprint.
+    //  *
+    //  * @param properties block properties for this workbench
+    //  * @param supplier supplies the BlockEntityType to use for the workbench's master block entity
+    //  */
+    // public FurnaceWorkbench(Properties properties, Supplier<BlockEntityType<? extends FurnaceWorkbenchEntity>> supplier) {
+    //     super(properties, supplier, IS_WIDE, IS_TALL, 1);
+    // }
 
     /**
      * Ensures the block is rendered using its model so the 2x2 workbench model is visible.
@@ -72,24 +80,11 @@ public class FurnaceWorkbench extends AbstractWorkbench<FurnaceWorkbenchEntity> 
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         // Only the Master block (Lower-Left) should tick to process smelting
         // This helper ensures the logic only runs on the Server side for our specific BE
-        return createTickerHelper(type, ModBlockEntities.FURNACE_WORKBENCH_BE, (lvl, pos, st, be) -> {
+        return createTickerHelper(type, ModTiers.TIER_MAP.get(ModTiers.getTierFromInt(this.tier)), (lvl, pos, st, be) -> {
             if (be instanceof FurnaceWorkbenchEntity furnace) {
                 furnace.tick(lvl, pos, st);
             }
         });
-    }
-
-    /**
-     * Create the block entity for this block; only the master block of the multi-block workbench receives an entity.
-     *
-     * @return the created {@link BlockEntity} for the master block, or `null` if this position does not host an entity
-     */
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        // AbstractWorkbench logic ensures only the Master block gets the entity.
-        // We override it here to point specifically to our Furnace entity.
-        return super.newBlockEntity(pos, state);
     }
 
 	/**

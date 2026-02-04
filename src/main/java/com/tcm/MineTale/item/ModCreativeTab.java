@@ -13,10 +13,11 @@ import net.minecraft.world.item.ItemStack;
 public class ModCreativeTab {
     public static final ResourceKey<CreativeModeTab> MINETALE_CREATIVE_TAB_KEY = ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "creative_tab"));
     public static final CreativeModeTab MINETALE_CREATIVE_TAB = FabricItemGroup.builder()
-            .icon(() -> new ItemStack(ModBlocks.FURNACE_WORKBENCH_BLOCK))
+            .icon(() -> new ItemStack(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1))
             .title(Component.translatable("minetale.creative_tab.title"))
             .displayItems((params, output) -> {
-                output.accept(ModBlocks.FURNACE_WORKBENCH_BLOCK);
+                output.accept(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1);
+                output.accept(ModBlocks.FURNACE_WORKBENCH_BLOCK_T2);
                 output.accept(ModBlocks.CAMPFIRE_WORKBENCH_BLOCK);
             })
             .build();

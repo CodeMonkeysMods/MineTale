@@ -34,12 +34,21 @@ public class MineTale implements ModInitializer {
 	 */
 	@Override
 	public void onInitialize() {
+		// 1. Blocks first - They are the foundation
 		ModBlocks.initialize();
-		ModRecipes.initialize();
-		ModBlockEntities.initialize();
-		ModMenuTypes.initialize();
-		ModEntities.initialize();
+
+		// 2. Items second - Many blocks have associated BlockItems
 		ModItems.initialize();
+
+		// 3. Block Entities third - They now have non-null Blocks to reference
+		ModBlockEntities.initialize();
+
+		// 4. Entities & Menus - These depend on the objects above
+		ModEntities.initialize();
+		ModMenuTypes.initialize();
+
+		// 5. Recipes last - These depend on Items, Blocks, and Entities existing
+		ModRecipes.initialize();
 
 		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, MINETALE_CREATIVE_TAB_KEY, MINETALE_CREATIVE_TAB);
 

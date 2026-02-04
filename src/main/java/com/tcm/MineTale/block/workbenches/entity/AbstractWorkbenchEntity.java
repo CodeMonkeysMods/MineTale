@@ -27,7 +27,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class AbstractWorkbenchEntity extends BlockEntity implements MenuProvider {
-    protected int tier = 1;
+    protected int tier;
     protected double scanRadius = 5.0;
 
     // Slot Mapping: 0-1 Inputs, 2 Fuel, 3-6 Outputs

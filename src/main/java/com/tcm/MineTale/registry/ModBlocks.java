@@ -28,9 +28,16 @@ public class ModBlocks {
 		true
 	);
 
-	public static final Block FURNACE_WORKBENCH_BLOCK = register(
-		"furnace_workbench_block",
-		FurnaceWorkbench::new,
+	public static final Block FURNACE_WORKBENCH_BLOCK_T1 = register(
+		"furnace_workbench_block_t1",
+		(props) -> new FurnaceWorkbench(props, ModTiers.TIER_1),
+		BlockBehaviour.Properties.of().sound(SoundType.WOOD),
+		true
+	);
+
+	public static final Block FURNACE_WORKBENCH_BLOCK_T2 = register(
+		"furnace_workbench_block_t2",
+		(props) -> new FurnaceWorkbench(props, ModTiers.TIER_2),
 		BlockBehaviour.Properties.of().sound(SoundType.WOOD),
 		true
 	);
@@ -43,7 +50,8 @@ public class ModBlocks {
     public static void initialize() { 
 		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(entries -> {
         	entries.accept(CAMPFIRE_WORKBENCH_BLOCK);
-			entries.accept(FURNACE_WORKBENCH_BLOCK);
+			entries.accept(FURNACE_WORKBENCH_BLOCK_T1);
+			entries.accept(FURNACE_WORKBENCH_BLOCK_T2);
     	});
 		
 
