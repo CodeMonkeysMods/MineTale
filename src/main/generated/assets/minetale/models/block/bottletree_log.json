@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_column",
-  "textures": {
-    "end": "minetale:block/bottletree_log_top",
-    "side": "minetale:block/bottletree_log"
-  }
-}

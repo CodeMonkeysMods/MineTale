@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_column",
-  "textures": {
-    "end": "minetale:block/spiral_log_top",
-    "side": "minetale:block/spiral_log"
-  }
-}
