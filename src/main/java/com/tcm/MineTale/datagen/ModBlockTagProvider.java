@@ -9,10 +9,21 @@ import net.minecraft.tags.BlockTags;
 import java.util.concurrent.CompletableFuture;
 
 public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
+    /**
+     * Creates a ModBlockTagProvider used to generate block tag definitions for the mod.
+     *
+     * @param output the FabricDataOutput destination for generated data
+     * @param registriesFuture a future that supplies registry lookups required to resolve blocks
+     */
     public ModBlockTagProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
 
+    /**
+     * Populates the BlockTags.LOGS tag with this mod's log block entries.
+     *
+     * @param provider the registry lookup provider used to resolve tag values
+     */
     @Override
     protected void addTags(HolderLookup.Provider provider) {
         valueLookupBuilder(BlockTags.LOGS)

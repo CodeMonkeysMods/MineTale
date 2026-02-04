@@ -6,12 +6,11 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 public class ModDataGenerator implements DataGeneratorEntrypoint {
 
     /**
-     * Initializes data generation by creating a new data pack and registering recipe providers.
+     * Initialize data generation by creating a data pack and registering generation providers.
      *
-     * Creates a FabricDataGenerator.Pack from the provided generator and registers
-     * ModRecipeProvider as a provider for that pack.
+     * Registers ModRecipeProvider and ModBlockTagProvider with a newly created FabricDataGenerator.Pack.
      *
-     * @param fabricDataGenerator the FabricDataGenerator used to create packs and register providers
+     * @param fabricDataGenerator the FabricDataGenerator used to create the pack and register providers
      */
     @Override
 	public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
