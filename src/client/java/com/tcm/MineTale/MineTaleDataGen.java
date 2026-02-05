@@ -1,7 +1,10 @@
 package com.tcm.MineTale;
 
+import com.tcm.MineTale.datagen.ModBlockTagProvider;
 import com.tcm.MineTale.datagen.ModLangProvider;
 import com.tcm.MineTale.datagen.ModModelProvider;
+import com.tcm.MineTale.datagen.ModRecipeProvider;
+
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 
@@ -21,5 +24,7 @@ public class MineTaleDataGen implements DataGeneratorEntrypoint {
 
         pack.addProvider(ModLangProvider::new);
         pack.addProvider(ModModelProvider::new);
+        pack.addProvider(ModRecipeProvider::new);
+        pack.addProvider(ModBlockTagProvider::new);
     }
 }
