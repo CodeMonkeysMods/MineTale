@@ -6,6 +6,7 @@ import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.menu.FurnaceWorkbenchMenu;
 import com.tcm.MineTale.recipe.MineTaleRecipeBookComponent;
 import com.tcm.MineTale.registry.ModBlocks;
+import com.tcm.MineTale.registry.ModRecipes;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenPosition;
@@ -41,7 +42,7 @@ public class FurnaceWorkbenchScreen extends AbstractRecipeBookScreen<FurnaceWork
             new RecipeBookComponent.TabInfo(tabIcon.getItem(), RecipeBookCategories.CRAFTING_MISC)
         );
 
-        return new MineTaleRecipeBookComponent(menu, tabs);
+        return new MineTaleRecipeBookComponent(menu, tabs, ModRecipes.FURNACE_TYPE);
     }
 
     @Override

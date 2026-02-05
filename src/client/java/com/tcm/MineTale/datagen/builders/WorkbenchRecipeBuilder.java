@@ -190,6 +190,9 @@ public static final MapCodec<WorkbenchRecipe> CODEC(RecipeType<WorkbenchRecipe> 
                 .requirements(AdvancementRequirements.Strategy.OR);
         
         // Add your criteria here (omitted for brevity)
+        for (Map.Entry<String, Criterion<?>> entry : this.criteria.entrySet()) {
+            advancement.addCriterion(entry.getKey(), entry.getValue());
+        }
 
         // 3. Create the Recipe Instance
         WorkbenchRecipe recipe = new WorkbenchRecipe(
