@@ -11,12 +11,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.tcm.MineTale.recipe.WorkbenchRecipe;
+import com.tcm.MineTale.registry.ModRecipeDisplay;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -28,6 +30,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 
@@ -38,6 +41,8 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
     private final List<ItemStack> results = new ArrayList<>();
     private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
     private CraftingBookCategory category = CraftingBookCategory.MISC;
+    private Identifier bookCategory = BuiltInRegistries.RECIPE_BOOK_CATEGORY
+        .getKey(ModRecipeDisplay.CAMPFIRE_SEARCH);
     private int cookTime = 200;
     @Nullable private String group;
 
@@ -56,9 +61,11 @@ public static final MapCodec<WorkbenchRecipe> CODEC(RecipeType<WorkbenchRecipe> 
             ItemStack.STRICT_CODEC.listOf().fieldOf("results").forGetter(WorkbenchRecipe::results),
             Codec.INT.optionalFieldOf("cookTime", 200).forGetter(WorkbenchRecipe::cookTime),
             // Updated to CraftingBookCategory codec
-            CraftingBookCategory.CODEC.optionalFieldOf("category", CraftingBookCategory.MISC).forGetter(WorkbenchRecipe::category)
-        ).apply(inst, (ingredients, results, cookTime, category) -> 
-            new WorkbenchRecipe(ingredients, results, cookTime, type, serializer, category)
+            CraftingBookCategory.CODEC.optionalFieldOf("category", CraftingBookCategory.MISC).forGetter(WorkbenchRecipe::category),
+            Identifier.CODEC.fieldOf("book_category").forGetter(WorkbenchRecipe::bookCategory)
+        ).apply(inst, (ingredients, results, cookTime, category, bookCategory) -> 
+            // 2. Pass the new bookCategory into the constructor
+            new WorkbenchRecipe(ingredients, results, cookTime, type, serializer, category, bookCategory)
         ));
     }
 
@@ -99,6 +106,15 @@ public static final MapCodec<WorkbenchRecipe> CODEC(RecipeType<WorkbenchRecipe> 
         this.category = category;
         return this;
     }
+
+    public WorkbenchRecipeBuilder bookCategory(RecipeBookCategory category) {
+        Identifier id = BuiltInRegistries.RECIPE_BOOK_CATEGORY.getKey(category);
+        if (id != null) {
+            this.bookCategory = id;
+        }
+        return this;
+    }
+
 
     /**
      * Adds an output item stack to the recipe.
@@ -201,7 +217,8 @@ public static final MapCodec<WorkbenchRecipe> CODEC(RecipeType<WorkbenchRecipe> 
                 cookTime,
                 this.type,
                 this.serializer,
-                this.category
+                this.category,
+                this.bookCategory
         );
 
         // 4. Accept the recipe into the generator

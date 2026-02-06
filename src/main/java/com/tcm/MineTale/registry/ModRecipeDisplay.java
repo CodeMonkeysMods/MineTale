@@ -27,7 +27,9 @@ public class ModRecipeDisplay {
     public static final RecipeDisplay.Type<WorkbenchRecipeDisplay> WORKBENCH_TYPE = 
         new RecipeDisplay.Type<>(WorkbenchRecipeDisplay.CODEC, STREAM_CODEC);
 
-    public static final RecipeBookCategory CAMPFIRE_SEARCH = new RecipeBookCategory();
+    public static final RecipeBookCategory CAMPFIRE_SEARCH = registerCategory("campfire_recipe_book_category");
+
+    public static final RecipeBookCategory FURNACE_T1_SEARCH = registerCategory("furnace_t1_recipe_book_category");
 
     public static void initialize() {
         // Register the Display TYPE
@@ -37,11 +39,25 @@ public class ModRecipeDisplay {
             WORKBENCH_TYPE
         );
 
-        // Register the Category
-        Registry.register(
-            BuiltInRegistries.RECIPE_BOOK_CATEGORY, 
-            Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "campfire_recipe_book_category"), 
-            CAMPFIRE_SEARCH
-        );
+        // // Register the Category
+        // Registry.register(
+        //     BuiltInRegistries.RECIPE_BOOK_CATEGORY, 
+        //     Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "campfire_recipe_book_category"), 
+        //     CAMPFIRE_SEARCH
+        // );
+
+        // Registry.register(
+        //     BuiltInRegistries.RECIPE_BOOK_CATEGORY, 
+        //     Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "furnace_t1_recipe_book_category"), 
+        //     FURNACE_T1_SEARCH
+        // );
+    }
+
+    private static RecipeBookCategory registerCategory(String name) {
+        Identifier id = Identifier.fromNamespaceAndPath(MineTale.MOD_ID, name);
+        RecipeBookCategory category = new RecipeBookCategory();
+        
+        // Register it in the game's internal registry
+        return Registry.register(BuiltInRegistries.RECIPE_BOOK_CATEGORY, id, category);
     }
 }

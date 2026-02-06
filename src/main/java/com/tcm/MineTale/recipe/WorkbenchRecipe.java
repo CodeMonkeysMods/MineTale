@@ -8,10 +8,13 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -29,7 +32,8 @@ public record WorkbenchRecipe(
     int cookTime,
     RecipeType<WorkbenchRecipe> recipeType,
     RecipeSerializer<WorkbenchRecipe> recipeSerializer,
-    CraftingBookCategory category
+    CraftingBookCategory category,
+    Identifier bookCategory
 ) implements Recipe<WorkbenchRecipeInput> {
 
     /**
@@ -119,7 +123,10 @@ public record WorkbenchRecipe(
      */
     @Override
     public RecipeBookCategory recipeBookCategory() {
-        return ModRecipeDisplay.CAMPFIRE_SEARCH;
+        return BuiltInRegistries.RECIPE_BOOK_CATEGORY
+        .get(this.bookCategory) // Returns Optional<Holder.Reference<RecipeBookCategory>>
+        .map(Holder::value)     // Extracts the RecipeBookCategory from the Holder
+        .orElse(ModRecipeDisplay.CAMPFIRE_SEARCH); // Fallback if ID is missing or invalid
     }
 
     @Override
@@ -171,9 +178,10 @@ public record WorkbenchRecipe(
                         : DataResult.error(() -> "Results must be between 1 and 4"))
                     .fieldOf("results").forGetter(WorkbenchRecipe::results),
                 Codec.INT.optionalFieldOf("cookTime", 200).forGetter(WorkbenchRecipe::cookTime),
-                // Changed CookingBookCategory to CraftingBookCategory
-                CraftingBookCategory.CODEC.optionalFieldOf("category", CraftingBookCategory.MISC).forGetter(WorkbenchRecipe::category)
-            ).apply(inst, (ing, res, time, cat) -> new WorkbenchRecipe(ing, res, time, this.recipeType, this, cat)));
+                CraftingBookCategory.CODEC.optionalFieldOf("category", CraftingBookCategory.MISC).forGetter(WorkbenchRecipe::category),
+                Identifier.CODEC.fieldOf("book_category").forGetter(WorkbenchRecipe::bookCategory)
+            ).apply(inst, (ing, res, time, cat, bookCat) -> 
+                new WorkbenchRecipe(ing, res, time, this.recipeType, this, cat, bookCat)));
 
             // 2. Updated StreamCodec to use CraftingBookCategory
             this.streamCodec = StreamCodec.composite(
@@ -182,7 +190,9 @@ public record WorkbenchRecipe(
                 ByteBufCodecs.VAR_INT, WorkbenchRecipe::cookTime,
                 // Changed CookingBookCategory to CraftingBookCategory
                 CraftingBookCategory.STREAM_CODEC, WorkbenchRecipe::category,
-                (ing, res, time, cat) -> new WorkbenchRecipe(ing, res, time, this.recipeType, this, cat)
+                Identifier.STREAM_CODEC, WorkbenchRecipe::bookCategory,
+                (ing, res, time, cat, bookCat) -> 
+                    new WorkbenchRecipe(ing, res, time, this.recipeType, this, cat, bookCat)
             );
         }
 

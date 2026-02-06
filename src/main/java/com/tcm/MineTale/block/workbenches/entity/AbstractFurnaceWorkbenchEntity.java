@@ -194,7 +194,7 @@ public abstract class AbstractFurnaceWorkbenchEntity extends AbstractWorkbenchEn
 
     @Override
     public RecipeType<WorkbenchRecipe> getWorkbenchRecipeType() {
-        return ModRecipes.FURNACE_TYPE;
+        return ModRecipes.FURNACE_T1_TYPE;
     }
 
     @Override

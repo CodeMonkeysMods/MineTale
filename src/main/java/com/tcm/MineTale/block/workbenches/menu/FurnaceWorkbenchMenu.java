@@ -19,6 +19,7 @@ import net.minecraft.world.inventory.StackedContentsCompatible;
 public class FurnaceWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     private static final int containerDataSize = 4;
 
+    @Nullable
     private final AbstractFurnaceWorkbenchEntity blockEntity;
 
     /**
@@ -28,17 +29,16 @@ public class FurnaceWorkbenchMenu extends AbstractWorkbenchContainerMenu {
      * @param playerInventory the player's inventory to attach to this menu
      */
     public FurnaceWorkbenchMenu(int syncId, Inventory playerInventory) {
-        this(syncId, playerInventory, new SimpleContainer(6 + 1), new SimpleContainerData(containerDataSize), null);
+        this(syncId, playerInventory, new SimpleContainer(7), new SimpleContainerData(containerDataSize), null);
     }
 
     public FurnaceWorkbenchMenu(int syncId, Inventory playerInventory, Container container, ContainerData data, @Nullable AbstractFurnaceWorkbenchEntity blockEntity) {
-        super(ModMenuTypes.FURNACE_WORKBENCH_MENU, syncId, container, data, containerDataSize, playerInventory, 2, 6);
+        super(ModMenuTypes.FURNACE_WORKBENCH_MENU, syncId, container, data, containerDataSize, playerInventory, Constants.INPUT_START + 1, 6);
         this.blockEntity = blockEntity;
     }
 
     @Override
     public @Nullable AbstractFurnaceWorkbenchEntity getBlockEntity() {
-        // Return the block entity instance you passed into this menu's constructor
         return this.blockEntity;
     }
 
@@ -53,9 +53,7 @@ public class FurnaceWorkbenchMenu extends AbstractWorkbenchContainerMenu {
 
     @Override
     public RecipeBookType getRecipeBookType() {
-        // Tells the game which tab/category of the recipe book to save your settings under.
-        // Even though it's a custom furnace, using FURNACE ensures it behaves like one.
-        return RecipeBookType.FURNACE;
+        return RecipeBookType.CRAFTING;
     }
 
     @Override
