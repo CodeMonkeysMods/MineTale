@@ -33,6 +33,11 @@ public class ModRecipeDisplay {
 
     public static final RecipeBookCategory FURNACE_T1_SEARCH = registerCategory("furnace_t1_recipe_book_category");
 
+    /**
+     * Registers the workbench recipe display type into the built-in recipe display registry.
+     *
+     * The registration uses this mod's ID combined with the path "workbench_recipe_display" as the identifier.
+     */
     public static void initialize() {
         // Register the Display TYPE
         Registry.register(

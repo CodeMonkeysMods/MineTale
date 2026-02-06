@@ -50,12 +50,12 @@ public class WorkbenchWorkbenchEntity extends AbstractWorkbenchEntity {
         }
 
         /**
-         * Sets an internal workbench data field identified by index.
+         * Update an internal workbench data field identified by index.
          *
          * Supported indices:
          * <ul>
-         *   <li>0 — sets {@code fuelTime}</li>
-         *   <li>2 — sets {@code cookTime}</li>
+         *   <li>0 — set {@code fuelTime}</li>
+         *   <li>2 — set {@code cookTime}</li>
          * </ul>
          * Other indices are ignored.
          *
@@ -97,10 +97,14 @@ public class WorkbenchWorkbenchEntity extends AbstractWorkbenchEntity {
     }
 
     /**
-     * Performs server-side per-tick updates for this workbench.
+     * Run server-side per-tick updates for this workbench entity.
      *
-     * <p>This method is a no-op on the client and exits immediately; server-side update logic
-     * should be implemented here.
+     * <p>Does nothing on the client. On the server this advances the input queue so the next
+     * item becomes ready and, if any state changes occur, marks the block entity as changed.
+     *
+     * @param level the world in which the workbench exists
+     * @param pos the position of the workbench block
+     * @param state the current block state at the workbench's position
      */
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (level.isClientSide()) return;
@@ -118,8 +122,9 @@ public class WorkbenchWorkbenchEntity extends AbstractWorkbenchEntity {
     }
 
     /**
-     * Iterates through the queue range. If a slot is empty, it pulls the item 
-     * from the slot behind it.
+     * Compacts the input queue by moving items forward into the first empty slot ahead of them.
+     *
+     * @return `true` if any items were moved, `false` otherwise.
      */
     private boolean shiftQueueForward() {
         boolean moved = false;
@@ -152,12 +157,12 @@ public class WorkbenchWorkbenchEntity extends AbstractWorkbenchEntity {
     // private boolean isFuel(ItemStack stack) { return stack.is(ItemTags.LOGS_THAT_BURN) || stack.is(Items.STICK); }
 
     /**
-     * Persist entity-specific state into the provided ValueOutput.
+     * Persist this workbench's state to the given ValueOutput.
      *
-     * Stores the workbench's tier as "WorkbenchTier" and its scan radius as "ScanRadius"
+     * Stores "WorkbenchTier" (int), "ScanRadius" (double), and the full inventory under "Inventory"
      * using type-safe Codecs.
      *
-     * @param valueOutput the output writer used to serialize this entity's fields
+     * @param valueOutput the writer used to serialize this entity's fields
      */
     @Override
     protected void saveAdditional(ValueOutput valueOutput) {
@@ -201,12 +206,12 @@ public class WorkbenchWorkbenchEntity extends AbstractWorkbenchEntity {
     }
 
     /**
-     * Create the server-side container menu for the workbench workbench UI.
+     * Creates the server-side container menu for this workbench's UI.
      *
-     * @param syncId         window id used to synchronize the menu with the client
+     * @param syncId the window id used to synchronize the menu with the client
      * @param playerInventory the opening player's inventory
-     * @param player         the player who opened the menu
-     * @return               a WorkbenchWorkbenchMenu tied to this workbench's inventory and sync data
+     * @param player the player who opened the menu
+     * @return a WorkbenchWorkbenchMenu bound to this workbench's inventory and synced data
      */
     @Override
     public @Nullable AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
@@ -214,9 +219,9 @@ public class WorkbenchWorkbenchEntity extends AbstractWorkbenchEntity {
     }
 
     /**
-     * Specifies which recipe type this workbench uses.
+     * Identifies the recipe type used to find and match recipes for this workbench.
      *
-     * @return the workbench workbench recipe type used to look up and match recipes
+     * @return the RecipeType for workbench recipes
      */
     @Override
     public RecipeType<WorkbenchRecipe> getWorkbenchRecipeType() {
