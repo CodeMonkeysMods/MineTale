@@ -95,19 +95,4 @@ public class CampfireWorkbench extends AbstractWorkbench<CampfireWorkbenchEntity
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
-
-    /**
-     * Create a block entity for the master block of this workbench.
-     *
-     * Only the master block of the multi-block workbench receives an entity; other positions return {@code null}.
-     *
-     * @return the block entity for the master block ({@link CampfireWorkbenchEntity}), or {@code null} if this position does not host an entity
-     */
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        // AbstractWorkbench logic ensures only the Master block gets the entity.
-        // We override it here to point specifically to our Campfire entity.
-        return super.newBlockEntity(pos, state);
-    }
 }

@@ -86,19 +86,4 @@ public class FurnaceWorkbench extends AbstractWorkbench<FurnaceWorkbenchEntity> 
         // Essential so that the 2x2 model is visible
         return RenderShape.MODEL;
     }
-
-    /**
-     * Create a block entity for the master block of this workbench.
-     *
-     * Only the master block of the multi-block workbench receives an entity; other positions return {@code null}.
-     *
-     * @return the block entity for the master block ({@link FurnaceWorkbenchEntity}), or {@code null} if this position does not host an entity
-     */
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        // AbstractWorkbench logic ensures only the Master block gets the entity.
-        // We override it here to point specifically to our Furnace entity.
-        return super.newBlockEntity(pos, state);
-    }
 }

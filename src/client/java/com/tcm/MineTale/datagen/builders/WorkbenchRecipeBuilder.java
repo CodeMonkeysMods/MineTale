@@ -7,9 +7,6 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.tcm.MineTale.recipe.WorkbenchRecipe;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
 
@@ -46,28 +43,28 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
     private int cookTime = 200;
     @Nullable private String group;
 
-   /**
- * Creates a MapCodec that serializes and deserializes WorkbenchRecipe instances bound to the given recipe type and serializer.
- *
- * The codec encodes the recipe's ingredients, results, and cookTime (default 200) and constructs a WorkbenchRecipe using the provided type and serializer.
- *
- * @param type the RecipeType associated with the encoded WorkbenchRecipe
- * @param serializer the RecipeSerializer used to (de)serialize the WorkbenchRecipe
- * @return a MapCodec for WorkbenchRecipe that reads/writes ingredients, results, and cookTime and produces WorkbenchRecipe instances tied to the given type and serializer
- */
-public static final MapCodec<WorkbenchRecipe> CODEC(RecipeType<WorkbenchRecipe> type, RecipeSerializer<WorkbenchRecipe> serializer) {
-        return RecordCodecBuilder.mapCodec(inst -> inst.group(
-            Ingredient.CODEC.listOf().fieldOf("ingredients").forGetter(WorkbenchRecipe::ingredients),
-            ItemStack.STRICT_CODEC.listOf().fieldOf("results").forGetter(WorkbenchRecipe::results),
-            Codec.INT.optionalFieldOf("cookTime", 200).forGetter(WorkbenchRecipe::cookTime),
-            // Updated to CraftingBookCategory codec
-            CraftingBookCategory.CODEC.optionalFieldOf("category", CraftingBookCategory.MISC).forGetter(WorkbenchRecipe::category),
-            Identifier.CODEC.fieldOf("book_category").forGetter(WorkbenchRecipe::bookCategory)
-        ).apply(inst, (ingredients, results, cookTime, category, bookCategory) -> 
-            // 2. Pass the new bookCategory into the constructor
-            new WorkbenchRecipe(ingredients, results, cookTime, type, serializer, category, bookCategory)
-        ));
-    }
+//    /**
+//  * Creates a MapCodec that serializes and deserializes WorkbenchRecipe instances bound to the given recipe type and serializer.
+//  *
+//  * The codec encodes the recipe's ingredients, results, and cookTime (default 200) and constructs a WorkbenchRecipe using the provided type and serializer.
+//  *
+//  * @param type the RecipeType associated with the encoded WorkbenchRecipe
+//  * @param serializer the RecipeSerializer used to (de)serialize the WorkbenchRecipe
+//  * @return a MapCodec for WorkbenchRecipe that reads/writes ingredients, results, and cookTime and produces WorkbenchRecipe instances tied to the given type and serializer
+//  */
+// public static final MapCodec<WorkbenchRecipe> CODEC(RecipeType<WorkbenchRecipe> type, RecipeSerializer<WorkbenchRecipe> serializer) {
+//         return RecordCodecBuilder.mapCodec(inst -> inst.group(
+//             Ingredient.CODEC.listOf().fieldOf("ingredients").forGetter(WorkbenchRecipe::ingredients),
+//             ItemStack.STRICT_CODEC.listOf().fieldOf("results").forGetter(WorkbenchRecipe::results),
+//             Codec.INT.optionalFieldOf("cookTime", 200).forGetter(WorkbenchRecipe::cookTime),
+//             // Updated to CraftingBookCategory codec
+//             CraftingBookCategory.CODEC.optionalFieldOf("category", CraftingBookCategory.MISC).forGetter(WorkbenchRecipe::category),
+//             Identifier.CODEC.fieldOf("book_category").forGetter(WorkbenchRecipe::bookCategory)
+//         ).apply(inst, (ingredients, results, cookTime, category, bookCategory) -> 
+//             // 2. Pass the new bookCategory into the constructor
+//             new WorkbenchRecipe(ingredients, results, cookTime, type, serializer, category, bookCategory)
+//         ));
+//     }
 
     /**
      * Create a new WorkbenchRecipeBuilder configured for a specific recipe type and its serializer.

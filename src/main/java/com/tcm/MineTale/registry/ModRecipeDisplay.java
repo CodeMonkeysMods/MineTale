@@ -38,19 +38,6 @@ public class ModRecipeDisplay {
             Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "workbench_recipe_display"), 
             WORKBENCH_TYPE
         );
-
-        // // Register the Category
-        // Registry.register(
-        //     BuiltInRegistries.RECIPE_BOOK_CATEGORY, 
-        //     Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "campfire_recipe_book_category"), 
-        //     CAMPFIRE_SEARCH
-        // );
-
-        // Registry.register(
-        //     BuiltInRegistries.RECIPE_BOOK_CATEGORY, 
-        //     Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "furnace_t1_recipe_book_category"), 
-        //     FURNACE_T1_SEARCH
-        // );
     }
 
     private static RecipeBookCategory registerCategory(String name) {

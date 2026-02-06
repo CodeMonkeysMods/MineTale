@@ -1,17 +1,11 @@
 package com.tcm.MineTale;
 
 import com.tcm.MineTale.block.workbenches.screen.FurnaceWorkbenchScreen;
-
-import java.util.List;
-
 import com.tcm.MineTale.block.workbenches.screen.CampfireWorkbenchScreen;
 import com.tcm.MineTale.registry.ModMenuTypes;
-import com.tcm.MineTale.registry.ModRecipeDisplay;
-import com.tcm.MineTale.registry.ModRecipes;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.world.item.crafting.RecipeBookCategories;
 
 public class MineTaleClient implements ClientModInitializer {
 
