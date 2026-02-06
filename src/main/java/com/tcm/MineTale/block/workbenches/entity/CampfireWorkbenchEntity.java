@@ -28,6 +28,7 @@ public class CampfireWorkbenchEntity extends AbstractWorkbenchEntity {
     private int cookTime;
     private int cookTimeTotal = 200; 
     private int fuelTime;
+    private int inputEnd = 3;
 
     protected final ContainerData data = new ContainerData() {
         /**
@@ -110,6 +111,10 @@ public class CampfireWorkbenchEntity extends AbstractWorkbenchEntity {
         if (shiftQueueForward()) {
             changed = true;
         }
+
+        if (changed) {
+            setChanged();
+        }
     }
 
     /**
@@ -119,7 +124,7 @@ public class CampfireWorkbenchEntity extends AbstractWorkbenchEntity {
     private boolean shiftQueueForward() {
         boolean moved = false;
         // Start from the front and pull from the back
-        for (int i = Constants.INPUT_START; i < Constants.INPUT_START + 1; i++) {
+        for (int i = Constants.INPUT_START; i < this.inputEnd; i++) {
             ItemStack current = inventory.getItem(i);
             ItemStack next = inventory.getItem(i + 1);
 

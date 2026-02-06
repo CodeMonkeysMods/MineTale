@@ -47,9 +47,8 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 			public void buildRecipes() {
 				new WorkbenchRecipeBuilder(ModRecipes.CAMPFIRE_TYPE, ModRecipes.CAMPFIRE_SERIALIZER)
 					.input(Ingredient.of(Items.PORKCHOP))
-					// Note: Slot 1 is optional in our logic, so we just don't add a second input
 					.output(new ItemStack(Items.COOKED_PORKCHOP))
-					.time(10) // Campfires usually take longer (30 seconds)
+					.time(10)
 					.unlockedBy("has_porkchop", has(Items.PORKCHOP))
 					.category(CraftingBookCategory.MISC)
 					.bookCategory(ModRecipeDisplay.CAMPFIRE_SEARCH)
@@ -57,9 +56,8 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 
 				new WorkbenchRecipeBuilder(ModRecipes.FURNACE_T1_TYPE, ModRecipes.FURNACE_SERIALIZER)
 					.input(Ingredient.of(Items.PORKCHOP))
-					// Note: Slot 1 is optional in our logic, so we just don't add a second input
 					.output(new ItemStack(Items.ACACIA_BOAT))
-					.time(10) // Campfires usually take longer (30 seconds)
+					.time(10)
 					.unlockedBy("has_porkchop", has(Items.PORKCHOP))
 					.category(CraftingBookCategory.MISC)
 					.bookCategory(ModRecipeDisplay.FURNACE_T1_SEARCH)

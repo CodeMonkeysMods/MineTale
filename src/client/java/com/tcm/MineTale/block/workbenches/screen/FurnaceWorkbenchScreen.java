@@ -41,11 +41,7 @@ public class FurnaceWorkbenchScreen extends AbstractRecipeBookScreen<FurnaceWork
         List<RecipeBookComponent.TabInfo> tabs = List.of(
             new RecipeBookComponent.TabInfo(tabIcon.getItem(), ModRecipeDisplay.FURNACE_T1_SEARCH)
         );
-//         List<RecipeBookComponent.TabInfo> tabs = List.of(
-//     new RecipeBookComponent.TabInfo(tabIcon.getItem(), ModRecipeDisplay.CAMPFIRE_SEARCH)
-// );
 
-        // Ensure the last argument is the RecipeBookType, NOT the RecipeType
         return new MineTaleRecipeBookComponent(menu, tabs, ModRecipes.FURNACE_T1_TYPE);
     }
 

@@ -67,9 +67,9 @@ public class FurnaceWorkbench extends AbstractWorkbench<FurnaceWorkbenchEntity> 
     }
 
     /**
-     * The codec used to serialize and deserialize this CampfireWorkbench type.
+     * The codec used to serialize and deserialize this FurnaceWorkbench type.
      *
-     * @return the MapCodec for this CampfireWorkbench
+     * @return the MapCodec for this FurnaceWorkbench
      */
     @Override
     protected MapCodec<? extends FurnaceWorkbench> codec() {
