@@ -36,11 +36,23 @@ public class MineTaleRecipeBookComponent extends RecipeBookComponent<RecipeBookM
         Identifier.withDefaultNamespace("recipe_book/filter_disabled_focused")
     );
 
+    /**
+     * Creates a MineTaleRecipeBookComponent bound to a specific machine recipe type.
+     *
+     * @param recipeBookMenu the recipe book menu instance this component is attached to
+     * @param list           the list of tab information to display in the recipe book
+     * @param filterType     the RecipeType used to filter which recipes are shown in this component
+     */
     public MineTaleRecipeBookComponent(RecipeBookMenu recipeBookMenu, List<TabInfo> list, RecipeType<?> filterType) {
         super(recipeBookMenu, list);
         this.filterType = filterType;
     }
 
+    /**
+     * Get the ID of the last recipe clicked in the current recipe book page.
+     *
+     * @return the `RecipeDisplayId` of the last clicked recipe, or `null` if there is no open page or no recipe has been clicked
+     */
     public @Nullable RecipeDisplayId getSelectedRecipeId() {
         // Cast 'this' to the Accessor interface to call the generated getter
         RecipeBookPage page = ((RecipeBookComponentAccessor)this).getRecipeBookPage();
@@ -51,6 +63,15 @@ public class MineTaleRecipeBookComponent extends RecipeBookComponent<RecipeBookM
         return null;
     }
 
+    /**
+     * Filters the provided recipe collection to include only workbench displays that match this component's filterType.
+     *
+     * Uses the provided StackedItemContents to perform matching and retains only recipe displays whose type is
+     * ModRecipeDisplay.WORKBENCH_TYPE and whose WorkbenchRecipeDisplay.getRecipeType() equals this.filterType.
+     *
+     * @param recipeCollection the collection whose selectable recipes will be updated
+     * @param stackedItemContents the available stacked item contents used for recipe matching
+     */
     @Override
     protected void selectMatchingRecipes(RecipeCollection recipeCollection, StackedItemContents stackedItemContents) {
         // Force everything to be "selected"
@@ -74,6 +95,13 @@ public class MineTaleRecipeBookComponent extends RecipeBookComponent<RecipeBookM
         });
     }
 
+    /**
+     * Handle mouse clicks inside the recipe book and select MineTale workbench recipes when clicked.
+     *
+     * @param mouseButtonEvent the mouse event to process
+     * @param bl               a pass-through boolean flag forwarded to the underlying recipe page click handler
+     * @return                 `true` if the click was handled by selecting a MineTale workbench recipe, `false` otherwise
+     */
     @Override
     public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
         if (!this.isVisible() || this.minecraft.player.isSpectator()) {
@@ -110,6 +138,11 @@ public class MineTaleRecipeBookComponent extends RecipeBookComponent<RecipeBookM
         return super.mouseClicked(mouseButtonEvent, bl);
     }
 
+    /**
+     * Provide the sprite set used by the recipe book's filter toggle button.
+     *
+     * @return the WidgetSprites used for the filter toggle (enabled/disabled and focused states)
+     */
     @Override
     protected WidgetSprites getFilterButtonTextures() {
         // Returns the textures for the "Toggle craftable" button

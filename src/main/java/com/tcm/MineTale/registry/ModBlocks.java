@@ -90,9 +90,11 @@ public class ModBlocks {
 	public static final Block WILD_WISTERIA_WOOD = register("wild_wisteria_wood", RotatedPillarBlock::new, BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava(), true);
 
     /**
-     * Registers the mod's workbench and furnace blocks into the Functional Blocks creative tab and logs the registration.
+     * Adds the mod's workbench and furnace blocks to the Functional Blocks creative tab.
      *
-     * Specifically registers CAMPFIRE_WORKBENCH_BLOCK, WORKBENCH_WORKBENCH_BLOCK, FURNACE_WORKBENCH_BLOCK_T1, and FURNACE_WORKBENCH_BLOCK_T2, then prints a message containing the mod ID.
+     * Registers CAMPFIRE_WORKBENCH_BLOCK, WORKBENCH_WORKBENCH_BLOCK, FURNACE_WORKBENCH_BLOCK_T1,
+     * and FURNACE_WORKBENCH_BLOCK_T2 to CreativeModeTabs.FUNCTIONAL_BLOCKS and prints a registration
+     * message containing the mod ID.
      */
     public static void initialize() { 
 		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(entries -> {

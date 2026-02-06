@@ -50,12 +50,12 @@ public class WorkbenchWorkbenchEntity extends AbstractWorkbenchEntity {
         }
 
         /**
-         * Update an internal workbench data field identified by index.
+         * Update an internal workbench data field identified by the given index.
          *
          * Supported indices:
          * <ul>
-         *   <li>0 — set {@code fuelTime}</li>
-         *   <li>2 — set {@code cookTime}</li>
+         *   <li>0 — sets {@code fuelTime}</li>
+         *   <li>2 — sets {@code cookTime}</li>
          * </ul>
          * Other indices are ignored.
          *
@@ -122,9 +122,9 @@ public class WorkbenchWorkbenchEntity extends AbstractWorkbenchEntity {
     }
 
     /**
-     * Compacts the input queue by moving items forward into the first empty slot ahead of them.
+     * Compacts the input queue by moving items forward into the first empty slot ahead.
      *
-     * @return `true` if any items were moved, `false` otherwise.
+     * @return true if any items were moved, false otherwise.
      */
     private boolean shiftQueueForward() {
         boolean moved = false;

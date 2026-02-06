@@ -15,6 +15,12 @@ import net.minecraft.world.item.crafting.RecipeType;
 
 @Mixin(ClientRecipeBook.class)
 public abstract class ClientRecipeBookMixin {
+    /**
+     * Maps supported custom recipe types to their corresponding recipe-book category and overrides the original method's result when a match is found.
+     *
+     * @param recipe the recipe holder to inspect for its recipe type
+     * @param cir    callback that will be used to set and return the mapped {@code RecipeBookCategory} for the original method
+     */
     @Inject(method = "getCategory", at = @At("HEAD"), cancellable = true)
     private static void minetale$addCustomCategory(RecipeHolder<?> recipe, CallbackInfoReturnable<RecipeBookCategory> cir) {
         RecipeType<?> type = recipe.value().getType();

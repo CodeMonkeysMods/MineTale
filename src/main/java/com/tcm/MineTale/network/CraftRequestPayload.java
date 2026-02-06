@@ -21,6 +21,11 @@ public record CraftRequestPayload(ItemStack resultItem, int amount) implements C
         CraftRequestPayload::new
     );
 
+    /**
+     * Provides the packet type identifier for this payload.
+     *
+     * @return the CustomPacketPayload.Type instance that identifies this payload's packet type
+     */
     @Override
     public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
         return TYPE;

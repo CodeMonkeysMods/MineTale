@@ -4,6 +4,11 @@ import com.tcm.MineTale.MineTale;
 
 public class ModEntities {
 
+    /**
+     * Writes a registration message to standard output identifying the mod by its ID.
+     *
+     * The message printed is "Registered Mod Entities for " followed by MineTale.MOD_ID.
+     */
     public static void initialize() {
         System.out.println("Registered Mod Entities for " + MineTale.MOD_ID);
     }

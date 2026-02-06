@@ -47,6 +47,12 @@ public class ModRecipeDisplay {
         );
     }
 
+    /**
+     * Create and register a RecipeBookCategory under this mod's namespace using the provided path.
+     *
+     * @param name the path portion of the category identifier; the namespace will be the mod ID
+     * @return the registered RecipeBookCategory instance
+     */
     private static RecipeBookCategory registerCategory(String name) {
         Identifier id = Identifier.fromNamespaceAndPath(MineTale.MOD_ID, name);
         RecipeBookCategory category = new RecipeBookCategory();

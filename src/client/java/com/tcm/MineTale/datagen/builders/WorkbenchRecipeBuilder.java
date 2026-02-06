@@ -95,7 +95,11 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
     }
 
     /**
-     * Adds an item input with a specific count.
+     * Adds the given item as an ingredient multiple times to this builder.
+     *
+     * @param item  the item to use as an ingredient
+     * @param count the number of times to add the ingredient (if less than or equal to zero, no ingredients are added)
+     * @return      this builder instance
      */
     public WorkbenchRecipeBuilder input(ItemLike item, int count) {
         Ingredient ingredient = Ingredient.of(item);
@@ -106,8 +110,12 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
     }
 
     /**
-     * Adds a tag input with a specific count.
-     * Requires a RegistryLookup (usually available in your RecipeProvider).
+     * Adds the ingredient represented by the given item tag to the recipe inputs the specified number of times.
+     *
+     * @param tag the item tag whose matching items will be used as the ingredient
+     * @param registries a registry lookup provider used to resolve the tag (typically the provider from a RecipeProvider)
+     * @param count the number of times to add the resolved ingredient; if zero nothing is added
+     * @return this builder instance
      */
     public WorkbenchRecipeBuilder input(TagKey<Item> tag, HolderLookup.Provider registries, int count) {
         // 1. Get the lookup for the Item registry from the provider
@@ -124,6 +132,12 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
 
 
 
+    /**
+     * Set the crafting book category used to classify the recipe in the crafting book.
+     *
+     * @param category the crafting book category to assign to the recipe
+     * @return the same WorkbenchRecipeBuilder instance
+     */
     public WorkbenchRecipeBuilder category(CraftingBookCategory category) {
         this.category = category;
         return this;
@@ -196,10 +210,12 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
     }
 
     /**
-     * Saves this builder's recipe to the given exporter under the specified identifier.
+     * Registers this builder's recipe with the provided RecipeOutput using the given recipe name.
+     *
+     * The provided name is used as the path component to construct a recipe ResourceKey scoped to the MineTale mod.
      *
      * @param exporter the RecipeOutput that will receive the recipe
-     * @param id the identifier to use for the saved recipe
+     * @param name     the recipe name (path component) to use when creating the recipe's Identifier
      */
     public void save(RecipeOutput exporter, String name) {
         this.save(exporter, ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(MineTale.MOD_ID, name)));

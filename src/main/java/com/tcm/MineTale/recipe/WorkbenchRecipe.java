@@ -135,9 +135,9 @@ public record WorkbenchRecipe(
     }
 
     /**
-     * Provides recipe displays for the recipe book UI.
+     * Provides a display representation for the recipe book UI.
      *
-     * @return an empty list, indicating no recipe displays are provided for the recipe book
+     * @return a list containing a WorkbenchRecipeDisplay instance representing this recipe
      */
     @Override
     public List<RecipeDisplay> display() {
@@ -165,6 +165,16 @@ public record WorkbenchRecipe(
         private final MapCodec<WorkbenchRecipe> codec;
         private final StreamCodec<RegistryFriendlyByteBuf, WorkbenchRecipe> streamCodec;
 
+        /**
+         * Creates a serializer for WorkbenchRecipe and constructs its JSON and network codecs.
+         *
+         * Initializes the serializer with the given recipe type and builds the MapCodec used for JSON
+         * serialization (assigned to `codec`) and the StreamCodec used for network serialization
+         * (assigned to `streamCodec`), covering the recipe's ingredients, results, cook time,
+         * crafting book category, and book category identifier.
+         *
+         * @param recipeType the RecipeType instance that identifies the kind of WorkbenchRecipe this serializer handles
+         */
         public Serializer(RecipeType<WorkbenchRecipe> recipeType) {
             this.recipeType = recipeType;
 
@@ -191,9 +201,19 @@ public record WorkbenchRecipe(
             );
         }
 
+        /**
+         * Provides the JSON map codec for serializing and deserializing this recipe.
+         *
+         * @return the MapCodec used for JSON (map) serialization of WorkbenchRecipe instances
+         */
         @Override
         public MapCodec<WorkbenchRecipe> codec() { return codec; }
 
+        /**
+         * Provides the network stream codec used for serializing and deserializing WorkbenchRecipe instances.
+         *
+         * @return the StreamCodec that encodes and decodes WorkbenchRecipe objects to and from a RegistryFriendlyByteBuf
+         */
         @Override
         public StreamCodec<RegistryFriendlyByteBuf, WorkbenchRecipe> streamCodec() { return streamCodec; }
     }
