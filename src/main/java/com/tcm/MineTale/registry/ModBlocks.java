@@ -5,6 +5,7 @@ import java.util.function.Function;
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.CampfireWorkbench;
 import com.tcm.MineTale.block.workbenches.FurnaceWorkbench;
+import com.tcm.MineTale.block.workbenches.WorkbenchWorkbench;
 
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.Registry;
@@ -30,6 +31,13 @@ public class ModBlocks {
 	public static final Block CAMPFIRE_WORKBENCH_BLOCK = register(
 		"campfire_workbench_block", 
 		CampfireWorkbench::new, 
+		BlockBehaviour.Properties.of().sound(SoundType.WOOD), 
+		true
+	);
+
+	public static final Block WORKBENCH_WORKBENCH_BLOCK = register(
+		"workbench_workbench_block",
+		WorkbenchWorkbench::new,
 		BlockBehaviour.Properties.of().sound(SoundType.WOOD), 
 		true
 	);
@@ -89,6 +97,7 @@ public class ModBlocks {
     public static void initialize() { 
 		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(entries -> {
         	entries.accept(CAMPFIRE_WORKBENCH_BLOCK);
+			entries.accept(WORKBENCH_WORKBENCH_BLOCK);
 			entries.accept(FURNACE_WORKBENCH_BLOCK_T1);
 			entries.accept(FURNACE_WORKBENCH_BLOCK_T2);
     	});

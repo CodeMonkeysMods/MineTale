@@ -3,6 +3,7 @@ package com.tcm.MineTale.registry;
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.entity.CampfireWorkbenchEntity;
 import com.tcm.MineTale.block.workbenches.entity.FurnaceWorkbenchEntity;
+import com.tcm.MineTale.block.workbenches.entity.WorkbenchWorkbenchEntity;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.Registry;
@@ -13,29 +14,17 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public class ModBlockEntities {
-
-    
-
     public static final BlockEntityType<CampfireWorkbenchEntity> CAMPFIRE_WORKBENCH_BE = register(
         "campfire_workbench_be", 
         CampfireWorkbenchEntity::new,
         ModBlocks.CAMPFIRE_WORKBENCH_BLOCK
     );
 
-
-
-    // public static final BlockEntityType<FurnaceWorkbenchEntity> FURNACE_WORKBENCH_BE_T1 = register(
-    //     "furnace_workbench_be", 
-    //     (pos, state) -> new FurnaceWorkbenchEntity("t1", pos, state),
-    //     ModBlocks.FURNACE_WORKBENCH_BLOCK_T1
-    // );
-
-    // public static final BlockEntityType<FurnaceWorkbenchEntity> FURNACE_WORKBENCH_BE_T2 = register(
-    //     "furnace_workbench_be", 
-    //     (pos, state) -> new FurnaceWorkbenchEntity("t2", pos, state),
-    //     ModBlocks.FURNACE_WORKBENCH_BLOCK_T2
-    // );
-    
+    public static final BlockEntityType<WorkbenchWorkbenchEntity> WORKBENCH_WORKBENCH_BE = register(
+        "workbench_workbench_be", 
+        WorkbenchWorkbenchEntity::new,
+        ModBlocks.WORKBENCH_WORKBENCH_BLOCK
+    );
 
     // Helper method to register AND add to map simultaneously
     private static BlockEntityType<FurnaceWorkbenchEntity> registerTier(ModTiers.FurnaceTier tier, Block block) {
