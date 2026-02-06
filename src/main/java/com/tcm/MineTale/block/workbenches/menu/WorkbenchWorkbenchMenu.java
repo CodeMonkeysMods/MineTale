@@ -24,20 +24,24 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     private final Inventory playerInventory;
     
    /**
-     * Client-side constructor used for initialization when the menu is opened.
+     * Creates a client-side menu instance when the workbench UI is opened.
+     *
+     * @param syncId the synchronization id used to match this menu with the server
+     * @param playerInventory the player's inventory bound to this menu
      */
     public WorkbenchWorkbenchMenu(int syncId, Inventory playerInventory) {
         this(syncId, playerInventory, new SimpleContainerData(EMPTY_SIZE), null);
     }
 
     /**
-     * Creates a workbench menu bound to the given player inventory, container, container data, and optional block entity.
+     * Creates a workbench menu associated with the given player inventory and optional block entity.
+     *
+     * Uses an empty internal container (size 0) and the class's data size for syncing numeric state.
      *
      * @param syncId synchronization id for this menu
-     * @param playerInventory the player's inventory
-     * @param container backing container for the workbench slots
-     * @param data container data used to sync numeric state
-     * @param blockEntity optional block entity this menu is bound to, or `null` if not bound
+     * @param playerInventory the player's inventory used for slot access and recipe-book integration
+     * @param data container data used to sync numeric state between server and client
+     * @param blockEntity nullable block entity this menu is bound to, or {@code null} if not bound
      */
     public WorkbenchWorkbenchMenu(int syncId, Inventory playerInventory, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {
         // Note: The order of arguments depends on your AbstractWorkbenchContainerMenu,
@@ -67,9 +71,9 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
 
     /**
-     * Populate the provided StackedItemContents with the items currently present in this menu's crafting slots so the recipe book can evaluate available recipes.
+     * Populate the given StackedItemContents with the items available through this menu for recipe-book calculations.
      *
-     * @param stackedItemContents container to be filled with consolidated item counts from the menu's crafting/container slots
+     * @param stackedItemContents container to receive consolidated item counts from the menu's inventories
      */
     @Override
     public void fillCraftSlotsStackedContents(StackedItemContents stackedItemContents) {
@@ -79,9 +83,9 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
 
     /**
-     * Identifies the recipe book category used by this menu.
+     * Selects the crafting recipe-book category for this menu.
      *
-     * @return the crafting recipe book type, `RecipeBookType.CRAFTING`.
+     * @return {@code RecipeBookType.CRAFTING}
      */
     @Override
     public RecipeBookType getRecipeBookType() {
@@ -90,11 +94,9 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
     
     /**
-     * Creates a WorkbenchRecipeInput using the current items in the menu's left and right input slots.
+     * Create the recipe input used by this menu's crafting UI; this implementation provides an empty input.
      *
-     * The left input is read from index {@code Constants.INPUT_START} and the right input from {@code inputEnd}.
-     *
-     * @return a WorkbenchRecipeInput containing the items currently in the left and right input slots
+     * @return a WorkbenchRecipeInput with both input stacks set to ItemStack.EMPTY
      */
     @Override
     public WorkbenchRecipeInput createRecipeInput() {

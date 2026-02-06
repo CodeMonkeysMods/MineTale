@@ -10,10 +10,12 @@ import net.minecraft.client.gui.screens.MenuScreens;
 
 public class MineTaleClient implements ClientModInitializer {
 	/**
-	 * Registers client-side screen factories for custom workbench menu types.
+	 * Register client-side screen factories for custom workbench menu types.
 	 *
-	 * Binds the furnace and campfire workbench menu types to their corresponding screen constructors
-	 * so the client can create the appropriate GUI when those menus are opened.
+	 * Binds ModMenuTypes.FURNACE_WORKBENCH_MENU to FurnaceWorkbenchScreen,
+	 * ModMenuTypes.CAMPFIRE_WORKBENCH_MENU to CampfireWorkbenchScreen, and
+	 * ModMenuTypes.WORKBENCH_WORKBENCH_MENU to WorkbenchWorkbenchScreen so the client
+	 * can create the appropriate GUI when those menus open.
 	 */
 	@Override
 	public void onInitializeClient() {

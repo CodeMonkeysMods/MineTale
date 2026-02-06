@@ -49,6 +49,14 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
         this(menu, inventory, title, createRecipeBookComponent(menu));
     }
 
+    /**
+     * Creates a WorkbenchWorkbenchScreen bound to the given menu, player inventory, title, and recipe book component.
+     *
+     * @param menu        the menu backing this screen
+     * @param inventory   the player's inventory shown in the screen
+     * @param title       the screen title component
+     * @param recipeBook  the MineTaleRecipeBookComponent used to display and manage recipes in this screen
+     */
     private WorkbenchWorkbenchScreen(WorkbenchWorkbenchMenu menu, Inventory inventory, Component title, MineTaleRecipeBookComponent recipeBook) {
         super(menu, recipeBook, inventory, title);
         this.mineTaleRecipeBook = recipeBook;
@@ -71,11 +79,12 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
     }
 
     /**
-     * Sets the screen's GUI size and initializes layout so the title is centered.
-     *
-     * Sets imageWidth to 176 and imageHeight to 166 before delegating to the superclass
-     * init method to complete widget and layout initialization (including horizontal title centering).
-     */
+         * Configure the screen's GUI dimensions and initialize widgets.
+         *
+         * Sets the layout size (imageWidth = 176, imageHeight = 166), delegates remaining
+         * layout initialization to the superclass, and creates the three craft buttons
+         * ("1", "30", "All") wired to their respective handlers.
+         */
     @Override
     protected void init() {
         // Important: Set your GUI size before super.init()
@@ -156,7 +165,15 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
     //     }
     // }
 
-    // RecipeBookComponent
+    /**
+     * Sends a crafting request for the currently selected recipe in the integrated recipe book.
+     *
+     * Locates the last recipe collection and last selected recipe ID from the recipe book component,
+     * resolves the recipe's result item, and sends a CraftRequestPayload to the server containing that
+     * item and the requested amount.
+     *
+     * @param amount the quantity to craft; use -1 to request crafting of the full available stack ("All")
+     */
 
     private void handleCraftRequest(int amount) {
         // 1. Cast the book component to the Accessor to get the selected data
@@ -189,12 +206,12 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
     }
 
     /**
-    * Renders the workbench GUI background texture at the screen's top-left position.
+    * Draws the workbench GUI background texture at the screen's top-left corner.
     *
-    * @param guiGraphics the graphics context for drawing
-    * @param f           partial tick time used for interpolation
-    * @param i           current mouse x coordinate
-    * @param j           current mouse y coordinate
+    * @param guiGraphics the graphics context used to draw GUI elements
+    * @param f           partial tick time for interpolation
+    * @param i           current mouse x coordinate relative to the window
+    * @param j           current mouse y coordinate relative to the window
     */
    protected void renderBg(GuiGraphics guiGraphics, float f, int i, int j) {
       int k = this.leftPos;
@@ -227,9 +244,9 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
     }
 
     /**
-     * Compute the on-screen position for the recipe book toggle button for this GUI.
+     * Computes the on-screen position for the recipe book toggle button for this GUI.
      *
-     * @return the ScreenPosition located 5 pixels from the GUI's left edge and 49 pixels above the GUI's vertical center
+     * @return the screen position placed 5 pixels from the GUI's left edge and 49 pixels above the GUI's vertical center
      */
     @Override
     protected ScreenPosition getRecipeBookButtonPosition() {

@@ -35,6 +35,24 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
 
     protected final Inventory playerInventory;
 
+    /**
+     * Constructs a workbench container menu, initializes inventory and sync state, and opens the container for the player.
+     *
+     * The constructor conditionally validates container size and attaches container data slots only when the container actually
+     * contains slots (i.e., when `outputEnd >= 0` and the container size is > 0). For slotless workbenches it only verifies the
+     * container is non-null with size 0. If the container has slots, workbench-specific slots are added; the player's inventory
+     * and hotbar are always added. The container is opened for the provided player.
+     *
+     * @param menuType            the menu type or null for an unregistered type
+     * @param syncId              synchronization id for the menu
+     * @param container           the underlying container backing this menu
+     * @param data                container data used to sync progress/state (e.g., burn/cook times)
+     * @param containerDataSize   expected size of `data` when the container provides slots; used for data count validation
+     * @param playerInventory     the player's inventory to attach to this menu
+     * @param inputEnd            index (inclusive) of the last input slot in the container
+     * @param outputEnd           index (inclusive) of the last output slot in the container; if negative or container is empty,
+     *                            the menu is treated as slotless and slot/data initialization is skipped
+     */
     public AbstractWorkbenchContainerMenu(@Nullable MenuType<?> menuType, int syncId, Container container, ContainerData data, int containerDataSize, Inventory playerInventory, int inputEnd, int outputEnd) {
         super(menuType, syncId);
 
@@ -69,6 +87,14 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
         addPlayerHotbar(playerInventory);
     }
 
+    /**
+     * Adds the workbench-specific slots to this menu: a fuel slot, two input slots, and four result slots.
+     *
+     * The fuel slot restricts placement to items accepted by isFuel(ItemStack). The two input slots accept any item.
+     * The four output slots are result slots (FurnaceResultSlot) that deliver crafted/output items to the player.
+     *
+     * @param container the container that backs the workbench slots
+     */
     protected void addWorkbenchSlots(Container container) {
         this.addSlot(new Slot(container, Constants.FUEL_SLOT, 44, 53) {
             /**

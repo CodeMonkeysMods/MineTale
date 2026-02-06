@@ -51,9 +51,10 @@ public class WorkbenchWorkbench extends AbstractWorkbench<WorkbenchWorkbenchEnti
     }
 
     /**
-     * Supplies a ticker that updates WorkbenchWorkbench block entities each tick.
+     * Provides a ticker for workbench block entities when the supplied block entity type matches this block's entity type.
      *
-     * @return a BlockEntityTicker that invokes AbstractWorkbenchEntity.tick for matching WorkbenchWorkbenchEntity instances, `null` if the supplied block entity type does not match
+     * @param type the block entity type to match against this block's workbench entity type
+     * @return a BlockEntityTicker that updates matching workbench block entities, or {@code null} if the types do not match
      */
     @Nullable
     @Override
@@ -87,9 +88,7 @@ public class WorkbenchWorkbench extends AbstractWorkbench<WorkbenchWorkbenchEnti
     private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 7, 16);
 
     /**
-     * Provides the block's collision and interaction shape.
-     *
-     * <p>Uses a fixed voxel shape covering a 1×1 footprint with a height of 7 units (coordinates: x 0–16, y 0–7, z 0–16).</p>
+     * The block's collision and interaction shape as a 1×1 footprint with height 7 (x 0–16, y 0–7, z 0–16).
      *
      * @return the voxel shape used for collision and interaction
      */
