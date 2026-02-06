@@ -12,7 +12,7 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.resources.Identifier;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -52,7 +52,7 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 					.unlockedBy("has_porkchop", has(Items.PORKCHOP))
 					.category(CraftingBookCategory.MISC)
 					.bookCategory(ModRecipeDisplay.CAMPFIRE_SEARCH)
-					.save(exporter, Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "campfire_pork_cooking"));
+					.save(exporter, "campfire_pork_cooking");
 
 				new WorkbenchRecipeBuilder(ModRecipes.FURNACE_T1_TYPE, ModRecipes.FURNACE_SERIALIZER)
 					.input(Ingredient.of(Items.PORKCHOP))
@@ -61,7 +61,17 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 					.unlockedBy("has_porkchop", has(Items.PORKCHOP))
 					.category(CraftingBookCategory.MISC)
 					.bookCategory(ModRecipeDisplay.FURNACE_T1_SEARCH)
-					.save(exporter, Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "furnace_pork_cooking"));
+					.save(exporter, "furnace_pork_cooking");
+
+				new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+					.input(ItemTags.LOGS, registryLookup, 5)
+					.input(Items.STICK, 10)
+					.output(new ItemStack(Items.CHEST)) 
+					.time(50)
+					.unlockedBy("has_logs", has(ItemTags.LOGS))
+					.category(CraftingBookCategory.MISC)
+					.bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+					.save(exporter, "workbench_wood_chest");
 			}
 		};
 	}

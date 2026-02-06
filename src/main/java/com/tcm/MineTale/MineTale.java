@@ -1,12 +1,22 @@
 package com.tcm.MineTale;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.tcm.MineTale.network.CraftRequestPayload;
+import com.tcm.MineTale.recipe.WorkbenchRecipe;
 import com.tcm.MineTale.registry.ModBlockEntities;
 import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModEntities;
@@ -18,6 +28,9 @@ import com.tcm.MineTale.registry.ModRecipes;
 
 import static com.tcm.MineTale.item.ModCreativeTab.MINETALE_CREATIVE_TAB;
 import static com.tcm.MineTale.item.ModCreativeTab.MINETALE_CREATIVE_TAB_KEY;
+
+import java.util.List;
+import java.util.Optional;
 
 public class MineTale implements ModInitializer {
 	public static final String MOD_ID = "minetale";
@@ -59,8 +72,132 @@ public class MineTale implements ModInitializer {
 		ModEntityDataSerializers.initialize();
 
 		RecipeSynchronization.synchronizeRecipeSerializer(ModRecipes.FURNACE_SERIALIZER);
-		// This helps the search bar "see" items in your custom categories
+
+		// Register the payload type and codec so the game knows how to handle it
+		PayloadTypeRegistry.playC2S().register(CraftRequestPayload.TYPE, CraftRequestPayload.CODEC);
+
+		// Register the server-side receiver
+		// ServerPlayNetworking.registerGlobalReceiver(CraftRequestPayload.TYPE, (payload, context) -> {
+		// 	context.server().execute(() -> {
+		// 		// Your crafting logic here
+		// 		System.out.println("Received craft request for: " + payload.resultItem() + " amount: " + payload.amount());
+		// 	});
+		// });
+
+		// ServerPlayNetworking.registerGlobalReceiver(CraftRequestPayload.TYPE, (payload, context) -> {
+		// 	context.server().execute(() -> {
+		// 		ServerPlayer player = context.player();
+		// 		ItemStack requestedResult = payload.stack();
+		// 		int amount = payload.amount();
+
+		// 		// 1. Find the recipe on the server
+		// 		Optional<RecipeHolder<WorkbenchRecipe>> recipeOpt = player.level().getRecipeManager()
+		// 			.getAllRecipesFor(ModRecipes.WORKBENCH_TYPE)
+		// 			.stream()
+		// 			.filter(r -> ItemStack.isSameItem(r.value().results().get(0), requestedResult))
+		// 			.findFirst();
+
+		// 		if (recipeOpt.isPresent()) {
+		// 			WorkbenchRecipe recipe = recipeOpt.get().value();
+					
+		// 			// 2. Logic for "1", "30", or "All"
+		// 			// For now, let's just handle "1" to test
+		// 			int limit = (amount == -1) ? 64 : amount; 
+
+		// 			for (int i = 0; i < limit; i++) {
+		// 				if (hasIngredients(player, recipe)) {
+		// 					consumeIngredients(player, recipe);
+		// 					// Give the player the result
+		// 					player.getInventory().add(recipe.results().get(0).copy());
+		// 				} else {
+		// 					break; 
+		// 				}
+		// 			}
+					
+		// 			// 3. VERY IMPORTANT: Sync the inventory so the player sees the items change
+		// 			player.containerMenu.broadcastChanges();
+		// 		}
+		// 	});
+		// });
+
+		// Register the server-side receiver using .TYPE
+		ServerPlayNetworking.registerGlobalReceiver(CraftRequestPayload.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				ServerPlayer player = context.player();
+				ItemStack requestedResult = payload.resultItem();
+				int amount = payload.amount();
+				// 1. Get the RecipeManager from the server level
+				RecipeManager recipeManager = player.level().recipeAccess();
+
+				// 2. Find the recipe by matching the output ItemStack
+				Optional<RecipeHolder<WorkbenchRecipe>> recipeOpt = recipeManager.getRecipes().stream()
+					.filter(holder -> holder.value() instanceof WorkbenchRecipe) // Check if it's your recipe class
+					.map(holder -> (RecipeHolder<WorkbenchRecipe>) holder)       // Cast to your type
+					.filter(holder -> {
+						// Compare the recipe result to the item requested by the client
+						ItemStack result = holder.value().results().get(0);
+						return ItemStack.isSameItem(result, requestedResult);
+					})
+					.findFirst();
+
+				if (recipeOpt.isPresent()) {
+					WorkbenchRecipe recipe = recipeOpt.get().value();
+					
+					// 2. Determine craft limit (Handle "All" logic)
+					int limit = (amount == -1) ? 64 : amount; 
+
+					for (int i = 0; i < limit; i++) {
+						// Check if player has the 15 items (5 logs, 10 sticks)
+						if (hasIngredients(player, recipe)) {
+							consumeIngredients(player, recipe);
+							
+							// Add the result stack to player inventory
+							// We copy it to avoid modifying the recipe instance
+							player.getInventory().add(recipe.results().get(0).copy());
+						} else {
+							break; 
+						}
+					}
+					
+					// 3. Sync inventory changes to the client screen
+					player.containerMenu.broadcastChanges();
+				}
+			});
+		});
 
 		LOGGER.info("Hello Fabric world!");
 	}
+
+	private boolean hasIngredients(ServerPlayer player, WorkbenchRecipe recipe) {
+        // We simulate the craft using a copy of the inventory
+        List<ItemStack> tempInv = new java.util.ArrayList<>();
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            tempInv.add(player.getInventory().getItem(i).copy());
+        }
+
+        for (Ingredient ingredient : recipe.ingredients()) {
+            boolean found = false;
+            for (ItemStack stack : tempInv) {
+                if (!stack.isEmpty() && ingredient.test(stack)) {
+                    stack.shrink(1);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) return false;
+        }
+        return true;
+    }
+
+    private void consumeIngredients(ServerPlayer player, WorkbenchRecipe recipe) {
+        for (Ingredient ingredient : recipe.ingredients()) {
+            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                ItemStack stack = player.getInventory().getItem(i);
+                if (!stack.isEmpty() && ingredient.test(stack)) {
+                    stack.shrink(1);
+                    break; 
+                }
+            }
+        }
+    }
 }

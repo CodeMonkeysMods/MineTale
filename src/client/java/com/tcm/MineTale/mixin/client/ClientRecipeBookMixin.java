@@ -24,6 +24,8 @@ public abstract class ClientRecipeBookMixin {
             cir.setReturnValue(ModRecipeDisplay.CAMPFIRE_SEARCH);
         } else if (ModRecipes.FURNACE_T1_TYPE.equals(type)) {
             cir.setReturnValue(ModRecipeDisplay.FURNACE_T1_SEARCH);
+        } else if (ModRecipes.WORKBENCH_TYPE.equals(type)) {
+            cir.setReturnValue(ModRecipeDisplay.WORKBENCH_SEARCH);
         }
     }
 }

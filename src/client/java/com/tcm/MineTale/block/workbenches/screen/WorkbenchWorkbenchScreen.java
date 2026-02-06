@@ -4,24 +4,39 @@ import java.util.List;
 
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.menu.WorkbenchWorkbenchMenu;
+import com.tcm.MineTale.mixin.client.RecipeBookComponentAccessor;
+import com.tcm.MineTale.network.CraftRequestPayload;
 import com.tcm.MineTale.recipe.MineTaleRecipeBookComponent;
 import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
 import com.tcm.MineTale.registry.ModRecipes;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
+import net.minecraft.client.gui.screens.recipebook.RecipeBookPage;
+import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.display.RecipeDisplayEntry;
+import net.minecraft.world.item.crafting.display.RecipeDisplayId;
+import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.minecraft.network.chat.Component;
 
 public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<WorkbenchWorkbenchMenu> {
     private static final Identifier TEXTURE = 
         Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "textures/gui/container/furnace_workbench.png");
+
+    private final MineTaleRecipeBookComponent mineTaleRecipeBook;
+
+    private Button craftOneBtn;
+    private Button craftThirtyBtn;
+    private Button craftAllBtn;
 
     /**
      * Initialize a workbench GUI screen using the provided container menu, player inventory, and title.
@@ -31,7 +46,12 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
      * @param title     the title component shown at the top of the screen
      */
     public WorkbenchWorkbenchScreen(WorkbenchWorkbenchMenu menu, Inventory inventory, Component title) {
-        super(menu, createRecipeBookComponent(menu), inventory, title);
+        this(menu, inventory, title, createRecipeBookComponent(menu));
+    }
+
+    private WorkbenchWorkbenchScreen(WorkbenchWorkbenchMenu menu, Inventory inventory, Component title, MineTaleRecipeBookComponent recipeBook) {
+        super(menu, recipeBook, inventory, title);
+        this.mineTaleRecipeBook = recipeBook;
     }
 
     /**
@@ -63,6 +83,109 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
         this.imageHeight = 166;
         
         super.init();
+
+        this.craftOneBtn = addRenderableWidget(Button.builder(Component.literal("1"), (button) -> {
+            handleCraftRequest(1);
+        }).bounds(this.leftPos + 80, this.topPos + 20, 30, 20).build());
+
+        this.craftThirtyBtn = addRenderableWidget(Button.builder(Component.literal("30"), (button) -> {
+            handleCraftRequest(30);
+        }).bounds(this.leftPos + 112, this.topPos + 20, 30, 20).build());
+
+        this.craftAllBtn = addRenderableWidget(Button.builder(Component.literal("All"), (button) -> {
+            handleCraftRequest(-1); // -1 represents "All" logic
+        }).bounds(this.leftPos + 144, this.topPos + 20, 30, 20).build());
+    }
+
+    // private void handleCraftRequest(int amount) {
+    //     RecipeBookPage page = ((RecipeBookComponentAccessor)this.mineTaleRecipeBook).getRecipeBookPage();
+    //     RecipeCollection collection = page.getLastClickedRecipeCollection();
+    //     RecipeDisplayId displayId = page.getLastClickedRecipe();
+
+    //     if (collection != null && displayId != null) {
+    //         // 1. Find the specific entry that was clicked
+    //         for (RecipeDisplayEntry entry : collection.getSelectedRecipes(RecipeCollection.CraftableStatus.ANY)) {
+    //             if (entry.id().equals(displayId)) {
+    //                 // 2. Resolve the visual result into an actual ItemStack
+    //                 List<ItemStack> results = entry.resultItems(SlotDisplayContext.fromLevel(this.minecraft.level));
+                    
+    //                 if (!results.isEmpty()) {
+    //                     ItemStack resultStack = results.get(0);
+    //                     // 3. Send the item and amount to the server
+    //                     // Note: Update your CraftRequestPayload to accept ItemStack instead of Identifier
+    //                     ClientPlayNetworking.send(new CraftRequestPayload(resultStack, amount));
+    //                 }
+    //                 break;
+    //             }
+    //         }
+    //     }
+    // }
+
+    // private void handleCraftRequest(int amount) {
+    //     // 1. Get the current page from the recipe book
+    //     // We use your mixin/accessor to get the internal page object
+    //     RecipeBookPage page = ((RecipeBookComponentAccessor)this.mineTaleRecipeBook).getRecipeBookPage();
+        
+    //     // 2. Identify WHAT was clicked
+    //     RecipeCollection collection = page.getLastClickedRecipeCollection();
+    //     RecipeDisplayId displayId = page.getLastClickedRecipe();
+
+    //     if (collection != null && displayId != null) {
+    //         // 3. Find the display entry
+    //         for (RecipeDisplayEntry entry : collection.getSelectedRecipes(RecipeCollection.CraftableStatus.ANY)) {
+    //             if (entry.id().equals(displayId)) {
+    //                 // 4. Get the result item (the Chest)
+    //                 // 1.21.1 uses SlotDisplayContext to handle dynamic results
+    //                 List<ItemStack> results = entry.resultItems(SlotDisplayContext.fromLevel(this.minecraft.level));
+                    
+    //                 if (!results.isEmpty()) {
+    //                     ItemStack resultStack = results.get(0);
+                        
+    //                     // 5. Send the packet to the Server
+    //                     // IMPORTANT: Ensure your CraftRequestPayload is registered to handle 
+    //                     // an ItemStack and an Int.
+    //                     ClientPlayNetworking.send(new CraftRequestPayload(resultStack, amount));
+                        
+    //                     // Optional: Play a click sound so the player knows it worked
+    //                     this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
+    //                         net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
+    //                 }
+    //                 break;
+    //             }
+    //         }
+    //     }
+    // }
+
+    // RecipeBookComponent
+
+    private void handleCraftRequest(int amount) {
+        // 1. Cast the book component to the Accessor to get the selected data
+        RecipeBookComponentAccessor accessor = (RecipeBookComponentAccessor) this.mineTaleRecipeBook;
+        
+        RecipeCollection collection = accessor.getLastRecipeCollection();
+        RecipeDisplayId displayId = accessor.getLastRecipe();
+
+        if (collection != null && displayId != null) {
+            // 2. Find the visual entry
+            for (RecipeDisplayEntry entry : collection.getSelectedRecipes(RecipeCollection.CraftableStatus.ANY)) {
+                if (entry.id().equals(displayId)) {
+                    // 3. Resolve result for the packet
+                    List<ItemStack> results = entry.resultItems(SlotDisplayContext.fromLevel(this.minecraft.level));
+                    
+                    if (!results.isEmpty()) {
+                        ItemStack resultStack = results.get(0);
+                        
+                        // 4. LOG FOR DEBUGGING: Does this print in your console?
+                        System.out.println("Sending craft request for: " + resultStack + " amount: " + amount);
+                        
+                        ClientPlayNetworking.send(new CraftRequestPayload(resultStack, amount));
+                    }
+                    break;
+                }
+            }
+        } else {
+            System.out.println("Request failed: Collection or DisplayID is null!");
+        }
     }
 
     /**
@@ -94,6 +217,11 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
 
         // 3. Call super (this draws your slots and items)
         super.render(graphics, mouseX, mouseY, delta);
+
+        boolean hasSelection = this.mineTaleRecipeBook.getSelectedRecipeId() != null;
+        this.craftOneBtn.active = hasSelection;
+        this.craftThirtyBtn.active = hasSelection;
+        this.craftAllBtn.active = hasSelection;
 
         renderTooltip(graphics, mouseX, mouseY);
     }

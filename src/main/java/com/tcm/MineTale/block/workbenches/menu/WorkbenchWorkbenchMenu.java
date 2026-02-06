@@ -5,34 +5,29 @@ import org.jspecify.annotations.Nullable;
 import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
 import com.tcm.MineTale.recipe.WorkbenchRecipeInput;
 import com.tcm.MineTale.registry.ModMenuTypes;
-import com.tcm.MineTale.util.Constants;
 
-import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.StackedItemContents;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.SimpleContainerData;
-import net.minecraft.world.inventory.StackedContentsCompatible;
+import net.minecraft.world.item.ItemStack;
 
 public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
-    private static final int containerDataSize = 4;
+    // No internal inventory needed anymore, but we pass an empty container to the super
+    private static final int EMPTY_SIZE = 0;
+    private static final int DATA_SIZE = 0;
 
     @Nullable
     private final AbstractWorkbenchEntity blockEntity;
+    private final Inventory playerInventory;
     
-    /**
-     * Constructs a WorkbenchWorkbenchMenu backed by default internal storage and data.
-     *
-     * Initializes the menu with a new 7-slot SimpleContainer and a SimpleContainerData of size
-     * {@code containerDataSize}, and binds it to the provided player inventory.
-     *
-     * @param syncId          synchronization id for the menu
-     * @param playerInventory the player's inventory interacting with this menu
+   /**
+     * Client-side constructor used for initialization when the menu is opened.
      */
     public WorkbenchWorkbenchMenu(int syncId, Inventory playerInventory) {
-        this(syncId, playerInventory, new SimpleContainer(7), new SimpleContainerData(containerDataSize), null);
+        this(syncId, playerInventory, new SimpleContainerData(EMPTY_SIZE), null);
     }
 
     /**
@@ -44,9 +39,21 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
      * @param data container data used to sync numeric state
      * @param blockEntity optional block entity this menu is bound to, or `null` if not bound
      */
-    public WorkbenchWorkbenchMenu(int syncId, Inventory playerInventory, Container container, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {
-        super(ModMenuTypes.WORKBENCH_WORKBENCH_MENU, syncId, container, data, containerDataSize, playerInventory, Constants.INPUT_START + 1, 6);
+    public WorkbenchWorkbenchMenu(int syncId, Inventory playerInventory, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {
+        // Note: The order of arguments depends on your AbstractWorkbenchContainerMenu,
+        // but the 'expectedSize' parameter MUST be 0.
+        super(
+            ModMenuTypes.WORKBENCH_WORKBENCH_MENU, 
+            syncId, 
+            new SimpleContainer(EMPTY_SIZE),
+            data, 
+            DATA_SIZE, 
+            playerInventory, 
+            EMPTY_SIZE,
+            EMPTY_SIZE
+        );
         this.blockEntity = blockEntity;
+        this.playerInventory = playerInventory;
     }
 
     /**
@@ -68,9 +75,7 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     public void fillCraftSlotsStackedContents(StackedItemContents stackedItemContents) {
         // This is vital for the recipe book to "see" what is currently in your furnace.
         // It allows the book to calculate if you have enough items to craft more.
-        if (this.container instanceof StackedContentsCompatible compatible) {
-            compatible.fillStackedContents(stackedItemContents);
-        }
+        this.playerInventory.fillStackedContents(stackedItemContents);
     }
 
     /**
@@ -80,6 +85,7 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
      */
     @Override
     public RecipeBookType getRecipeBookType() {
+        // This keeps the Crafting-style recipe book available on the UI
         return RecipeBookType.CRAFTING;
     }
     
@@ -92,11 +98,8 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
      */
     @Override
     public WorkbenchRecipeInput createRecipeInput() {
-        // We grab the items currently sitting in the container at indices 0 and 1
-        // These correspond to the "Left" and "Right" input slots added in your constructor
-        return new WorkbenchRecipeInput(
-            this.container.getItem(Constants.INPUT_START), 
-            this.container.getItem(this.inputEnd)
-        );
+        // Since there are no slots, we return an empty input.
+        // The actual crafting logic will scan the player inventory directly when a button is clicked.
+        return new WorkbenchRecipeInput(ItemStack.EMPTY, ItemStack.EMPTY);
     }
 }

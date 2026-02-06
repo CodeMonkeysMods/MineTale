@@ -35,33 +35,41 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
 
     protected final Inventory playerInventory;
 
-    /**
-     * Creates a workbench container menu backed by the given inventory and sync data, sets up slots
-     * (fuel slot, two inputs, four result slots) and binds player inventory/hotbar and data for progress syncing.
-     *
-     * @param menuType the menu type (may be null for dynamic registration)
-     * @param syncId the window synchronization id
-     * @param container the underlying container inventory for the workbench
-     * @param data the container data used to synchronize cook and burn progress
-     * @param containerSize expected size of {@code container}; validated by this constructor
-     * @param containerDataSize expected size of {@code data}; validated by this constructor
-     * @param playerInventory the player's inventory used to add player slots and to identify the player for result slots
-     */
     public AbstractWorkbenchContainerMenu(@Nullable MenuType<?> menuType, int syncId, Container container, ContainerData data, int containerDataSize, Inventory playerInventory, int inputEnd, int outputEnd) {
         super(menuType, syncId);
 
         this.outputEnd = outputEnd;
         this.inputEnd = inputEnd;
 
-        checkContainerSize(container, outputEnd + 1);
-        checkContainerDataCount(data, containerDataSize);
+        // FIX: Only validate size if the workbench actually expects slots.
+        // If outputEnd is -1 or 0 (and container is empty), we skip or adjust the check.
+        if (outputEnd >= 0 && container.getContainerSize() > 0) {
+            checkContainerSize(container, outputEnd + 1);
+            // Sync the cooking/fuel progress bars
+            checkContainerDataCount(data, containerDataSize);
+            this.addDataSlots(data);
+        } else {
+            // For slotless workbenches, we just ensure the container isn't null.
+            checkContainerSize(container, 0);
+        }
+
         this.container = container;
         this.data = data;
         this.playerInventory = playerInventory;
 
         container.startOpen(playerInventory.player);
 
-        // 1. Fuel Slot (Center-ish bottom)
+        // Only attempt to add slots if the container actually has them
+        if (container.getContainerSize() > 0) {
+            this.addWorkbenchSlots(container);
+        }
+
+        // --- PLAYER INVENTORY ---
+        addPlayerInventory(playerInventory);
+        addPlayerHotbar(playerInventory);
+    }
+
+    protected void addWorkbenchSlots(Container container) {
         this.addSlot(new Slot(container, Constants.FUEL_SLOT, 44, 53) {
             /**
              * Determines whether the given item stack is allowed in the fuel slot.
@@ -99,13 +107,6 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
         this.addSlot(new FurnaceResultSlot(playerInventory.player, container, this.inputEnd + 2, 125, 26)); //TOP RIGHT
         this.addSlot(new FurnaceResultSlot(playerInventory.player, container, this.outputEnd - 1, 107, 44)); //BOTTOM LEFT
         this.addSlot(new FurnaceResultSlot(playerInventory.player, container, this.outputEnd, 125, 44)); //BOTTOM RIGHT
-
-        // --- PLAYER INVENTORY ---
-        addPlayerInventory(playerInventory);
-        addPlayerHotbar(playerInventory);
-
-        // Sync the cooking/fuel progress bars
-        this.addDataSlots(data);
     }
 
     /**
@@ -136,7 +137,7 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
      *
      * @param playerInventory the player's Inventory to populate the menu slots from
      */
-    private void addPlayerInventory(Inventory playerInventory) {
+    protected void addPlayerInventory(Inventory playerInventory) {
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
                 this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
@@ -149,7 +150,7 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
      *
      * @param playerInventory the player's inventory to populate hotbar slots from
      */
-    private void addPlayerHotbar(Inventory playerInventory) {
+    protected void addPlayerHotbar(Inventory playerInventory) {
         for (int i = 0; i < 9; ++i) {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
         }

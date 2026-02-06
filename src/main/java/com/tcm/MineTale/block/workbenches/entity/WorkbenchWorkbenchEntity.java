@@ -215,9 +215,9 @@ public class WorkbenchWorkbenchEntity extends AbstractWorkbenchEntity {
      */
     @Override
     public @Nullable AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
-        return new WorkbenchWorkbenchMenu(syncId, playerInventory, this.inventory, this.data, this);
+        return new WorkbenchWorkbenchMenu(syncId, playerInventory, this.data, this);
     }
-
+    
     /**
      * Identifies the recipe type used to find and match recipes for this workbench.
      *

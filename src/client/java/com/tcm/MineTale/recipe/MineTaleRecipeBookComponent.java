@@ -2,13 +2,19 @@ package com.tcm.MineTale.recipe;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
+import com.tcm.MineTale.mixin.client.RecipeBookComponentAccessor;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
+import com.tcm.MineTale.registry.ModRecipes;
 import com.tcm.MineTale.util.Constants;
 
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.recipebook.GhostSlots;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
+import net.minecraft.client.gui.screens.recipebook.RecipeBookPage;
 import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
@@ -17,6 +23,7 @@ import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.RecipeDisplayId;
 
 public class MineTaleRecipeBookComponent extends RecipeBookComponent<RecipeBookMenu> {
     private final RecipeType<?> filterType; // The specific machine type
@@ -32,6 +39,16 @@ public class MineTaleRecipeBookComponent extends RecipeBookComponent<RecipeBookM
     public MineTaleRecipeBookComponent(RecipeBookMenu recipeBookMenu, List<TabInfo> list, RecipeType<?> filterType) {
         super(recipeBookMenu, list);
         this.filterType = filterType;
+    }
+
+    public @Nullable RecipeDisplayId getSelectedRecipeId() {
+        // Cast 'this' to the Accessor interface to call the generated getter
+        RecipeBookPage page = ((RecipeBookComponentAccessor)this).getRecipeBookPage();
+        
+        if (page != null) {
+            return page.getLastClickedRecipe();
+        }
+        return null;
     }
 
     @Override
@@ -57,7 +74,41 @@ public class MineTaleRecipeBookComponent extends RecipeBookComponent<RecipeBookM
         });
     }
 
-    
+    @Override
+    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+        if (!this.isVisible() || this.minecraft.player.isSpectator()) {
+            return false;
+        }
+
+        RecipeBookComponentAccessor accessor = (RecipeBookComponentAccessor) this;
+        int xOrigin = accessor.invokeGetXOrigin();
+        int yOrigin = accessor.invokeGetYOrigin();
+        RecipeBookPage page = accessor.getRecipeBookPage();
+
+        if (page.mouseClicked(mouseButtonEvent, xOrigin, yOrigin, 147, 166, bl)) {
+            RecipeDisplayId recipeDisplayId = page.getLastClickedRecipe();
+            RecipeCollection recipeCollection = page.getLastClickedRecipeCollection();
+
+            if (recipeDisplayId != null && recipeCollection != null) {
+                // Check if ANY recipe in this collection belongs to your workbench category
+                boolean isMineTaleRecipe = recipeCollection.getRecipes().stream()
+                    .anyMatch(entry -> entry.category().equals(ModRecipeDisplay.WORKBENCH_SEARCH));
+
+                if (isMineTaleRecipe) {
+                    // Logic for your Workbench: Just select, don't "place"
+                    accessor.setLastRecipeCollection(recipeCollection);
+                    accessor.setLastRecipe(recipeDisplayId);
+                    
+                    this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
+                        net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    
+                    return true; 
+                }
+            }
+        }
+
+        return super.mouseClicked(mouseButtonEvent, bl);
+    }
 
     @Override
     protected WidgetSprites getFilterButtonTextures() {
