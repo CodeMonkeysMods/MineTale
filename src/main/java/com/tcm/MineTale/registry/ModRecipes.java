@@ -28,6 +28,12 @@ public class ModRecipes {
     public static final RecipeSerializer<WorkbenchRecipe> WORKBENCH_SERIALIZER =
         new WorkbenchRecipe.Serializer(WORKBENCH_TYPE);
 
+    /**
+     * Registers the mod's recipe types and their serializers into the game's built-in registries.
+     *
+     * Specifically registers the furnace (FURNACE_T1_TYPE), campfire (CAMPFIRE_TYPE),
+     * and workbench (WORKBENCH_TYPE) recipe types with their corresponding serializers.
+     */
     public static void initialize() {
         // Register the Furnace-flavored version
         register(FURNACE_T1_TYPE.toString(), FURNACE_T1_TYPE, FURNACE_SERIALIZER);

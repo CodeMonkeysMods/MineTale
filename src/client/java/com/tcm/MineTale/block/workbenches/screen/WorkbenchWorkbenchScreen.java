@@ -24,9 +24,9 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
         Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "textures/gui/container/furnace_workbench.png");
 
     /**
-     * Creates a campfire workbench screen for the provided menu, player inventory, and title.
+     * Initialize a workbench GUI screen using the provided container menu, player inventory, and title.
      *
-     * @param menu      the container menu that provides slots and synchronizes state for this screen
+     * @param menu      the menu supplying slots and synchronized state for this screen
      * @param inventory the player's inventory to display and interact with
      * @param title     the title component shown at the top of the screen
      */
@@ -35,8 +35,10 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
     }
 
     /**
-     * Static helper to build the component with the custom MineTale tabs 
-     * before the super constructor is called.
+     * Create a MineTaleRecipeBookComponent configured for the workbench screen.
+     *
+     * @param menu the workbench menu used to initialize the recipe book component
+     * @return a MineTaleRecipeBookComponent containing the workbench tab and associated recipe category
      */
     private static MineTaleRecipeBookComponent createRecipeBookComponent(WorkbenchWorkbenchMenu menu) {
         ItemStack tabIcon = new ItemStack(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem());
@@ -49,7 +51,10 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
     }
 
     /**
-     * Initializes the screen and centers the title horizontally by setting {@code titleLabelX}.
+     * Sets the screen's GUI size and initializes layout so the title is centered.
+     *
+     * Sets imageWidth to 176 and imageHeight to 166 before delegating to the superclass
+     * init method to complete widget and layout initialization (including horizontal title centering).
      */
     @Override
     protected void init() {
@@ -61,12 +66,12 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
     }
 
     /**
-    * Renders the campfire workbench background texture at the screen's top-left position.
+    * Renders the workbench GUI background texture at the screen's top-left position.
     *
-    * @param guiGraphics the graphics context used for drawing
-    * @param f           partial ticks for interpolation
-    * @param i           current mouse x position
-    * @param j           current mouse y position
+    * @param guiGraphics the graphics context for drawing
+    * @param f           partial tick time used for interpolation
+    * @param i           current mouse x coordinate
+    * @param j           current mouse y coordinate
     */
    protected void renderBg(GuiGraphics guiGraphics, float f, int i, int j) {
       int k = this.leftPos;
@@ -75,13 +80,13 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
    }
 
     /**
-         * Renders the campfire workbench screen, drawing its background, contents, and tooltips.
-         *
-         * @param graphics the graphics context used for rendering
-         * @param mouseX   the current mouse X coordinate
-         * @param mouseY   the current mouse Y coordinate
-         * @param delta    the frame time delta (partial tick) used for animated rendering
-         */
+     * Renders the workbench screen including the background tint, GUI elements, and tooltips.
+     *
+     * @param graphics the graphics context
+     * @param mouseX the current mouse x-coordinate
+     * @param mouseY the current mouse y-coordinate
+     * @param delta the partial tick delta for frame interpolation
+     */
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         // 1. Always render the dark background tint first
@@ -93,6 +98,11 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
         renderTooltip(graphics, mouseX, mouseY);
     }
 
+    /**
+     * Compute the on-screen position for the recipe book toggle button for this GUI.
+     *
+     * @return the ScreenPosition located 5 pixels from the GUI's left edge and 49 pixels above the GUI's vertical center
+     */
     @Override
     protected ScreenPosition getRecipeBookButtonPosition() {
         // 1. Calculate the start (left) of your workbench GUI

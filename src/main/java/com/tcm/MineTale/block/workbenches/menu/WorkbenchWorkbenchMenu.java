@@ -23,10 +23,10 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     private final AbstractWorkbenchEntity blockEntity;
     
     /**
-     * Creates a WorkbenchWorkbenchMenu using default internal storage and data containers.
+     * Constructs a WorkbenchWorkbenchMenu backed by default internal storage and data.
      *
-     * Constructs a menu with a new SimpleContainer of size {@code containerSize} and a new
-     * SimpleContainerData of size {@code containerDataSize}, then delegates to the primary constructor.
+     * Initializes the menu with a new 7-slot SimpleContainer and a SimpleContainerData of size
+     * {@code containerDataSize}, and binds it to the provided player inventory.
      *
      * @param syncId          synchronization id for the menu
      * @param playerInventory the player's inventory interacting with this menu
@@ -36,23 +36,34 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
 
     /**
-     * Creates a WorkbenchWorkbenchMenu bound to the given player inventory, container, and container data.
+     * Creates a workbench menu bound to the given player inventory, container, container data, and optional block entity.
      *
-     * @param syncId the synchronization id for this menu (used by the client/server container sync)
+     * @param syncId synchronization id for this menu
      * @param playerInventory the player's inventory
-     * @param container the backing container for the workbench slots
-     * @param data the container data used for syncing additional numeric state
+     * @param container backing container for the workbench slots
+     * @param data container data used to sync numeric state
+     * @param blockEntity optional block entity this menu is bound to, or `null` if not bound
      */
     public WorkbenchWorkbenchMenu(int syncId, Inventory playerInventory, Container container, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {
         super(ModMenuTypes.WORKBENCH_WORKBENCH_MENU, syncId, container, data, containerDataSize, playerInventory, Constants.INPUT_START + 1, 6);
         this.blockEntity = blockEntity;
     }
 
+    /**
+     * Accesses the block entity bound to this menu, if present.
+     *
+     * @return the bound AbstractWorkbenchEntity, or {@code null} if this menu is not bound to a block entity
+     */
     @Override
     public @Nullable AbstractWorkbenchEntity getBlockEntity() {
         return this.blockEntity;
     }
 
+    /**
+     * Populate the provided StackedItemContents with the items currently present in this menu's crafting slots so the recipe book can evaluate available recipes.
+     *
+     * @param stackedItemContents container to be filled with consolidated item counts from the menu's crafting/container slots
+     */
     @Override
     public void fillCraftSlotsStackedContents(StackedItemContents stackedItemContents) {
         // This is vital for the recipe book to "see" what is currently in your furnace.
@@ -62,11 +73,23 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
         }
     }
 
+    /**
+     * Identifies the recipe book category used by this menu.
+     *
+     * @return the crafting recipe book type, `RecipeBookType.CRAFTING`.
+     */
     @Override
     public RecipeBookType getRecipeBookType() {
         return RecipeBookType.CRAFTING;
     }
     
+    /**
+     * Creates a WorkbenchRecipeInput using the current items in the menu's left and right input slots.
+     *
+     * The left input is read from index {@code Constants.INPUT_START} and the right input from {@code inputEnd}.
+     *
+     * @return a WorkbenchRecipeInput containing the items currently in the left and right input slots
+     */
     @Override
     public WorkbenchRecipeInput createRecipeInput() {
         // We grab the items currently sitting in the container at indices 0 and 1

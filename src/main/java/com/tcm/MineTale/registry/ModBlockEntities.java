@@ -26,7 +26,14 @@ public class ModBlockEntities {
         ModBlocks.WORKBENCH_WORKBENCH_BLOCK
     );
 
-    // Helper method to register AND add to map simultaneously
+    /**
+     * Register a BlockEntityType for the given furnace tier and store it in the tier map.
+     *
+     * @param tier  the furnace tier whose BlockEntityType will be registered
+     * @param block the block to associate with the registered BlockEntityType; must not be null
+     * @return      the registered BlockEntityType for the specified furnace tier
+     * @throws IllegalStateException if {@code block} is null
+     */
     private static BlockEntityType<FurnaceWorkbenchEntity> registerTier(ModTiers.FurnaceTier tier, Block block) {
         // If 'block' is null here, the game WILL crash later. 
         // We can check it now to prove the theory:

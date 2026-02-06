@@ -30,9 +30,9 @@ public class WorkbenchWorkbench extends AbstractWorkbench<WorkbenchWorkbenchEnti
     public static final MapCodec<WorkbenchWorkbench> CODEC = simpleCodec(WorkbenchWorkbench::new);
 
     /**
-     * Creates a WorkbenchWorkbench configured to use the mod's WORKBENCH_WORKBENCH_BE block entity type.
+     * Constructs a WorkbenchWorkbench that uses the mod's WORKBENCH_WORKBENCH_BE block entity type.
      *
-     * @param properties block properties used to construct this workbench
+     * @param properties block properties for this workbench
      */
     public WorkbenchWorkbench(Properties properties) {
         // Hardcode the supplier and sounds here if they never change
@@ -51,9 +51,9 @@ public class WorkbenchWorkbench extends AbstractWorkbench<WorkbenchWorkbenchEnti
     }
 
     /**
-     * Provides a ticker that updates workbench workbench block entities each tick.
+     * Supplies a ticker that updates WorkbenchWorkbench block entities each tick.
      *
-     * @return a BlockEntityTicker that invokes AbstractWorkbenchEntity.tick for WorkbenchWorkbenchEntity instances, or `null` if the supplied block entity type does not match the workbench workbench type.
+     * @return a BlockEntityTicker that invokes AbstractWorkbenchEntity.tick for matching WorkbenchWorkbenchEntity instances, `null` if the supplied block entity type does not match
      */
     @Nullable
     @Override
@@ -63,7 +63,7 @@ public class WorkbenchWorkbench extends AbstractWorkbench<WorkbenchWorkbenchEnti
     }
 
     /**
-     * The codec used to serialize and deserialize this WorkbenchWorkbench type.
+     * Provides the MapCodec used to serialize and deserialize this workbench.
      *
      * @return the MapCodec for this WorkbenchWorkbench
      */
@@ -87,9 +87,11 @@ public class WorkbenchWorkbench extends AbstractWorkbench<WorkbenchWorkbenchEnti
     private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 7, 16);
 
     /**
-     * Gets the block's collision and interaction shape.
+     * Provides the block's collision and interaction shape.
      *
-     * @return the voxel shape representing the block's collision and interaction bounds
+     * <p>Uses a fixed voxel shape covering a 1×1 footprint with a height of 7 units (coordinates: x 0–16, y 0–7, z 0–16).</p>
+     *
+     * @return the voxel shape used for collision and interaction
      */
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
