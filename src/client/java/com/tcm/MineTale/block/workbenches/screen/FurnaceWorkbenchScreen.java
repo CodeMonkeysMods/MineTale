@@ -6,6 +6,8 @@ import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.menu.FurnaceWorkbenchMenu;
 import com.tcm.MineTale.recipe.MineTaleRecipeBookComponent;
 import com.tcm.MineTale.registry.ModBlocks;
+import com.tcm.MineTale.registry.ModRecipeDisplay;
+import com.tcm.MineTale.registry.ModRecipes;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenPosition;
@@ -15,7 +17,6 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeBookCategories;
 import net.minecraft.network.chat.Component;
 
 public class FurnaceWorkbenchScreen extends AbstractRecipeBookScreen<FurnaceWorkbenchMenu> {
@@ -38,10 +39,10 @@ public class FurnaceWorkbenchScreen extends AbstractRecipeBookScreen<FurnaceWork
         ItemStack tabIcon = new ItemStack(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1.asItem());
         
         List<RecipeBookComponent.TabInfo> tabs = List.of(
-            new RecipeBookComponent.TabInfo(tabIcon.getItem(), RecipeBookCategories.CRAFTING_MISC)
+            new RecipeBookComponent.TabInfo(tabIcon.getItem(), ModRecipeDisplay.FURNACE_T1_SEARCH)
         );
 
-        return new MineTaleRecipeBookComponent(menu, tabs);
+        return new MineTaleRecipeBookComponent(menu, tabs, ModRecipes.FURNACE_T1_TYPE);
     }
 
     @Override
@@ -81,16 +82,7 @@ public class FurnaceWorkbenchScreen extends AbstractRecipeBookScreen<FurnaceWork
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         renderBackground(graphics, mouseX, mouseY, delta);
 
-        // if (this.recipeBookComponent != null) {
-        //     this.recipeBookComponent.render(graphics, mouseX, mouseY, delta);
-        // }
-
         super.render(graphics, mouseX, mouseY, delta);
-
-        // if (this.recipeBookComponent != null) {
-        //     this.recipeBookComponent.renderGhostRecipe(graphics, true);
-        //     this.recipeBookComponent.renderTooltip(graphics, this.leftPos, this.topPos, this.hoveredSlot);
-        // }
 
         renderTooltip(graphics, mouseX, mouseY);
     }

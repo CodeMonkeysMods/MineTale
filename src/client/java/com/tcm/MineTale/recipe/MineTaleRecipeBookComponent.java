@@ -15,9 +15,11 @@ import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.player.StackedItemContents;
 import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
 
 public class MineTaleRecipeBookComponent extends RecipeBookComponent<RecipeBookMenu> {
+    private final RecipeType<?> filterType; // The specific machine type
 
     // Standard button sprites (the "Filter" checkmark button)
     protected static final WidgetSprites FILTER_BUTTON_SPRITES = new WidgetSprites(
@@ -27,8 +29,9 @@ public class MineTaleRecipeBookComponent extends RecipeBookComponent<RecipeBookM
         Identifier.withDefaultNamespace("recipe_book/filter_disabled_focused")
     );
 
-    public MineTaleRecipeBookComponent(RecipeBookMenu recipeBookMenu, List<TabInfo> list) {
+    public MineTaleRecipeBookComponent(RecipeBookMenu recipeBookMenu, List<TabInfo> list, RecipeType<?> filterType) {
         super(recipeBookMenu, list);
+        this.filterType = filterType;
     }
 
     @Override
@@ -36,10 +39,21 @@ public class MineTaleRecipeBookComponent extends RecipeBookComponent<RecipeBookM
         // Force everything to be "selected"
         // recipeCollection.selectRecipes(stackedItemContents, (recipeDisplay) -> true);
 
+        // recipeCollection.selectRecipes(stackedItemContents, (recipeDisplay) -> {
+        // // Only allow recipes that use your custom Workbench display type
+        // // This effectively filters out vanilla CraftingRecipeDisplays (the boats)
+        //     return recipeDisplay.type() == ModRecipeDisplay.WORKBENCH_TYPE;
+        // });
+
         recipeCollection.selectRecipes(stackedItemContents, (recipeDisplay) -> {
-        // Only allow recipes that use your custom Workbench display type
-        // This effectively filters out vanilla CraftingRecipeDisplays (the boats)
-            return recipeDisplay.type() == ModRecipeDisplay.WORKBENCH_TYPE;
+            // 1. Check if the display matches your custom type
+            if (recipeDisplay.type() != ModRecipeDisplay.WORKBENCH_TYPE) return false;
+
+            // 2. We need to verify if the underlying recipe matches the current block's type
+            // Note: In 1.21+, you may need to cast the display or check the recipe's origin
+            // Here is the logic to ensure we only show recipes meant for THIS specific machine:
+            return recipeDisplay instanceof WorkbenchRecipeDisplay wbDisplay && 
+                   wbDisplay.getRecipeType() == this.filterType;
         });
     }
 

@@ -28,6 +28,7 @@ public class CampfireWorkbenchEntity extends AbstractWorkbenchEntity {
     private int cookTime;
     private int cookTimeTotal = 200; 
     private int fuelTime;
+    private int inputEnd = 3;
 
     protected final ContainerData data = new ContainerData() {
         /**
@@ -103,6 +104,37 @@ public class CampfireWorkbenchEntity extends AbstractWorkbenchEntity {
      */
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (level.isClientSide()) return;
+
+        boolean changed = false;
+        
+        // 1. Shift queue forward so the next item is ready to smelt
+        if (shiftQueueForward()) {
+            changed = true;
+        }
+
+        if (changed) {
+            setChanged();
+        }
+    }
+
+    /**
+     * Iterates through the queue range. If a slot is empty, it pulls the item 
+     * from the slot behind it.
+     */
+    private boolean shiftQueueForward() {
+        boolean moved = false;
+        // Start from the front and pull from the back
+        for (int i = Constants.INPUT_START; i < this.inputEnd; i++) {
+            ItemStack current = inventory.getItem(i);
+            ItemStack next = inventory.getItem(i + 1);
+
+            if (current.isEmpty() && !next.isEmpty()) {
+                inventory.setItem(i, next.copy());
+                inventory.setItem(i + 1, ItemStack.EMPTY);
+                moved = true;
+            }
+        }
+        return moved;
     }
 
     /**

@@ -40,27 +40,6 @@ public class FurnaceWorkbench extends AbstractWorkbench<FurnaceWorkbenchEntity> 
         super(properties, () -> ModTiers.TIER_MAP.get(tier), IS_WIDE, IS_TALL, tier.id());
     }
 
-    // /**
-    //  * Creates a FurnaceWorkbench that uses a custom BlockEntityType supplier and a 2x2 footprint.
-    //  *
-    //  * @param properties block properties for this workbench
-    //  * @param supplier supplies the BlockEntityType to use for the workbench's master block entity
-    //  */
-    // public FurnaceWorkbench(Properties properties, Supplier<BlockEntityType<? extends FurnaceWorkbenchEntity>> supplier) {
-    //     super(properties, supplier, IS_WIDE, IS_TALL, 1);
-    // }
-
-    /**
-     * Ensures the block is rendered using its model so the 2x2 workbench model is visible.
-     *
-     * @return {@code RenderShape.MODEL} to render the block with its model
-     */
-    @Override
-    public RenderShape getRenderShape(BlockState state) {
-        // Essential so that the 2x2 model is visible
-        return RenderShape.MODEL;
-    }
-
     /**
      * Provides a ticker that drives furnace workbench logic for the master block.
      *
@@ -87,8 +66,8 @@ public class FurnaceWorkbench extends AbstractWorkbench<FurnaceWorkbenchEntity> 
         });
     }
 
-	/**
-     * Supply the codec used to serialize and deserialize this FurnaceWorkbench.
+    /**
+     * The codec used to serialize and deserialize this FurnaceWorkbench type.
      *
      * @return the MapCodec for this FurnaceWorkbench
      */
@@ -96,5 +75,15 @@ public class FurnaceWorkbench extends AbstractWorkbench<FurnaceWorkbenchEntity> 
     protected MapCodec<? extends FurnaceWorkbench> codec() {
         return CODEC;
     }
-    
+
+    /**
+     * Ensures the block is rendered using its model so the 2x2 workbench model is visible.
+     *
+     * @return {@code RenderShape.MODEL} to render the block with its model
+     */
+    @Override
+    public RenderShape getRenderShape(BlockState state) {
+        // Essential so that the 2x2 model is visible
+        return RenderShape.MODEL;
+    }
 }

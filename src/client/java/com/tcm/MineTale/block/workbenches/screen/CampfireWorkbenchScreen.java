@@ -7,6 +7,7 @@ import com.tcm.MineTale.block.workbenches.menu.CampfireWorkbenchMenu;
 import com.tcm.MineTale.recipe.MineTaleRecipeBookComponent;
 import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
+import com.tcm.MineTale.registry.ModRecipes;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenPosition;
@@ -44,7 +45,7 @@ public class CampfireWorkbenchScreen extends AbstractRecipeBookScreen<CampfireWo
             new RecipeBookComponent.TabInfo(tabIcon.getItem(), ModRecipeDisplay.CAMPFIRE_SEARCH)
         );
 
-        return new MineTaleRecipeBookComponent(menu, tabs);
+        return new MineTaleRecipeBookComponent(menu, tabs, ModRecipes.CAMPFIRE_TYPE);
     }
 
     /**

@@ -4,6 +4,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.datagen.builders.WorkbenchRecipeBuilder;
+import com.tcm.MineTale.registry.ModRecipeDisplay;
 import com.tcm.MineTale.registry.ModRecipes;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -46,20 +47,20 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 			public void buildRecipes() {
 				new WorkbenchRecipeBuilder(ModRecipes.CAMPFIRE_TYPE, ModRecipes.CAMPFIRE_SERIALIZER)
 					.input(Ingredient.of(Items.PORKCHOP))
-					// Note: Slot 1 is optional in our logic, so we just don't add a second input
 					.output(new ItemStack(Items.COOKED_PORKCHOP))
-					.time(10) // Campfires usually take longer (30 seconds)
+					.time(10)
 					.unlockedBy("has_porkchop", has(Items.PORKCHOP))
 					.category(CraftingBookCategory.MISC)
+					.bookCategory(ModRecipeDisplay.CAMPFIRE_SEARCH)
 					.save(exporter, Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "campfire_pork_cooking"));
 
-				new WorkbenchRecipeBuilder(ModRecipes.FURNACE_TYPE, ModRecipes.FURNACE_SERIALIZER)
+				new WorkbenchRecipeBuilder(ModRecipes.FURNACE_T1_TYPE, ModRecipes.FURNACE_SERIALIZER)
 					.input(Ingredient.of(Items.PORKCHOP))
-					// Note: Slot 1 is optional in our logic, so we just don't add a second input
-					.output(new ItemStack(Items.COOKED_PORKCHOP))
-					.time(10) // Campfires usually take longer (30 seconds)
+					.output(new ItemStack(Items.ACACIA_BOAT))
+					.time(10)
 					.unlockedBy("has_porkchop", has(Items.PORKCHOP))
 					.category(CraftingBookCategory.MISC)
+					.bookCategory(ModRecipeDisplay.FURNACE_T1_SEARCH)
 					.save(exporter, Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "furnace_pork_cooking"));
 			}
 		};

@@ -10,7 +10,6 @@ import com.tcm.MineTale.block.workbenches.entity.CampfireWorkbenchEntity;
 import com.tcm.MineTale.registry.ModBlockEntities;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -19,8 +18,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.ChestType;
-import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -98,35 +95,4 @@ public class CampfireWorkbench extends AbstractWorkbench<CampfireWorkbenchEntity
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
-
-    /**
-     * Create a block entity for the master block of this workbench.
-     *
-     * Only the master block of the multi-block workbench receives an entity; other positions return {@code null}.
-     *
-     * @return the block entity for the master block ({@link CampfireWorkbenchEntity}), or {@code null} if this position does not host an entity
-     */
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        // AbstractWorkbench logic ensures only the Master block gets the entity.
-        // We override it here to point specifically to our Furnace entity.
-        return super.newBlockEntity(pos, state);
-    }
-
-    /**
-     * Compute the master (base) block position for this block based on its state.
-     *
-     * @param state the block state of the current block
-     * @param pos   the position of the current block
-     * @return the position of the master (base) block: if the block is the upper half, the block below is used; if the block's type is `RIGHT`, the position is offset one block counterclockwise from its facing direction; otherwise the original position
-     */
-    public BlockPos getMasterPos(BlockState state, BlockPos pos) {
-        BlockPos master = pos;
-        Direction facing = state.getValue(FACING);
-        if (state.getValue(HALF) == DoubleBlockHalf.UPPER) master = master.below();
-        if (state.getValue(TYPE) == ChestType.RIGHT) master = master.relative(facing.getCounterClockWise());
-        return master;
-    }
-    
 }
