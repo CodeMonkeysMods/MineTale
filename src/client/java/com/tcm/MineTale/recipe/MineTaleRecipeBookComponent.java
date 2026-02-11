@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.tcm.MineTale.mixin.client.RecipeBookComponentAccessor;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
-import com.tcm.MineTale.registry.ModRecipes;
 import com.tcm.MineTale.util.Constants;
 
 import net.minecraft.client.gui.components.WidgetSprites;

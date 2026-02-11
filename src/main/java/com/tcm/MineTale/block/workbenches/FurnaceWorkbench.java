@@ -10,12 +10,20 @@ import com.tcm.MineTale.registry.ModTiers;
 import com.tcm.MineTale.registry.ModTiers.FurnaceTier;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.ChestType;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class FurnaceWorkbench extends AbstractWorkbench<FurnaceWorkbenchEntity> {
     // Setting these to true creates the 2x2 multi-block footprint
@@ -85,5 +93,43 @@ public class FurnaceWorkbench extends AbstractWorkbench<FurnaceWorkbenchEntity> 
     public RenderShape getRenderShape(BlockState state) {
         // Essential so that the 2x2 model is visible
         return RenderShape.MODEL;
+    }
+
+    protected static final VoxelShape LOWER_LEFT_SHAPE = Shapes.or(
+        Block.box(0.0, 0.0, 0.0, 16.0, 8.0, 16.0),  // Base
+        Block.box(2.0, 8.0, 2.0, 16.0, 16.0, 14.0)  // Mid-section
+    );
+
+    protected static final VoxelShape LOWER_RIGHT_SHAPE = Shapes.or(
+        Block.box(0.0, 0.0, 0.0, 16.0, 8.0, 16.0),  // Base
+        Block.box(0.0, 8.0, 2.0, 13.0, 16.0, 14.0)  // Mid-section (Shifted X: 29-16=13)
+    );
+
+    protected static final VoxelShape UPPER_LEFT_SHAPE = Shapes.or(
+        Block.box(1.0, 0.0, 1.0, 16.0, 5.0, 14.0),   // Tabletop (flush right)
+        Block.box(8.0, 5.0, 4.0, 16.0, 9.0, 12.0),   // Shelf (flush right)
+        Block.box(6.0, 9.0, 3.0, 16.0, 12.0, 13.0)   // Top Cap (flush right)
+    );
+
+
+    protected static final VoxelShape UPPER_RIGHT_SHAPE = Shapes.or(
+        Block.box(0.0, 0.0, 1.0, 15.0, 5.0, 14.0),  // Tabletop (Shifted X: 31-16=15)
+        Block.box(0.0, 5.0, 4.0, 8.0, 9.0, 12.0),   // Shelf (Shifted X: 24-16=8)
+        Block.box(0.0, 9.0, 3.0, 10.0, 12.0, 13.0)  // Top Cap (Shifted X: 26-16=10)
+    );
+
+    @Override
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        DoubleBlockHalf half = state.getValue(HALF);
+        ChestType type = state.getValue(TYPE);
+        
+        // We select the correct pre-defined VoxelShape based on position
+        if (half == DoubleBlockHalf.LOWER) {
+            return (type == ChestType.LEFT || type == ChestType.SINGLE) 
+                ? LOWER_LEFT_SHAPE : LOWER_RIGHT_SHAPE;
+        } else {
+            return (type == ChestType.LEFT || type == ChestType.SINGLE) 
+                ? UPPER_LEFT_SHAPE : UPPER_RIGHT_SHAPE;
+        }
     }
 }
