@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "facing=east,half=lower": {
+      "model": "minetale:block/furniture/construction_sign_bottom"
+    },
+    "facing=north,half=lower": {
+      "model": "minetale:block/furniture/construction_sign_bottom"
+    },
+    "facing=south,half=lower": {
+      "model": "minetale:block/furniture/construction_sign_bottom"
+    },
+    "facing=west,half=lower": {
+      "model": "minetale:block/furniture/construction_sign_bottom"
+    },
+    "facing=east,half=upper": {
+      "model": "minetale:block/furniture/construction_sign_top"
+    },
+    "facing=north,half=upper": {
+      "model": "minetale:block/furniture/construction_sign_top"
+    },
+    "facing=south,half=upper": {
+      "model": "minetale:block/furniture/construction_sign_top"
+    },
+    "facing=west,half=upper": {
+      "model": "minetale:block/furniture/construction_sign_top"
+    }
+  }
+}
