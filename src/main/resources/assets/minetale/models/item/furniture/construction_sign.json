@@ -1,7 +1,7 @@
 {
 	"textures": {
-		"0": "hytale:block/furniture/construction_sign",
-		"1": "hytale:block/furniture/construction_sign_edge"
+		"0": "minetale:block/furniture/construction_sign",
+		"1": "minetale:block/furniture/construction_sign_edge"
 	},
 	"elements": [
 		{
