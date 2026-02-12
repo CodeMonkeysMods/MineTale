@@ -10,7 +10,6 @@ import com.tcm.MineTale.registry.ModTiers;
 import com.tcm.MineTale.registry.ModTiers.FurnaceTier;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;

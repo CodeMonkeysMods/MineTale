@@ -27,11 +27,12 @@ public class ModRecipeDisplay {
     public static final RecipeDisplay.Type<WorkbenchRecipeDisplay> WORKBENCH_TYPE = 
         new RecipeDisplay.Type<>(WorkbenchRecipeDisplay.CODEC, STREAM_CODEC);
 
-    public static final RecipeBookCategory CAMPFIRE_SEARCH = registerCategory("campfire_recipe_book_category");
+    // 1. Declare the fields but don't assign them yet
+    public static RecipeBookCategory CAMPFIRE_SEARCH;
+    public static RecipeBookCategory WORKBENCH_SEARCH;
+    public static RecipeBookCategory FURNACE_T1_SEARCH;
 
-    public static final RecipeBookCategory WORKBENCH_SEARCH = registerCategory("workbench_recipe_book_category");
-
-    public static final RecipeBookCategory FURNACE_T1_SEARCH = registerCategory("furnace_t1_recipe_book_category");
+    
 
     /**
      * Registers the workbench recipe display type into the built-in recipe display registry.
@@ -39,6 +40,11 @@ public class ModRecipeDisplay {
      * The registration uses this mod's ID combined with the path "workbench_recipe_display" as the identifier.
      */
     public static void initialize() {
+        CAMPFIRE_SEARCH = registerCategory("campfire_recipe_book_category");
+
+        WORKBENCH_SEARCH = registerCategory("workbench_recipe_book_category");
+
+        FURNACE_T1_SEARCH = registerCategory("furnace_t1_recipe_book_category");
         // Register the Display TYPE
         Registry.register(
             BuiltInRegistries.RECIPE_DISPLAY, 
