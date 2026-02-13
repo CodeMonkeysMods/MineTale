@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "facing=east,half=lower,lit=false": {
+      "model": "minetale:block/bench/furnace_bottom"
+    },
+    "facing=north,half=lower,lit=false": {
+      "model": "minetale:block/bench/furnace_bottom"
+    },
+    "facing=south,half=lower,lit=false": {
+      "model": "minetale:block/bench/furnace_bottom"
+    },
+    "facing=west,half=lower,lit=false": {
+      "model": "minetale:block/bench/furnace_bottom"
+    },
+    "facing=east,half=upper,lit=false": {
+      "model": "minetale:block/bench/furnace_top"
+    },
+    "facing=north,half=upper,lit=false": {
+      "model": "minetale:block/bench/furnace_top"
+    },
+    "facing=south,half=upper,lit=false": {
+      "model": "minetale:block/bench/furnace_top"
+    },
+    "facing=west,half=upper,lit=false": {
+      "model": "minetale:block/bench/furnace_top"
+    },
+    "facing=east,half=lower,lit=true": {
+      "model": "minetale:block/bench/furnace_bottom"
+    },
+    "facing=north,half=lower,lit=true": {
+      "model": "minetale:block/bench/furnace_bottom"
+    },
+    "facing=south,half=lower,lit=true": {
+      "model": "minetale:block/bench/furnace_bottom"
+    },
+    "facing=west,half=lower,lit=true": {
+      "model": "minetale:block/bench/furnace_bottom"
+    },
+    "facing=east,half=upper,lit=true": {
+      "model": "minetale:block/bench/furnace_top"
+    },
+    "facing=north,half=upper,lit=true": {
+      "model": "minetale:block/bench/furnace_top"
+    },
+    "facing=south,half=upper,lit=true": {
+      "model": "minetale:block/bench/furnace_top"
+    },
+    "facing=west,half=upper,lit=true": {
+      "model": "minetale:block/bench/furnace_top"
+    }
+  }
+}
