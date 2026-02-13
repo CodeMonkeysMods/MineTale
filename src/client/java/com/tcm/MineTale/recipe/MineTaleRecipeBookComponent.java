@@ -132,6 +132,10 @@ public class MineTaleRecipeBookComponent extends RecipeBookComponent<RecipeBookM
                     return true; 
                 }
             }
+
+            // We return true here because page.mouseClicked was true. 
+            // This prevents the super call from processing the same click again.
+            return true;
         }
 
         return super.mouseClicked(mouseButtonEvent, bl);

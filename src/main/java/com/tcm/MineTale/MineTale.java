@@ -15,6 +15,7 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.tcm.MineTale.block.workbenches.menu.WorkbenchWorkbenchMenu;
 import com.tcm.MineTale.network.CraftRequestPayload;
 import com.tcm.MineTale.recipe.WorkbenchRecipe;
 import com.tcm.MineTale.registry.ModBlockEntities;
@@ -124,17 +125,28 @@ public class MineTale implements ModInitializer {
 		ServerPlayNetworking.registerGlobalReceiver(CraftRequestPayload.TYPE, (payload, context) -> {
 			context.server().execute(() -> {
 				ServerPlayer player = context.player();
+
+				// --- SECURITY GUARD ---
+				// Ensure the player actually has the Workbench UI open before processing the craft
+				if (!(player.containerMenu instanceof WorkbenchWorkbenchMenu)) {
+					return; 
+				}
+
 				ItemStack requestedResult = payload.resultItem();
 				int amount = payload.amount();
+				
 				// 1. Get the RecipeManager from the server level
 				RecipeManager recipeManager = player.level().recipeAccess();
 
 				// 2. Find the recipe by matching the output ItemStack
-				Optional<RecipeHolder<WorkbenchRecipe>> recipeOpt = recipeManager.getRecipes().stream()
-					.filter(holder -> holder.value() instanceof WorkbenchRecipe) // Check if it's your recipe class
-					.map(holder -> (RecipeHolder<WorkbenchRecipe>) holder)       // Cast to your type
+				Optional<RecipeHolder<WorkbenchRecipe>> recipeOpt = recipeManager.getAllOfType(ModRecipes.WORKBENCH_TYPE).stream()
 					.filter(holder -> {
-						// Compare the recipe result to the item requested by the client
+						// Guard against recipes with no results before accessing index 0
+						if (holder.value().results().isEmpty()) {
+							return false;
+						}
+						
+						// Compare the first result of the workbench recipe to the requested item
 						ItemStack result = holder.value().results().get(0);
 						return ItemStack.isSameItem(result, requestedResult);
 					})
@@ -144,15 +156,11 @@ public class MineTale implements ModInitializer {
 					WorkbenchRecipe recipe = recipeOpt.get().value();
 					
 					// 2. Determine craft limit (Handle "All" logic)
-					int limit = (amount == -1) ? 64 : amount; 
+					int limit = (amount == -1) ? 64 : Math.min(Math.max(amount, 0), 64);; 
 
 					for (int i = 0; i < limit; i++) {
-						// Check if player has the 15 items (5 logs, 10 sticks)
 						if (hasIngredients(player, recipe)) {
 							consumeIngredients(player, recipe);
-							
-							// Add the result stack to player inventory
-							// We copy it to avoid modifying the recipe instance
 							player.getInventory().add(recipe.results().get(0).copy());
 						} else {
 							break; 

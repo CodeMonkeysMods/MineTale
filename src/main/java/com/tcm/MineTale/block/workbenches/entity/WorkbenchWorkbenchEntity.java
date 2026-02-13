@@ -19,17 +19,11 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 public class WorkbenchWorkbenchEntity extends AbstractWorkbenchEntity {
-    private int cookTime;
-    private int cookTimeTotal = 200; 
-    private int fuelTime;
-    private int inputEnd = 3;
-
     protected final ContainerData data = new ContainerData() {
         /**
          * Retrieves an internal data value by index for UI synchronization.
@@ -41,10 +35,10 @@ public class WorkbenchWorkbenchEntity extends AbstractWorkbenchEntity {
         @Override
         public int get(int index) {
             return switch (index) {
-                case 0 -> fuelTime;
+                case 0 -> 0;
                 case 1 -> 100; // Fuel total
-                case 2 -> cookTime;
-                case 3 -> cookTimeTotal;
+                case 2 -> 0;
+                case 3 -> 0;
                 default -> 0;
             };
         }
@@ -64,10 +58,7 @@ public class WorkbenchWorkbenchEntity extends AbstractWorkbenchEntity {
          */
         @Override
         public void set(int index, int value) {
-            switch (index) {
-                case 0 -> fuelTime = value;
-                case 2 -> cookTime = value;
-            }
+            // Not required on WorkbenchEntity
         }
 
         /**
@@ -95,66 +86,6 @@ public class WorkbenchWorkbenchEntity extends AbstractWorkbenchEntity {
         this.scanRadius = 0.0; 
         this.tier = 1;
     }
-
-    /**
-     * Run server-side per-tick updates for this workbench entity.
-     *
-     * <p>Does nothing on the client. On the server this advances the input queue so the next
-     * item becomes ready and, if any state changes occur, marks the block entity as changed.
-     *
-     * @param level the world in which the workbench exists
-     * @param pos the position of the workbench block
-     * @param state the current block state at the workbench's position
-     */
-    public void tick(Level level, BlockPos pos, BlockState state) {
-        if (level.isClientSide()) return;
-
-        boolean changed = false;
-        
-        // 1. Shift queue forward so the next item is ready to smelt
-        if (shiftQueueForward()) {
-            changed = true;
-        }
-
-        if (changed) {
-            setChanged();
-        }
-    }
-
-    /**
-     * Compacts the input queue by moving items forward into the first empty slot ahead.
-     *
-     * @return true if any items were moved, false otherwise.
-     */
-    private boolean shiftQueueForward() {
-        boolean moved = false;
-        // Start from the front and pull from the back
-        for (int i = Constants.INPUT_START; i < this.inputEnd; i++) {
-            ItemStack current = inventory.getItem(i);
-            ItemStack next = inventory.getItem(i + 1);
-
-            if (current.isEmpty() && !next.isEmpty()) {
-                inventory.setItem(i, next.copy());
-                inventory.setItem(i + 1, ItemStack.EMPTY);
-                moved = true;
-            }
-        }
-        return moved;
-    }
-
-    /**
-     * Determines whether the provided item stack is a supported food.
-     *
-     * @param stack the item stack to test
-     */
-    // private boolean isCookable(List<ItemStack> stacks) { return stack.is(ItemTags.MEAT); }
-
-    /**
-     * Determines whether the given item stack represents a fuel item.
-     *
-     * @param stack the item stack to inspect
-     */
-    // private boolean isFuel(ItemStack stack) { return stack.is(ItemTags.LOGS_THAT_BURN) || stack.is(Items.STICK); }
 
     /**
      * Persist this workbench's state to the given ValueOutput.

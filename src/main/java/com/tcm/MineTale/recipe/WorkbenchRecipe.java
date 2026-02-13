@@ -146,19 +146,6 @@ public record WorkbenchRecipe(
     }
 
     // --- SERIALIZER ---
-    public record SizedIngredient(Ingredient ingredient, int count) {
-        public static final Codec<SizedIngredient> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            Ingredient.CODEC.fieldOf("ingredient").forGetter(SizedIngredient::ingredient),
-            Codec.INT.optionalFieldOf("count", 1).forGetter(SizedIngredient::count)
-        ).apply(inst, SizedIngredient::new));
-
-        public static final StreamCodec<RegistryFriendlyByteBuf, SizedIngredient> STREAM_CODEC = StreamCodec.composite(
-            Ingredient.CONTENTS_STREAM_CODEC, SizedIngredient::ingredient,
-            ByteBufCodecs.VAR_INT, SizedIngredient::count,
-            SizedIngredient::new
-        );
-    }
-
     public static class Serializer implements RecipeSerializer<WorkbenchRecipe> {
         private final RecipeType<WorkbenchRecipe> recipeType;
         private final MapCodec<WorkbenchRecipe> codec;

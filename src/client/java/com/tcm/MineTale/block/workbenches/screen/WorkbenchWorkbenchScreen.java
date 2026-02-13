@@ -29,7 +29,7 @@ import net.minecraft.network.chat.Component;
 
 public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<WorkbenchWorkbenchMenu> {
     private static final Identifier TEXTURE = 
-        Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "textures/gui/container/furnace_workbench.png");
+        Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "textures/gui/container/workbench_workbench.png");
 
     private final MineTaleRecipeBookComponent mineTaleRecipeBook;
 
@@ -105,65 +105,6 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
         }).bounds(this.leftPos + 144, this.topPos + 20, 30, 20).build());
     }
 
-    // private void handleCraftRequest(int amount) {
-    //     RecipeBookPage page = ((RecipeBookComponentAccessor)this.mineTaleRecipeBook).getRecipeBookPage();
-    //     RecipeCollection collection = page.getLastClickedRecipeCollection();
-    //     RecipeDisplayId displayId = page.getLastClickedRecipe();
-
-    //     if (collection != null && displayId != null) {
-    //         // 1. Find the specific entry that was clicked
-    //         for (RecipeDisplayEntry entry : collection.getSelectedRecipes(RecipeCollection.CraftableStatus.ANY)) {
-    //             if (entry.id().equals(displayId)) {
-    //                 // 2. Resolve the visual result into an actual ItemStack
-    //                 List<ItemStack> results = entry.resultItems(SlotDisplayContext.fromLevel(this.minecraft.level));
-                    
-    //                 if (!results.isEmpty()) {
-    //                     ItemStack resultStack = results.get(0);
-    //                     // 3. Send the item and amount to the server
-    //                     // Note: Update your CraftRequestPayload to accept ItemStack instead of Identifier
-    //                     ClientPlayNetworking.send(new CraftRequestPayload(resultStack, amount));
-    //                 }
-    //                 break;
-    //             }
-    //         }
-    //     }
-    // }
-
-    // private void handleCraftRequest(int amount) {
-    //     // 1. Get the current page from the recipe book
-    //     // We use your mixin/accessor to get the internal page object
-    //     RecipeBookPage page = ((RecipeBookComponentAccessor)this.mineTaleRecipeBook).getRecipeBookPage();
-        
-    //     // 2. Identify WHAT was clicked
-    //     RecipeCollection collection = page.getLastClickedRecipeCollection();
-    //     RecipeDisplayId displayId = page.getLastClickedRecipe();
-
-    //     if (collection != null && displayId != null) {
-    //         // 3. Find the display entry
-    //         for (RecipeDisplayEntry entry : collection.getSelectedRecipes(RecipeCollection.CraftableStatus.ANY)) {
-    //             if (entry.id().equals(displayId)) {
-    //                 // 4. Get the result item (the Chest)
-    //                 // 1.21.1 uses SlotDisplayContext to handle dynamic results
-    //                 List<ItemStack> results = entry.resultItems(SlotDisplayContext.fromLevel(this.minecraft.level));
-                    
-    //                 if (!results.isEmpty()) {
-    //                     ItemStack resultStack = results.get(0);
-                        
-    //                     // 5. Send the packet to the Server
-    //                     // IMPORTANT: Ensure your CraftRequestPayload is registered to handle 
-    //                     // an ItemStack and an Int.
-    //                     ClientPlayNetworking.send(new CraftRequestPayload(resultStack, amount));
-                        
-    //                     // Optional: Play a click sound so the player knows it worked
-    //                     this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
-    //                         net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
-    //                 }
-    //                 break;
-    //             }
-    //         }
-    //     }
-    // }
-
     /**
      * Sends a crafting request for the currently selected recipe in the integrated recipe book.
      *
@@ -191,7 +132,7 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
                     if (!results.isEmpty()) {
                         ItemStack resultStack = results.get(0);
                         
-                        // 4. LOG FOR DEBUGGING: Does this print in your console?
+                        // 4. LOG FOR DEBUGGING
                         System.out.println("Sending craft request for: " + resultStack + " amount: " + amount);
                         
                         ClientPlayNetworking.send(new CraftRequestPayload(resultStack, amount));

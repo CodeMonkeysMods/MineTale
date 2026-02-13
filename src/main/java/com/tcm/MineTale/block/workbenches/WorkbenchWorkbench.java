@@ -24,7 +24,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 // ChestBlock
 
 public class WorkbenchWorkbench extends AbstractWorkbench<WorkbenchWorkbenchEntity> {
-    public static final boolean IS_WIDE = false;
+    public static final boolean IS_WIDE = true;
     public static final boolean IS_TALL = false;
 
     public static final MapCodec<WorkbenchWorkbench> CODEC = simpleCodec(WorkbenchWorkbench::new);
@@ -85,7 +85,7 @@ public class WorkbenchWorkbench extends AbstractWorkbench<WorkbenchWorkbenchEnti
         return RenderShape.MODEL;
     }
 
-    private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 7, 16);
+    private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 16, 16);
 
     /**
      * The block's collision and interaction shape as a 1×1 footprint with height 7 (x 0–16, y 0–7, z 0–16).

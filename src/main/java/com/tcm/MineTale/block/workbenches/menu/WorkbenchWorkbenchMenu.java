@@ -77,7 +77,7 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
      */
     @Override
     public void fillCraftSlotsStackedContents(StackedItemContents stackedItemContents) {
-        // This is vital for the recipe book to "see" what is currently in your furnace.
+        // This is vital for the recipe book to "see" what is currently in your workbench.
         // It allows the book to calculate if you have enough items to craft more.
         this.playerInventory.fillStackedContents(stackedItemContents);
     }

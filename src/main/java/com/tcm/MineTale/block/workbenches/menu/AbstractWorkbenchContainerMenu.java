@@ -188,6 +188,11 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
      * @return the cook progress scaled to a 24-pixel width (`0` if there is no progress or total cook time is zero)
      */
     public int getCookProgress() {
+        // Guard against null data or missing indices (needs at least index 2 and 3)
+        if (this.data == null || this.data.getCount() < 4) {
+            return 0;
+        }
+        
         int i = this.data.get(2); // cookTime
         int j = this.data.get(3); // cookTimeTotal
         return j != 0 && i != 0 ? i * 24 / j : 0;
@@ -202,6 +207,11 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
      * @return an integer between 0 and 13 representing the current burn progress in pixels
      */
     public int getBurnProgress() {
+        // Guard against null data or missing indices (needs at least index 0 and 1)
+        if (this.data == null || this.data.getCount() < 2) {
+            return 0;
+        }
+
         int i = this.data.get(1); // fuelTimeTotal
         if (i == 0) i = 200;
         return this.data.get(0) * 13 / i; // fuelTime
