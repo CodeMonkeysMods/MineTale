@@ -1,9 +1,13 @@
 package com.tcm.MineTale.block.workbenches.screen;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.menu.WorkbenchWorkbenchMenu;
+import com.tcm.MineTale.mixin.client.ClientRecipeBookAccessor;
 import com.tcm.MineTale.mixin.client.RecipeBookComponentAccessor;
 import com.tcm.MineTale.network.CraftRequestPayload;
 import com.tcm.MineTale.recipe.MineTaleRecipeBookComponent;
@@ -12,6 +16,7 @@ import com.tcm.MineTale.registry.ModRecipeDisplay;
 import com.tcm.MineTale.registry.ModRecipes;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.ClientRecipeBook;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.navigation.ScreenPosition;
@@ -21,7 +26,9 @@ import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.RecipeDisplayEntry;
 import net.minecraft.world.item.crafting.display.RecipeDisplayId;
 import net.minecraft.world.item.crafting.display.SlotDisplayContext;
@@ -34,7 +41,7 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
     private final MineTaleRecipeBookComponent mineTaleRecipeBook;
 
     private Button craftOneBtn;
-    private Button craftThirtyBtn;
+    private Button craftTenBtn;
     private Button craftAllBtn;
 
     /**
@@ -92,17 +99,20 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
         
         super.init();
 
-        this.craftOneBtn = addRenderableWidget(Button.builder(Component.literal("1"), (button) -> {
-            handleCraftRequest(1);
-        }).bounds(this.leftPos + 80, this.topPos + 20, 30, 20).build());
+        int defaultLeft = this.leftPos + 90;
+        int defaultTop = this.topPos + 25;
 
-        this.craftThirtyBtn = addRenderableWidget(Button.builder(Component.literal("30"), (button) -> {
+        this.craftOneBtn = addRenderableWidget(Button.builder(Component.literal("Craft"), (button) -> {
+            handleCraftRequest(1);
+        }).bounds(defaultLeft, defaultTop, 75, 20).build());
+
+        this.craftTenBtn = addRenderableWidget(Button.builder(Component.literal("x10"), (button) -> {
             handleCraftRequest(30);
-        }).bounds(this.leftPos + 112, this.topPos + 20, 30, 20).build());
+        }).bounds(defaultLeft, defaultTop + 22, 35, 20).build());
 
         this.craftAllBtn = addRenderableWidget(Button.builder(Component.literal("All"), (button) -> {
             handleCraftRequest(-1); // -1 represents "All" logic
-        }).bounds(this.leftPos + 144, this.topPos + 20, 30, 20).build());
+        }).bounds(defaultLeft + 40, defaultTop + 22, 35, 20).build());
     }
 
     /**
@@ -159,28 +169,86 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
       guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, k, l, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
    }
 
-    /**
-     * Renders the workbench screen including the background tint, GUI elements, and tooltips.
-     *
-     * @param graphics the graphics context
-     * @param mouseX the current mouse x-coordinate
-     * @param mouseY the current mouse y-coordinate
-     * @param delta the partial tick delta for frame interpolation
-     */
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        // 1. Always render the dark background tint first
         renderBackground(graphics, mouseX, mouseY, delta);
-
-        // 3. Call super (this draws your slots and items)
         super.render(graphics, mouseX, mouseY, delta);
 
-        boolean hasSelection = this.mineTaleRecipeBook.getSelectedRecipeId() != null;
-        this.craftOneBtn.active = hasSelection;
-        this.craftThirtyBtn.active = hasSelection;
-        this.craftAllBtn.active = hasSelection;
+        // Get the ID of the recipe clicked in the ghost-book
+        RecipeDisplayId displayId = this.mineTaleRecipeBook.getSelectedRecipeId();
+        RecipeDisplayEntry selectedEntry = null;
+
+        if (displayId != null && this.minecraft.level != null) {
+            ClientRecipeBook book = this.minecraft.player.getRecipeBook();
+            // Accessing the known recipes via your Accessor
+            Map<RecipeDisplayId, RecipeDisplayEntry> knownRecipes = ((ClientRecipeBookAccessor) book).getKnown();
+            selectedEntry = knownRecipes.get(displayId);
+        }
+
+        // 2. Button Activation Logic
+        if (selectedEntry != null) {
+            // We use the entry directly. It contains the 15 ingredients needed!
+            boolean canCraftOne = canCraft(this.minecraft.player, selectedEntry, 1);
+            boolean canCraftTen = canCraft(this.minecraft.player, selectedEntry, 10);
+
+            this.craftOneBtn.active = canCraftOne;
+            this.craftTenBtn.active = canCraftTen;
+            this.craftAllBtn.active = canCraftOne;
+        } else {
+            this.craftOneBtn.active = false;
+            this.craftTenBtn.active = false;
+            this.craftAllBtn.active = false;
+        }
 
         renderTooltip(graphics, mouseX, mouseY);
+    }
+
+    private boolean canCraft(Player player, RecipeDisplayEntry entry, int craftCount) {
+        if (player == null || entry == null) return false;
+
+        // craftingRequirements() provides the list of all items (the 15 items for your chest)
+        Optional<List<Ingredient>> reqs = entry.craftingRequirements();
+        if (reqs.isEmpty()) return false;
+
+        // 1. Group duplicate ingredients (e.g., 5 Log entries become 1 Log entry with a value of 5)
+        Map<Ingredient, Integer> aggregatedRequirements = new HashMap<>();
+        for (Ingredient ing : reqs.get()) {
+            aggregatedRequirements.put(ing, aggregatedRequirements.getOrDefault(ing, 0) + 1);
+        }
+
+        // 2. Check the player's inventory against the totals
+        Inventory inv = player.getInventory();
+        for (Map.Entry<Ingredient, Integer> entryReq : aggregatedRequirements.entrySet()) {
+            // totalNeeded = (Amount in 1 recipe) * (Number of crafts, e.g. 1 or 30)
+            int totalNeeded = entryReq.getValue() * craftCount;
+            
+            if (!hasIngredientAmount(inv, entryReq.getKey(), totalNeeded)) {
+                return false; // Player doesn't have enough of this specific ingredient
+            }
+        }
+        
+        return true;
+    }
+
+    private boolean hasIngredientAmount(Inventory inventory, Ingredient ingredient, int totalRequired) {
+        System.out.println("DEBUG: Searching inventory for " + totalRequired + " of an ingredient...");
+        if (totalRequired <= 0) return true;
+        
+        int found = 0;
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            ItemStack stack = inventory.getItem(i);
+            if (!stack.isEmpty() && ingredient.test(stack)) {
+                found += stack.getCount();
+                System.out.println("DEBUG: Found " + stack.getCount() + " in slot " + i + ". Total found: " + found);
+            }
+            if (found >= totalRequired) {
+                System.out.println("DEBUG: Ingredient requirement MET");
+                return true;
+            }
+        }
+        
+        System.out.println("DEBUG: Ingredient requirement FAILED. Only found: " + found + "/" + totalRequired);
+        return false;
     }
 
     /**
