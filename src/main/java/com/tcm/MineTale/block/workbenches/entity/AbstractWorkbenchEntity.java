@@ -297,6 +297,14 @@ public ItemStack getItem(int slot) { return this.inventory.getItem(slot); }
      */
     public void setTier(int tier) { this.tier = tier; setChanged(); }
 
+    /**
+     * Collects nearby chest and barrel inventories within a cubic scan area centered on this workbench.
+     *
+     * Scans from worldPosition ± scanRadius (or ±5 when scanRadius ≤ 0) horizontally and ±2 vertically,
+     * and returns any found BlockEntities that implement Container.
+     *
+     * @return a list of nearby `Container` instances (chests and barrels). Returns an empty list if none are found or the world is unavailable.
+     */
     public List<Container> getNearbyInventories() {
         List<Container> inventories = new java.util.ArrayList<>();
         if (level == null) return inventories;

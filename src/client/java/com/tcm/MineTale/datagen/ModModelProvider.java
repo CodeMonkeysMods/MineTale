@@ -31,12 +31,12 @@ public class ModModelProvider extends FabricModelProvider {
             .select(Direction.WEST, BlockModelGenerators.Y_ROT_270);
 
     /**
-     * Registers block state and model definitions for the mod's log blocks.
+     * Registers block state and model definitions for the mod's custom log blocks and furnace workbenches.
      *
-     * This configures horizontal and vertical log models for each custom log block and, for
-     * WILD_WISTERIA_LOG, also registers the corresponding wood model (WILD_WISTERIA_WOOD).
+     * Configures horizontal and vertical variants for each custom log block and registers the wood model for
+     * WILD_WISTERIA_LOG; registers blockstate variants and item models for the mod's furnace workbench blocks.
      *
-     * @param blockStateModelGenerator the generator used to create block state and model entries
+     * @param blockStateModelGenerator generator used to create block state and model entries
      */
     @Override
     public void generateBlockStateModels(BlockModelGenerators blockStateModelGenerator) {
@@ -75,6 +75,16 @@ public class ModModelProvider extends FabricModelProvider {
         registerFurnaceWorkbench(blockStateModelGenerator, ModBlocks.FURNACE_WORKBENCH_BLOCK_T2);
     }
 
+    /**
+     * Registers block state variants and the item model for a two-block furnace workbench.
+     *
+     * Uses explicit shared model identifiers for the top, bottom, and inventory models, dispatches
+     * the block state by `DOUBLE_BLOCK_HALF` to select the top or bottom model, applies
+     * `WORKBENCH_ROTATION` for horizontal orientation, and registers the simple item model.
+     *
+     * @param generator the BlockModelGenerators instance used to emit blockstate and item model data
+     * @param block the furnace workbench block to register models for
+     */
     private void registerFurnaceWorkbench(BlockModelGenerators generator, Block block) {
         // 1. Manually define the shared model paths
         // Path: assets/minetale/models/block/bench/furnace_top.json

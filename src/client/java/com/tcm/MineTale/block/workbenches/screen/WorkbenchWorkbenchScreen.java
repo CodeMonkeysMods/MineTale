@@ -208,6 +208,14 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
         renderTooltip(graphics, mouseX, mouseY);
     }
 
+    /**
+     * Determines whether the player has enough ingredients to craft the given recipe the specified number of times.
+     *
+     * @param player     the player whose inventory (and networked nearby items) will be checked; may be null
+     * @param entry      the recipe display entry providing crafting requirements; may be null
+     * @param craftCount the multiplier for required ingredient quantities (e.g., 1, 10, or -1 is not specially handled here)
+     * @return `true` if the player has at least the required quantity of each ingredient multiplied by `craftCount`, `false` otherwise (also returns `false` if `player` or `entry` is null or the recipe has no requirements)
+     */
     private boolean canCraft(Player player, RecipeDisplayEntry entry, int craftCount) {
         if (player == null || entry == null) return false;
 
