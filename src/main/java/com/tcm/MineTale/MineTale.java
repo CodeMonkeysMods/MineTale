@@ -15,7 +15,10 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
+import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
 import com.tcm.MineTale.block.workbenches.menu.WorkbenchWorkbenchMenu;
+import com.tcm.MineTale.network.ClientboundNearbyInventorySyncPacket;
 import com.tcm.MineTale.network.CraftRequestPayload;
 import com.tcm.MineTale.recipe.WorkbenchRecipe;
 import com.tcm.MineTale.registry.ModBlockEntities;
@@ -77,49 +80,7 @@ public class MineTale implements ModInitializer {
 		// Register the payload type and codec so the game knows how to handle it
 		PayloadTypeRegistry.playC2S().register(CraftRequestPayload.TYPE, CraftRequestPayload.CODEC);
 
-		// Register the server-side receiver
-		// ServerPlayNetworking.registerGlobalReceiver(CraftRequestPayload.TYPE, (payload, context) -> {
-		// 	context.server().execute(() -> {
-		// 		// Your crafting logic here
-		// 		System.out.println("Received craft request for: " + payload.resultItem() + " amount: " + payload.amount());
-		// 	});
-		// });
-
-		// ServerPlayNetworking.registerGlobalReceiver(CraftRequestPayload.TYPE, (payload, context) -> {
-		// 	context.server().execute(() -> {
-		// 		ServerPlayer player = context.player();
-		// 		ItemStack requestedResult = payload.stack();
-		// 		int amount = payload.amount();
-
-		// 		// 1. Find the recipe on the server
-		// 		Optional<RecipeHolder<WorkbenchRecipe>> recipeOpt = player.level().getRecipeManager()
-		// 			.getAllRecipesFor(ModRecipes.WORKBENCH_TYPE)
-		// 			.stream()
-		// 			.filter(r -> ItemStack.isSameItem(r.value().results().get(0), requestedResult))
-		// 			.findFirst();
-
-		// 		if (recipeOpt.isPresent()) {
-		// 			WorkbenchRecipe recipe = recipeOpt.get().value();
-					
-		// 			// 2. Logic for "1", "30", or "All"
-		// 			// For now, let's just handle "1" to test
-		// 			int limit = (amount == -1) ? 64 : amount; 
-
-		// 			for (int i = 0; i < limit; i++) {
-		// 				if (hasIngredients(player, recipe)) {
-		// 					consumeIngredients(player, recipe);
-		// 					// Give the player the result
-		// 					player.getInventory().add(recipe.results().get(0).copy());
-		// 				} else {
-		// 					break; 
-		// 				}
-		// 			}
-					
-		// 			// 3. VERY IMPORTANT: Sync the inventory so the player sees the items change
-		// 			player.containerMenu.broadcastChanges();
-		// 		}
-		// 	});
-		// });
+		PayloadTypeRegistry.playS2C().register(ClientboundNearbyInventorySyncPacket.TYPE, ClientboundNearbyInventorySyncPacket.STREAM_CODEC);
 
 		// Register the server-side receiver using .TYPE
 		ServerPlayNetworking.registerGlobalReceiver(CraftRequestPayload.TYPE, (payload, context) -> {
@@ -183,23 +144,64 @@ public class MineTale implements ModInitializer {
      * @param recipe the workbench recipe to validate against the player's inventory
      * @return `true` if all required ingredients can be satisfied from the player's current inventory, `false` otherwise
      */
-    private boolean hasIngredients(ServerPlayer player, WorkbenchRecipe recipe) {
-        // We simulate the craft using a copy of the inventory
-        List<ItemStack> tempInv = new java.util.ArrayList<>();
-        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-            tempInv.add(player.getInventory().getItem(i).copy());
-        }
+    // private boolean hasIngredients(ServerPlayer player, WorkbenchRecipe recipe) {
+    //     // We simulate the craft using a copy of the inventory
+    //     List<ItemStack> tempInv = new java.util.ArrayList<>();
+    //     for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+    //         tempInv.add(player.getInventory().getItem(i).copy());
+    //     }
 
-        for (Ingredient ingredient : recipe.ingredients()) {
-            boolean found = false;
-            for (ItemStack stack : tempInv) {
-                if (!stack.isEmpty() && ingredient.test(stack)) {
-                    stack.shrink(1);
-                    found = true;
-                    break;
+    //     for (Ingredient ingredient : recipe.ingredients()) {
+    //         boolean found = false;
+    //         for (ItemStack stack : tempInv) {
+    //             if (!stack.isEmpty() && ingredient.test(stack)) {
+    //                 stack.shrink(1);
+    //                 found = true;
+    //                 break;
+    //             }
+    //         }
+    //         if (!found) return false;
+    //     }
+    //     return true;
+    // }
+
+	private boolean hasIngredients(ServerPlayer player, WorkbenchRecipe recipe) {
+        if (!(player.containerMenu instanceof AbstractWorkbenchContainerMenu menu)) return false;
+        AbstractWorkbenchEntity be = menu.getBlockEntity();
+
+        // 1. Create a "Mental Map" of what we found in Player + Chests
+        // We use a Map to track how many of each item we have available to "spend"
+        java.util.Map<net.minecraft.world.item.Item, Integer> available = new java.util.HashMap<>();
+        
+        // Add Player Inventory
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
+            if (!stack.isEmpty()) available.merge(stack.getItem(), stack.getCount(), Integer::sum);
+        }
+        
+        // Add Nearby Chests
+        if (be != null && be.isCanPullFromNearby()) {
+            for (net.minecraft.world.Container chest : be.getNearbyInventories()) {
+                for (int i = 0; i < chest.getContainerSize(); i++) {
+                    ItemStack stack = chest.getItem(i);
+                    if (!stack.isEmpty()) available.merge(stack.getItem(), stack.getCount(), Integer::sum);
                 }
             }
-            if (!found) return false;
+        }
+
+        // 2. Try to "spend" each ingredient from the JSON list
+        for (Ingredient ingredient : recipe.ingredients()) {
+            boolean matched = false;
+            for (net.minecraft.world.item.Item item : available.keySet()) {
+                if (ingredient.test(item.getDefaultInstance())) {
+                    int count = available.get(item);
+                    if (count > 0) {
+                        available.put(item, count - 1);
+                        matched = true;
+                        break;
+                    }
+                }
+            }
+            if (!matched) return false; // Ran out of a specific log or stick!
         }
         return true;
     }
@@ -210,15 +212,49 @@ public class MineTale implements ModInitializer {
      * @param player the player whose inventory will be modified
      * @param recipe the workbench recipe whose ingredients should be consumed
      */
-    private void consumeIngredients(ServerPlayer player, WorkbenchRecipe recipe) {
-        for (Ingredient ingredient : recipe.ingredients()) {
-            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-                ItemStack stack = player.getInventory().getItem(i);
-                if (!stack.isEmpty() && ingredient.test(stack)) {
-                    stack.shrink(1);
-                    break; 
-                }
-            }
-        }
-    }
+    // private void consumeIngredients(ServerPlayer player, WorkbenchRecipe recipe) {
+    //     for (Ingredient ingredient : recipe.ingredients()) {
+    //         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+    //             ItemStack stack = player.getInventory().getItem(i);
+    //             if (!stack.isEmpty() && ingredient.test(stack)) {
+    //                 stack.shrink(1);
+    //                 break; 
+    //             }
+    //         }
+    //     }
+    // }
+
+	private void consumeIngredients(ServerPlayer player, WorkbenchRecipe recipe) {
+		if (!(player.containerMenu instanceof AbstractWorkbenchContainerMenu menu)) return;
+		AbstractWorkbenchEntity be = menu.getBlockEntity();
+
+		for (Ingredient ingredient : recipe.ingredients()) {
+			boolean consumed = false;
+
+			// 1. Try Player first
+			for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
+				if (!stack.isEmpty() && ingredient.test(stack)) {
+					stack.shrink(1);
+					consumed = true;
+					break;
+				}
+			}
+
+			// 2. Try Chests second
+			if (!consumed && be != null && be.isCanPullFromNearby()) {
+				for (net.minecraft.world.Container chest : be.getNearbyInventories()) {
+					for (int i = 0; i < chest.getContainerSize(); i++) {
+						ItemStack stack = chest.getItem(i);
+						if (!stack.isEmpty() && ingredient.test(stack)) {
+							stack.shrink(1);
+							chest.setChanged();
+							consumed = true;
+							break;
+						}
+					}
+					if (consumed) break;
+				}
+			}
+		}
+	}
 }

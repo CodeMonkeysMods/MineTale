@@ -6,25 +6,35 @@ import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 
+import com.mojang.serialization.Codec;
+import com.tcm.MineTale.network.ClientboundNearbyInventorySyncPacket;
 import com.tcm.MineTale.recipe.WorkbenchRecipe;
 import com.tcm.MineTale.recipe.WorkbenchRecipeInput;
 import com.tcm.MineTale.util.Constants;
 
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.StackedItemContents;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BarrelBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public abstract class AbstractWorkbenchEntity extends BlockEntity implements MenuProvider {
     protected int tier;
@@ -34,6 +44,7 @@ public abstract class AbstractWorkbenchEntity extends BlockEntity implements Men
     protected final SimpleContainer inventory = new SimpleContainer(7);
     protected int progress = 0;
     protected int maxProgress = 200;
+    protected boolean canPullFromNearby = false;
 
     /**
      * Creates a new workbench block entity instance.
@@ -295,29 +306,144 @@ public ItemStack getItem(int slot) { return this.inventory.getItem(slot); }
      *
      * @return a list of nearby `Container` instances sorted by proximity; an empty list if none are found or if the world (`level`) is null
      */
+    // public List<Container> getNearbyInventories() {
+    //     List<Container> inventories = new ArrayList<>();
+    //     if (level == null) {
+    //         return inventories;
+    //     } 
+    //     BlockPos.betweenClosed(
+    //         worldPosition.offset((int)-scanRadius, -2, (int)-scanRadius),
+    //         worldPosition.offset((int)scanRadius, 2, (int)scanRadius)
+    //     ).forEach(pos -> {
+    //         BlockEntity be = level.getBlockEntity(pos);
+    //         if (be instanceof Container container) {
+    //             inventories.add(container);
+    //         }
+    //     });
+        
+    //     // Prioritization: Sort by proximity to prevent "chest prioritization" issues
+    //     inventories.sort((a, b) -> {
+    //         double distA = ((BlockEntity)a).getBlockPos().distSqr(this.worldPosition);
+    //         double distB = ((BlockEntity)b).getBlockPos().distSqr(this.worldPosition);
+    //         return Double.compare(distA, distB);
+    //     });
+        
+    //     return inventories;
+    // }
+
+    // public List<Container> getNearbyInventories() {
+    //     List<Container> inventories = new ArrayList<>();
+    //     if (level == null) return inventories; 
+
+    //     int radius = (int) this.scanRadius;
+        
+    //     // Check a box around the workbench
+    //     BlockPos center = this.worldPosition;
+    //     for (BlockPos pos : BlockPos.betweenClosed(center.offset(-radius, -2, -radius), center.offset(radius, 2, radius))) {
+    //         if (pos.equals(center)) continue;
+
+    //         BlockEntity be = level.getBlockEntity(pos);
+    //         // On the client, level.getBlockEntity(pos) only works if the block is within render distance
+    //         if (be instanceof Container container) {
+    //             inventories.add(container);
+    //         }
+    //     }
+        
+    //     return inventories;
+    // }
+
+    // public List<Container> getNearbyInventories() {
+    //     List<Container> inventories = new ArrayList<>();
+    //     if (level == null) return inventories;
+
+    //     int radius = (int) this.scanRadius;
+    //     BlockPos center = this.worldPosition;
+        
+    //     for (BlockPos pos : BlockPos.betweenClosed(center.offset(-radius, -2, -radius), center.offset(radius, 2, radius))) {
+    //         if (pos.equals(center)) continue;
+
+    //         BlockEntity be = level.getBlockEntity(pos);
+            
+    //         // DEBUG: Check if we find the block but fail the Container check
+    //         if (level.isClientSide() && be != null && !(be instanceof Container)) {
+    //             // This might happen if it's a modded chest that doesn't use the Container interface
+    //             System.out.println("DEBUG: Found BE at " + pos + " but it is not a Container!");
+    //         }
+
+    //         if (be instanceof ChestBlockEntity chest) {
+    //             inventories.add(chest);
+    //         }
+    //     }
+    //     return inventories;
+    // }
+
     public List<Container> getNearbyInventories() {
-        List<Container> inventories = new ArrayList<>();
-        if (level == null) {
-            return inventories;
-        } 
-        BlockPos.betweenClosed(
-            worldPosition.offset((int)-scanRadius, -2, (int)-scanRadius),
-            worldPosition.offset((int)scanRadius, 2, (int)scanRadius)
-        ).forEach(pos -> {
+        List<Container> inventories = new java.util.ArrayList<>();
+        if (level == null) return inventories;
+
+        // Use a solid default if scanRadius is 0
+        int radius = (this.scanRadius <= 0) ? 5 : (int) this.scanRadius;
+        BlockPos center = this.worldPosition;
+        
+        // Scan a cube around the workbench
+        for (BlockPos pos : BlockPos.betweenClosed(center.offset(-radius, -2, -radius), center.offset(radius, 2, radius))) {
+            if (pos.equals(center)) continue;
+
             BlockEntity be = level.getBlockEntity(pos);
-            if (be instanceof Container container) {
-                inventories.add(container);
+            
+            // Specifically look for Minecraft Chests and Barrels
+            if (be instanceof ChestBlockEntity || 
+                be instanceof BarrelBlockEntity) {
+                
+                if (be instanceof Container container) {
+                    inventories.add(container);
+                }
             }
-        });
-        
-        // Prioritization: Sort by proximity to prevent "chest prioritization" issues
-        inventories.sort((a, b) -> {
-            double distA = ((BlockEntity)a).getBlockPos().distSqr(this.worldPosition);
-            double distB = ((BlockEntity)b).getBlockPos().distSqr(this.worldPosition);
-            return Double.compare(distA, distB);
-        });
-        
+        }
         return inventories;
+    }
+
+    public void fillSlotsFromNearby(WorkbenchRecipe recipe) {
+        if (this.level == null || this.level.isClientSide()) return;
+
+        List<Container> nearby = this.getNearbyInventories();
+        // Assuming WorkbenchRecipe uses standard Ingredient objects
+        List<Ingredient> ingredients = recipe.ingredients(); 
+
+        // We only care about the two input slots (Constants.INPUT_START and Slot 1)
+        int[] inputSlots = {Constants.INPUT_START, 1};
+
+        for (int i = 0; i < ingredients.size() && i < inputSlots.length; i++) {
+            Ingredient ing = ingredients.get(i);
+            int targetSlot = inputSlots[i];
+            ItemStack currentStack = this.inventory.getItem(targetSlot);
+
+            // If the slot is already occupied by a different item, we might want to clear it
+            // Or only proceed if the slot is empty/matches the ingredient
+            if (!currentStack.isEmpty() && !ing.test(currentStack)) {
+                continue; // Or handle ejecting the item back to player/chest
+            }
+
+            // If we still need items for this ingredient slot
+            if (currentStack.getCount() < 1) { 
+                for (Container external : nearby) {
+                    if (external == this.inventory) continue;
+
+                    for (int j = 0; j < external.getContainerSize(); j++) {
+                        ItemStack remoteStack = external.getItem(j);
+                        
+                        if (ing.test(remoteStack)) {
+                            // Pull 1 item (or more if your recipes require counts)
+                            ItemStack extracted = external.removeItem(j, 1);
+                            this.setItem(targetSlot, extracted);
+                            external.setChanged();
+                            break; // Move to the next ingredient
+                        }
+                    }
+                    if (!this.inventory.getItem(targetSlot).isEmpty()) break;
+                }
+            }
+        }
     }
 
     /**
@@ -338,6 +464,105 @@ public ItemStack getItem(int slot) { return this.inventory.getItem(slot); }
             }
         }
         return -1;
+    }
+
+    public boolean isCanPullFromNearby() {
+        return canPullFromNearby;
+    }
+
+    // public void fillMissingIngredientsFromNearby(WorkbenchRecipe recipe, StackedItemContents playerContents) {
+    //     if (this.level == null || this.level.isClientSide()) return;
+
+    //     List<Ingredient> ingredients = recipe.ingredients();
+    //     List<Container> nearby = this.getNearbyInventories();
+        
+    //     // We target our input slots
+    //     int[] targetSlots = { Constants.INPUT_START, this.inputEnd };
+
+    //     for (int i = 0; i < ingredients.size(); i++) {
+    //         Ingredient ingredient = ingredients.get(i);
+    //         if (ingredient.isEmpty()) continue;
+
+    //         // CHECK PRIORITY: Does the player (or workbench) already have this?
+    //         // stackedContents.canCraft returns how many times the recipe can be made.
+    //         // We check if the ingredient is 'accounted for'.
+    //         if (playerContents.has(ingredient.getStackingIds().get(0))) {
+    //             // Player has it! Standard Minecraft logic will handle moving it.
+    //             continue; 
+    //         }
+
+    //         // PLAYER DOES NOT HAVE IT: Search nearby chests
+    //         int slotIndex = (i < targetSlots.length) ? targetSlots[i] : -1;
+    //         if (slotIndex == -1) continue;
+
+    //         for (Container external : nearby) {
+    //             if (external == this.inventory) continue;
+
+    //             for (int j = 0; j < external.getContainerSize(); j++) {
+    //                 ItemStack remoteStack = external.getItem(j);
+    //                 if (!remoteStack.isEmpty() && ingredient.test(remoteStack)) {
+    //                     // Found it! Pull 1 into the workbench slot
+    //                     ItemStack taken = external.removeItem(j, 1);
+    //                     this.inventory.setItem(slotIndex, taken);
+                        
+    //                     external.setChanged();
+    //                     this.setChanged();
+    //                     return; // Move to next ingredient
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+    public void fillMissingIngredientsFromNearby(WorkbenchRecipe recipe, StackedItemContents playerContents, int start, int end) {
+        if (this.level == null || this.level.isClientSide() || start < 0) return;
+
+        List<Ingredient> ingredients = recipe.ingredients();
+        List<Container> nearby = this.getNearbyInventories();
+        
+        for (int i = 0; i < ingredients.size(); i++) {
+            Ingredient ingredient = ingredients.get(i);
+            if (ingredient.isEmpty()) continue;
+
+            // --- UPDATED CHECK FOR 1.21.1 ---
+            // We check if the playerContents has ANY item that matches the ingredient.
+            // StackedItemContents is essentially a map of Item ID -> Count.
+            if (hasIngredient(playerContents, ingredient)) {
+                continue; 
+            }
+            // --------------------------------
+
+            int targetSlot = start + i;
+            if (targetSlot > end) break; 
+
+            for (Container external : nearby) {
+                if (external == this.inventory) continue;
+
+                for (int j = 0; j < external.getContainerSize(); j++) {
+                    ItemStack remoteStack = external.getItem(j);
+                    if (!remoteStack.isEmpty() && ingredient.test(remoteStack)) {
+                        ItemStack taken = external.removeItem(j, 1);
+                        this.inventory.setItem(targetSlot, taken);
+                        
+                        external.setChanged();
+                        this.setChanged();
+                        
+                        // Add the newly pulled item to playerContents 
+                        // so the next ingredient check knows we have it now
+                        playerContents.accountStack(taken);
+                        
+                        break; 
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper to check if StackedItemContents has enough of an ingredient.
+     */
+    private boolean hasIngredient(StackedItemContents contents, Ingredient ingredient) {
+        return contents.canCraft(List.of(ingredient), null);
     }
 
     /**
@@ -374,5 +599,40 @@ public ItemStack getItem(int slot) { return this.inventory.getItem(slot); }
         return Component.translatable(this.getBlockState().getBlock().getDescriptionId());
     }
 
-    
+    @Override
+    protected void saveAdditional(ValueOutput valueOutput) {
+        super.saveAdditional(valueOutput);
+
+        valueOutput.store("CanPullFromNearby", Codec.BOOL, this.canPullFromNearby);
+    }
+
+    @Override
+    protected void loadAdditional(ValueInput valueInput) {
+        super.loadAdditional(valueInput);
+
+        this.canPullFromNearby = valueInput.read("CanPullFromNearby", Codec.BOOL).orElse(false);
+    }
+
+    public void syncNearbyToPlayer(ServerPlayer player) {
+        List<ItemStack> allItems = new java.util.ArrayList<>();
+        
+        // Get the list of nearby Minecraft chests
+        List<Container> nearby = this.getNearbyInventories();
+        
+        for (Container chest : nearby) {
+            for (int i = 0; i < chest.getContainerSize(); i++) {
+                ItemStack stack = chest.getItem(i);
+                if (!stack.isEmpty()) {
+                    // We send a copy to the packet to be safe
+                    allItems.add(stack.copy());
+                }
+            }
+        }
+
+        // DEBUG PRINT: Check your console (Server side)
+        System.out.println("SERVER: Found " + allItems.size() + " items nearby. Sending to " + player.getName().getString());
+
+        // Send the packet using Fabric's ServerPlayNetworking
+        ServerPlayNetworking.send(player, new ClientboundNearbyInventorySyncPacket(allItems));
+    }
 }

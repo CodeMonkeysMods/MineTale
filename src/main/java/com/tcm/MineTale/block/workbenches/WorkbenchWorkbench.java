@@ -88,7 +88,7 @@ public class WorkbenchWorkbench extends AbstractWorkbench<WorkbenchWorkbenchEnti
     private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 16, 16);
 
     /**
-     * The block's collision and interaction shape as a 1×1 footprint with height 7 (x 0–16, y 0–7, z 0–16).
+     * The block's collision and interaction shape as a 1×1 footprint (x 0–16, y 0–16, z 0–16).
      *
      * @return the voxel shape used for collision and interaction
      */

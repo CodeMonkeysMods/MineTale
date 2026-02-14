@@ -1,5 +1,7 @@
 package com.tcm.MineTale.block.workbenches.menu;
 
+import java.util.List;
+
 import org.jspecify.annotations.Nullable;
 
 import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
@@ -75,11 +77,44 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
      *
      * @param stackedItemContents container to receive consolidated item counts from the menu's inventories
      */
+    // @Override
+    // public void fillCraftSlotsStackedContents(StackedItemContents stackedItemContents) {
+    //     // 1. Tell the book the player has items in their pockets
+    //     this.playerInventory.fillStackedContents(stackedItemContents);
+        
+    //     // 2. Tell the book the "Nearby Chests" items also count
+    //     AbstractWorkbenchEntity be = this.getBlockEntity();
+    //     if (be != null && be.isCanPullFromNearby()) {
+    //         // This runs on the CLIENT UI, making the icons turn WHITE
+    //         for (Container nearby : be.getNearbyInventories()) {
+    //             for (int i = 0; i < nearby.getContainerSize(); i++) {
+    //                 stackedItemContents.accountStack(nearby.getItem(i));
+    //             }
+    //         }
+    //     }
+    // }
+
     @Override
-    public void fillCraftSlotsStackedContents(StackedItemContents stackedItemContents) {
-        // This is vital for the recipe book to "see" what is currently in your workbench.
-        // It allows the book to calculate if you have enough items to craft more.
-        this.playerInventory.fillStackedContents(stackedItemContents);
+    public void fillCraftSlotsStackedContents(StackedItemContents contents) {
+        // 1. Account for items in the player's pockets
+        this.playerInventory.fillStackedContents(contents);
+        
+        // 2. Account for items sitting in the Workbench slots (if any)
+        for (int i = 0; i < this.container.getContainerSize(); i++) {
+            contents.accountStack(this.container.getItem(i));
+        }
+
+        // 3. THE FIX: Use the list provided by the Packet (Networked Items)
+        // We stop calling be.getNearbyInventories() here because it returns empty on Client
+        List<ItemStack> nearbyItems = this.getNetworkedNearbyItems();
+        
+        if (!nearbyItems.isEmpty() && this.playerInventory.player.level().isClientSide()) {
+            System.out.println("DEBUG: Recipe Book is now accounting for " + nearbyItems.size() + " stacks from the packet!");
+        }
+
+        for (ItemStack stack : nearbyItems) {
+            contents.accountStack(stack);
+        }
     }
 
     /**

@@ -4,13 +4,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.tcm.MineTale.MineTale;
+import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
+import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
 import com.tcm.MineTale.block.workbenches.menu.WorkbenchWorkbenchMenu;
 import com.tcm.MineTale.mixin.client.ClientRecipeBookAccessor;
 import com.tcm.MineTale.mixin.client.RecipeBookComponentAccessor;
 import com.tcm.MineTale.network.CraftRequestPayload;
 import com.tcm.MineTale.recipe.MineTaleRecipeBookComponent;
+import com.tcm.MineTale.recipe.WorkbenchRecipe;
 import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
 import com.tcm.MineTale.registry.ModRecipes;
@@ -24,9 +28,12 @@ import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.core.HolderSet;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.RecipeDisplayEntry;
@@ -89,7 +96,7 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
          *
          * Sets the layout size (imageWidth = 176, imageHeight = 166), delegates remaining
          * layout initialization to the superclass, and creates the three craft buttons
-         * ("1", "30", "All") wired to their respective handlers.
+         * ("1", "10", "All") wired to their respective handlers.
          */
     @Override
     protected void init() {
@@ -107,7 +114,7 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
         }).bounds(defaultLeft, defaultTop, 75, 20).build());
 
         this.craftTenBtn = addRenderableWidget(Button.builder(Component.literal("x10"), (button) -> {
-            handleCraftRequest(30);
+            handleCraftRequest(10);
         }).bounds(defaultLeft, defaultTop + 22, 35, 20).build());
 
         this.craftAllBtn = addRenderableWidget(Button.builder(Component.literal("All"), (button) -> {
@@ -189,11 +196,12 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
         if (selectedEntry != null) {
             // We use the entry directly. It contains the 15 ingredients needed!
             boolean canCraftOne = canCraft(this.minecraft.player, selectedEntry, 1);
+            boolean canCraftMoreThanOne = canCraft(this.minecraft.player, selectedEntry, 2);
             boolean canCraftTen = canCraft(this.minecraft.player, selectedEntry, 10);
 
             this.craftOneBtn.active = canCraftOne;
             this.craftTenBtn.active = canCraftTen;
-            this.craftAllBtn.active = canCraftOne;
+            this.craftAllBtn.active = canCraftMoreThanOne;
         } else {
             this.craftOneBtn.active = false;
             this.craftTenBtn.active = false;
@@ -206,24 +214,37 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
     private boolean canCraft(Player player, RecipeDisplayEntry entry, int craftCount) {
         if (player == null || entry == null) return false;
 
-        // craftingRequirements() provides the list of all items (the 15 items for your chest)
         Optional<List<Ingredient>> reqs = entry.craftingRequirements();
         if (reqs.isEmpty()) return false;
 
-        // 1. Group duplicate ingredients (e.g., 5 Log entries become 1 Log entry with a value of 5)
-        Map<Ingredient, Integer> aggregatedRequirements = new HashMap<>();
+        // 1. Group ingredients by their underlying Item HolderSet.
+        // Since Ingredient doesn't override hashCode, we use the values field directly
+        // or use a List of Holders as the key for stable hashing.
+        Map<HolderSet<Item>, Integer> aggregatedRequirements = new HashMap<>();
+        
+        // Helper map to get back to an Ingredient object for the final check
+        Map<HolderSet<Item>, Ingredient> holderToIngredient = new HashMap<>();
+
         for (Ingredient ing : reqs.get()) {
-            aggregatedRequirements.put(ing, aggregatedRequirements.getOrDefault(ing, 0) + 1);
+            // Accessing the 'values' via a custom accessor or reflection if private, 
+            // but based on your source, we can use the Ingredient object itself 
+            // IF we use a helper that handles the hashing correctly.
+            
+            // Strategy: Use the stream of holders as a List key (Lists have stable hashcodes)
+            HolderSet<Item> key = ing.items().collect(Collectors.collectingAndThen(Collectors.toList(), HolderSet::direct));
+            
+            aggregatedRequirements.put(key, aggregatedRequirements.getOrDefault(key, 0) + 1);
+            holderToIngredient.putIfAbsent(key, ing);
         }
 
-        // 2. Check the player's inventory against the totals
+        // 2. Check the player's inventory
         Inventory inv = player.getInventory();
-        for (Map.Entry<Ingredient, Integer> entryReq : aggregatedRequirements.entrySet()) {
-            // totalNeeded = (Amount in 1 recipe) * (Number of crafts, e.g. 1 or 30)
+        for (Map.Entry<HolderSet<Item>, Integer> entryReq : aggregatedRequirements.entrySet()) {
             int totalNeeded = entryReq.getValue() * craftCount;
+            Ingredient originalIng = holderToIngredient.get(entryReq.getKey());
             
-            if (!hasIngredientAmount(inv, entryReq.getKey(), totalNeeded)) {
-                return false; // Player doesn't have enough of this specific ingredient
+            if (!hasIngredientAmount(inv, originalIng, totalNeeded)) {
+                return false;
             }
         }
         
@@ -231,23 +252,36 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
     }
 
     private boolean hasIngredientAmount(Inventory inventory, Ingredient ingredient, int totalRequired) {
-        System.out.println("DEBUG: Searching inventory for " + totalRequired + " of an ingredient...");
+        System.out.println("DEBUG: Searching inventory + nearby for " + totalRequired + "...");
         if (totalRequired <= 0) return true;
         
         int found = 0;
+
+        // 1. Check Player Inventory
         for (int i = 0; i < inventory.getContainerSize(); i++) {
             ItemStack stack = inventory.getItem(i);
             if (!stack.isEmpty() && ingredient.test(stack)) {
                 found += stack.getCount();
-                System.out.println("DEBUG: Found " + stack.getCount() + " in slot " + i + ". Total found: " + found);
             }
-            if (found >= totalRequired) {
-                System.out.println("DEBUG: Ingredient requirement MET");
-                return true;
+        }
+
+        // 2. CHECK THE NETWORKED ITEMS FROM CHESTS
+        // This is the list we sent via the packet!
+        if (this.menu instanceof AbstractWorkbenchContainerMenu workbenchMenu) {
+            for (ItemStack stack : workbenchMenu.getNetworkedNearbyItems()) {
+                if (!stack.isEmpty() && ingredient.test(stack)) {
+                    found += stack.getCount();
+                    System.out.println("DEBUG: Found " + stack.getCount() + " in nearby networked list. Total: " + found);
+                }
             }
         }
         
-        System.out.println("DEBUG: Ingredient requirement FAILED. Only found: " + found + "/" + totalRequired);
+        if (found >= totalRequired) {
+            System.out.println("DEBUG: Requirement MET with " + found + "/" + totalRequired);
+            return true;
+        }
+        
+        System.out.println("DEBUG: FAILED. Only found: " + found + "/" + totalRequired);
         return false;
     }
 

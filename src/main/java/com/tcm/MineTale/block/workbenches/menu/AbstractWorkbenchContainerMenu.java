@@ -1,5 +1,6 @@
 package com.tcm.MineTale.block.workbenches.menu;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jspecify.annotations.Nullable;
@@ -11,6 +12,7 @@ import com.tcm.MineTale.util.Constants;
 
 import net.minecraft.recipebook.ServerPlaceRecipe;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -24,6 +26,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.StackedContentsCompatible;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
 public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu implements StackedContentsCompatible {
@@ -34,6 +37,23 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
     protected final int outputEnd;
 
     protected final Inventory playerInventory;
+
+    private List<ItemStack> networkedNearbyItems = new ArrayList<>();
+
+    /**
+     * Updates the list of items available from nearby chests.
+     * Called by the networking system when a sync packet arrives.
+     */
+    public void setNetworkedNearbyItems(List<ItemStack> items) {
+        this.networkedNearbyItems = items;
+    }
+
+    /**
+     * Gets the list of items found in nearby chests.
+     */
+    public List<ItemStack> getNetworkedNearbyItems() {
+        return this.networkedNearbyItems;
+    }
 
     /**
      * Constructs a workbench container menu, initializes inventory and sync state, and opens the container for the player.
@@ -85,6 +105,13 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
         // --- PLAYER INVENTORY ---
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);
+
+        if (playerInventory.player instanceof ServerPlayer serverPlayer) {
+            AbstractWorkbenchEntity be = this.getBlockEntity();
+            if (be != null && be.isCanPullFromNearby()) { // Only sync if the feature is enabled
+                be.syncNearbyToPlayer(serverPlayer);
+            }
+        }
     }
 
     /**
@@ -273,57 +300,179 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
 
     public abstract @Nullable AbstractWorkbenchEntity getBlockEntity();
 
+    // @Override
+    // public RecipeBookMenu.PostPlaceAction handlePlacement(boolean placeAll, boolean isSpecial, RecipeHolder<?> recipe, ServerLevel serverLevel, Inventory inventory) {
+    //     if (!(recipe.value() instanceof WorkbenchRecipe workbenchRecipe)) return PostPlaceAction.NOTHING;
+
+    //     AbstractWorkbenchEntity be = this.getBlockEntity();
+    //     boolean isSlotless = this.outputEnd < 0;
+
+    //     // 1. Handle slot-based pulling
+    //     if (!isSlotless && be != null && be.isCanPullFromNearby()) {
+    //         StackedItemContents contents = new StackedItemContents();
+    //         inventory.fillStackedContents(contents);
+            
+    //         // Manual fill because Container doesn't have the method
+    //         for (int i = 0; i < this.container.getContainerSize(); i++) {
+    //             contents.accountStack(this.container.getItem(i));
+    //         }
+
+    //         be.fillMissingIngredientsFromNearby(workbenchRecipe, contents, Constants.INPUT_START, this.inputEnd);
+    //     }
+
+    //     // 2. Handle the Crafting Action
+    //     if (isSlotless && be != null) {
+    //         if (this.canCraftSlotless(workbenchRecipe, inventory, be)) {
+    //             this.consumeAndGiveToPlayer(workbenchRecipe, inventory, be);
+    //             // We return NOTHING because we've already manually moved the items
+    //             return PostPlaceAction.NOTHING; 
+    //         }
+    //         return PostPlaceAction.NOTHING;
+    //     } else {
+    //         // This replaces the undefined 'handleStandardPlacement' 
+    //         // using the logic we built previously with ServerPlaceRecipe
+    //         return this.performStandardPlacement(placeAll, recipe, serverLevel, inventory);
+    //     }
+    // }
+
+
     @Override
-    public RecipeBookMenu.PostPlaceAction handlePlacement(boolean placeAll, boolean isSpecial, RecipeHolder<?> recipe, ServerLevel serverLevel, Inventory inventory
-	) {
-        if (recipe.value() instanceof WorkbenchRecipe) {
-            @SuppressWarnings("unchecked")
-            RecipeHolder<WorkbenchRecipe> castRecipe = (RecipeHolder<WorkbenchRecipe>) recipe;
-            // 2. Call the static placeRecipe method
-            return ServerPlaceRecipe.placeRecipe(
-                new ServerPlaceRecipe.CraftingMenuAccess<WorkbenchRecipe>() {
-                    @Override
-                    public void fillCraftSlotsStackedContents(StackedItemContents contents) {
-                        AbstractWorkbenchContainerMenu.this.fillCraftSlotsStackedContents(contents);
-                    }
+    public RecipeBookMenu.PostPlaceAction handlePlacement(boolean placeAll, boolean isSpecial, RecipeHolder<?> recipe, ServerLevel serverLevel, Inventory inventory) {
+        if (!(recipe.value() instanceof WorkbenchRecipe workbenchRecipe)) {
+            return PostPlaceAction.NOTHING;
+        }
 
-                    @Override
-                    public void clearCraftingContent() {
-                        // Instead of setting to EMPTY, return items to player inventory
-                        // This allows the Recipe Book to 'refill' or 'stack' properly
-                        for (int i : new int[]{Constants.INPUT_START, AbstractWorkbenchContainerMenu.this.inputEnd}) {
-                            ItemStack stack = AbstractWorkbenchContainerMenu.this.getSlot(i).getItem();
-                            if (!stack.isEmpty()) {
-                                AbstractWorkbenchContainerMenu.this.playerInventory.placeItemBackInInventory(stack);
-                                AbstractWorkbenchContainerMenu.this.getSlot(i).set(ItemStack.EMPTY);
-                            }
-                        }
-                    }
+        AbstractWorkbenchEntity be = this.getBlockEntity();
+        // A workbench is slotless if outputEnd was passed as -1 or 0 in the constructor
+        boolean isSlotless = this.outputEnd <= 0;
 
-                    @Override
-                    public boolean recipeMatches(RecipeHolder<WorkbenchRecipe> holder) {
-                        return holder.value().matches(
-                            AbstractWorkbenchContainerMenu.this.createRecipeInput(), 
-                            serverLevel
-                        );
-                    }
-                },
-                1, // Grid Width
-                1, // Grid Height
-                // FIX: Pass Slots 1 and 2 here. 
-                // If Constants.INPUT_START is 1 and inputEnd is 2, this is correct:
-                List.of(this.getSlot(Constants.INPUT_START), this.getSlot(this.inputEnd)), 
-                // Result Slots (3, 4, 5, 6)
-                List.of(this.getSlot(this.inputEnd + 1), this.getSlot(this.inputEnd + 2), 
-                        this.getSlot(this.outputEnd - 1), this.getSlot(this.outputEnd)),
-                inventory,
-                castRecipe,
-                placeAll,
-                false
-            );
+        // --- 1. SLOTTED LOGIC (Furnace-style) ---
+        if (!isSlotless && be != null && be.isCanPullFromNearby()) {
+            StackedItemContents contents = new StackedItemContents();
+            inventory.fillStackedContents(contents);
+            
+            // Account for items already in the workbench slots
+            for (int i = 0; i < this.container.getContainerSize(); i++) {
+                contents.accountStack(this.container.getItem(i));
+            }
+
+            // Pull missing items from nearby chests into the BE slots first
+            be.fillMissingIngredientsFromNearby(workbenchRecipe, contents, Constants.INPUT_START, this.inputEnd);
+        }
+
+        // --- 2. SLOTLESS LOGIC (Direct Crafting) ---
+        if (isSlotless && be != null) {
+            // Since there are no slots, we check if Player + Nearby has enough
+            if (this.canCraftSlotless(workbenchRecipe, inventory, be)) {
+                // Physically remove items from world/player and give result
+                this.consumeAndGiveToPlayer(workbenchRecipe, inventory, be);
+                
+                // We return NOTHING because the standard Ghost Recipe logic 
+                // shouldn't try to "place" items into non-existent slots.
+                return PostPlaceAction.NOTHING; 
+            }
+        } 
+        
+        // --- 3. STANDARD SLOTTED PLACEMENT ---
+        // If it's not slotless, perform the vanilla-style placement into slots
+        if (!isSlotless) {
+            return this.performStandardPlacement(placeAll, recipe, serverLevel, inventory);
         }
 
         return PostPlaceAction.NOTHING;
+    }
+
+    private RecipeBookMenu.PostPlaceAction performStandardPlacement(boolean placeAll, RecipeHolder<?> recipe, ServerLevel level, Inventory inventory) {
+        RecipeHolder<WorkbenchRecipe> castRecipe = (RecipeHolder<WorkbenchRecipe>) recipe;
+        
+        return ServerPlaceRecipe.placeRecipe(
+            new ServerPlaceRecipe.CraftingMenuAccess<WorkbenchRecipe>() {
+                @Override public void fillCraftSlotsStackedContents(StackedItemContents contents) { 
+                    AbstractWorkbenchContainerMenu.this.fillCraftSlotsStackedContents(contents); 
+                }
+                @Override public void clearCraftingContent() {
+                    // Clear input slots and return to player
+                    int[] slots = {Constants.INPUT_START, AbstractWorkbenchContainerMenu.this.inputEnd};
+                    for (int i : slots) {
+                        if (i < 0) continue;
+                        ItemStack stack = AbstractWorkbenchContainerMenu.this.container.getItem(i);
+                        if (!stack.isEmpty()) {
+                            AbstractWorkbenchContainerMenu.this.playerInventory.placeItemBackInInventory(stack);
+                            AbstractWorkbenchContainerMenu.this.container.setItem(i, ItemStack.EMPTY);
+                        }
+                    }
+                }
+                @Override public boolean recipeMatches(RecipeHolder<WorkbenchRecipe> holder) {
+                    return holder.value().matches(AbstractWorkbenchContainerMenu.this.createRecipeInput(), level);
+                }
+            },
+            1, 1, 
+            List.of(this.getSlot(Constants.INPUT_START), this.getSlot(this.inputEnd)), 
+            List.of(this.getSlot(this.inputEnd + 1), this.getSlot(this.inputEnd + 2), 
+                    this.getSlot(this.outputEnd - 1), this.getSlot(this.outputEnd)),
+            inventory, castRecipe, placeAll, false
+        );
+    }
+
+    private boolean canCraftSlotless(WorkbenchRecipe recipe, Inventory playerInv, AbstractWorkbenchEntity be) {
+        StackedItemContents totalContents = new StackedItemContents();
+        
+        // 1. Add Player items
+        playerInv.fillStackedContents(totalContents);
+        
+        // 2. Add Nearby items (This works perfectly on Server!)
+        if (be != null && be.isCanPullFromNearby()) {
+            for (Container nearby : be.getNearbyInventories()) {
+                for (int i = 0; i < nearby.getContainerSize(); i++) {
+                    totalContents.accountStack(nearby.getItem(i));
+                }
+            }
+        }
+        
+        // Use the Recipe's ingredients to verify
+        return totalContents.canCraft(recipe, null);
+    }
+
+    private void consumeAndGiveToPlayer(WorkbenchRecipe recipe, Inventory playerInv, AbstractWorkbenchEntity be) {
+        for (Ingredient ingredient : recipe.ingredients()) {
+            // Priority 1: Take from Player
+            if (removeItemFromInventory(playerInv, ingredient)) continue;
+            
+            // Priority 2: Take from Nearby
+            if (be.isCanPullFromNearby()) {
+                for (Container nearby : be.getNearbyInventories()) {
+                    if (removeItemFromContainer(nearby, ingredient)) break;
+                }
+            }
+        }
+        
+        // Give results to player
+        for (ItemStack result : recipe.results()) {
+            playerInv.placeItemBackInInventory(result.copy());
+        }
+    }
+
+    private boolean removeItemFromInventory(Inventory inv, Ingredient ing) {
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack stack = inv.getItem(i);
+            if (!stack.isEmpty() && ing.test(stack)) {
+                inv.removeItem(i, 1);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean removeItemFromContainer(Container inv, Ingredient ing) {
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack stack = inv.getItem(i);
+            if (!stack.isEmpty() && ing.test(stack)) {
+                inv.removeItem(i, 1);
+                inv.setChanged();
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -337,15 +486,22 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
 
     @Override
     public void fillCraftSlotsStackedContents(StackedItemContents contents) {
-        // 1. Tell the server what is in the player's pockets
+        // 1. Account for items in the player's actual inventory
         this.playerInventory.fillStackedContents(contents);
         
-        // 2. Tell the server what is already in the workbench slots
-        // This allows the server to 'add' to the existing count
-        for (int i = Constants.INPUT_START; i <= this.inputEnd; i++) {
+        // 2. Account for items sitting in the Workbench slots (if any)
+        for (int i = 0; i < this.container.getContainerSize(); i++) {
             contents.accountStack(this.container.getItem(i));
         }
-    }
 
+        // 3. USE THE PACKET DATA: This is the list sent from the server
+        // This bypasses the client-side world-scan and uses the "trusted" list
+        for (ItemStack stack : this.getNetworkedNearbyItems()) {
+            if (!stack.isEmpty()) {
+                contents.accountStack(stack);
+            }
+        }
+    }
+    
     public abstract WorkbenchRecipeInput createRecipeInput();
 }

@@ -13,12 +13,15 @@ import com.tcm.MineTale.registry.ModRecipes;
 import com.tcm.MineTale.util.Constants;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -28,33 +31,21 @@ public class WorkbenchWorkbenchEntity extends AbstractWorkbenchEntity {
         /**
          * Retrieves an internal data value by index for UI synchronization.
          *
-         * @param index the data index: 0 = remaining fuel time, 1 = fuel total (constant 100),
-         *              2 = current cook progress, 3 = total cook time
+         * @param index There is no cook time or anything for this block as it doesnt use it
          * @return the value associated with {@code index}, or 0 for any other index
          */
         @Override
         public int get(int index) {
             return switch (index) {
-                case 0 -> 0;
-                case 1 -> 100; // Fuel total
-                case 2 -> 0;
-                case 3 -> 0;
                 default -> 0;
             };
         }
 
         /**
-         * Update an internal workbench data field identified by the given index.
+         * No-op for this workbench; data is server-driven and not set client-side.
          *
-         * Supported indices:
-         * <ul>
-         *   <li>0 — sets {@code fuelTime}</li>
-         *   <li>2 — sets {@code cookTime}</li>
-         * </ul>
-         * Other indices are ignored.
-         *
-         * @param index the data index to set
-         * @param value the value to assign to the indexed field
+         * `@param` index the data index to set
+         * `@param` value the value to assign (ignored)
          */
         @Override
         public void set(int index, int value) {
@@ -83,8 +74,8 @@ public class WorkbenchWorkbenchEntity extends AbstractWorkbenchEntity {
     public WorkbenchWorkbenchEntity(BlockPos blockPos, BlockState blockState) {
         super(ModBlockEntities.WORKBENCH_WORKBENCH_BE, blockPos, blockState);
 
-        this.scanRadius = 0.0; 
         this.tier = 1;
+        this.canPullFromNearby = true;
     }
 
     /**
@@ -146,6 +137,12 @@ public class WorkbenchWorkbenchEntity extends AbstractWorkbenchEntity {
      */
     @Override
     public @Nullable AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
+        // 1. Trigger the sync to the client before returning the menu
+        if (player instanceof ServerPlayer serverPlayer) {
+            this.syncNearbyToPlayer(serverPlayer);
+        }
+
+        // 2. Return the menu as usual
         return new WorkbenchWorkbenchMenu(syncId, playerInventory, this.data, this);
     }
     
