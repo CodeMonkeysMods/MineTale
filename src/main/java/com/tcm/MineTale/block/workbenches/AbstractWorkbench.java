@@ -60,7 +60,7 @@ public abstract class AbstractWorkbench<E extends AbstractWorkbenchEntity> exten
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockPos pos = context.getClickedPos();
         Level level = context.getLevel();
-        Direction facing = context.getHorizontalDirection().getOpposite();
+        Direction facing = context.getHorizontalDirection();
 
         // Check horizontal space
         if (isWide) {

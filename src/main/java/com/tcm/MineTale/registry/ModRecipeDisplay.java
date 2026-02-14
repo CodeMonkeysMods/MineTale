@@ -27,10 +27,16 @@ public class ModRecipeDisplay {
     public static final RecipeDisplay.Type<WorkbenchRecipeDisplay> WORKBENCH_TYPE = 
         new RecipeDisplay.Type<>(WorkbenchRecipeDisplay.CODEC, STREAM_CODEC);
 
+    // 1. Declare the fields but don't assign them yet
     public static final RecipeBookCategory CAMPFIRE_SEARCH = registerCategory("campfire_recipe_book_category");
-
+    public static final RecipeBookCategory WORKBENCH_SEARCH = registerCategory("workbench_recipe_book_category");
     public static final RecipeBookCategory FURNACE_T1_SEARCH = registerCategory("furnace_t1_recipe_book_category");
 
+    /**
+     * Registers the workbench recipe display type into the built-in recipe display registry.
+     *
+     * The registration uses this mod's ID combined with the path "workbench_recipe_display" as the identifier.
+     */
     public static void initialize() {
         // Register the Display TYPE
         Registry.register(
@@ -40,6 +46,12 @@ public class ModRecipeDisplay {
         );
     }
 
+    /**
+     * Create and register a RecipeBookCategory under this mod's namespace using the provided path.
+     *
+     * @param name the path portion of the category identifier; the namespace will be the mod ID
+     * @return the registered RecipeBookCategory instance
+     */
     private static RecipeBookCategory registerCategory(String name) {
         Identifier id = Identifier.fromNamespaceAndPath(MineTale.MOD_ID, name);
         RecipeBookCategory category = new RecipeBookCategory();

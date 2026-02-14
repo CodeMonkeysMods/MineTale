@@ -21,7 +21,6 @@ public record WorkbenchRecipeDisplay(
     SlotDisplay craftingStation,
     RecipeType<?> recipeType
 ) implements RecipeDisplay {
-
     public static final MapCodec<WorkbenchRecipeDisplay> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
         SlotDisplay.CODEC.listOf().fieldOf("ingredients").forGetter(WorkbenchRecipeDisplay::ingredients),
         SlotDisplay.CODEC.fieldOf("result").forGetter(WorkbenchRecipeDisplay::result),
@@ -36,7 +35,7 @@ public record WorkbenchRecipeDisplay(
             new SlotDisplay.ItemStackSlotDisplay(recipe.results().isEmpty() ? ItemStack.EMPTY : recipe.results().get(0)),
             // Dynamic icon: If it's a campfire recipe, show the campfire item in the book
             new SlotDisplay.ItemStackSlotDisplay(new ItemStack(
-                recipe.getType() == ModRecipes.CAMPFIRE_TYPE ? ModBlocks.CAMPFIRE_WORKBENCH_BLOCK : ModBlocks.FURNACE_WORKBENCH_BLOCK_T1
+                ModBlocks.WORKBENCH_WORKBENCH_BLOCK
             )),
             recipe.getType()
         );
@@ -64,7 +63,6 @@ public record WorkbenchRecipeDisplay(
 
     @Override
     public SlotDisplay craftingStation() {
-        // Replace 'ModBlocks.YOUR_WORKBENCH' with your actual block item
-        return new SlotDisplay.ItemStackSlotDisplay(new ItemStack(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1));
+        return new SlotDisplay.ItemStackSlotDisplay(new ItemStack(ModBlocks.WORKBENCH_WORKBENCH_BLOCK));
     }
 }

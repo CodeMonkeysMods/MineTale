@@ -3,7 +3,6 @@ package com.tcm.MineTale.recipe;
 import java.util.List;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
@@ -135,9 +134,9 @@ public record WorkbenchRecipe(
     }
 
     /**
-     * Provides recipe displays for the recipe book UI.
+     * Provides a display representation for the recipe book UI.
      *
-     * @return an empty list, indicating no recipe displays are provided for the recipe book
+     * @return a list containing a WorkbenchRecipeDisplay instance representing this recipe
      */
     @Override
     public List<RecipeDisplay> display() {
@@ -147,73 +146,61 @@ public record WorkbenchRecipe(
     }
 
     // --- SERIALIZER ---
-
     public static class Serializer implements RecipeSerializer<WorkbenchRecipe> {
         private final RecipeType<WorkbenchRecipe> recipeType;
         private final MapCodec<WorkbenchRecipe> codec;
         private final StreamCodec<RegistryFriendlyByteBuf, WorkbenchRecipe> streamCodec;
 
         /**
-         * Creates a serializer for WorkbenchRecipe and initializes its data and binary codecs.
+         * Creates a serializer for WorkbenchRecipe and constructs its JSON and network codecs.
          *
-         * The constructed codec validates that the recipe contains 1 or 2 ingredients, 1 to 4 result stacks,
-         * and provides a default cookTime of 200 when absent. The stream codec mirrors the same fields
-         * for binary (network/packet) serialization.
+         * Initializes the serializer with the given recipe type and builds the MapCodec used for JSON
+         * serialization (assigned to `codec`) and the StreamCodec used for network serialization
+         * (assigned to `streamCodec`), covering the recipe's ingredients, results, cook time,
+         * crafting book category, and book category identifier.
          *
-         * @param recipeType the RecipeType associated with recipes produced/deserialized by this serializer
+         * @param recipeType the RecipeType instance that identifies the kind of WorkbenchRecipe this serializer handles
          */
         public Serializer(RecipeType<WorkbenchRecipe> recipeType) {
             this.recipeType = recipeType;
 
-            // 1. Updated MapCodec to use CraftingBookCategory
+            // MAP CODEC (For JSON)
             this.codec = RecordCodecBuilder.mapCodec(inst -> inst.group(
-                Ingredient.CODEC.listOf()
-                    .validate(list -> list.size() >= 1 && list.size() <= 2 
-                        ? DataResult.success(list) 
-                        : DataResult.error(() -> "Ingredients must be 1 or 2"))
-                    .fieldOf("ingredients").forGetter(WorkbenchRecipe::ingredients),
-                ItemStack.STRICT_CODEC.listOf()
-                    .validate(list -> list.size() >= 1 && list.size() <= 4 
-                        ? DataResult.success(list) 
-                        : DataResult.error(() -> "Results must be between 1 and 4"))
-                    .fieldOf("results").forGetter(WorkbenchRecipe::results),
+                Ingredient.CODEC.listOf().fieldOf("ingredients").forGetter(WorkbenchRecipe::ingredients),
+                ItemStack.STRICT_CODEC.listOf().fieldOf("results").forGetter(WorkbenchRecipe::results),
                 Codec.INT.optionalFieldOf("cookTime", 200).forGetter(WorkbenchRecipe::cookTime),
                 CraftingBookCategory.CODEC.optionalFieldOf("category", CraftingBookCategory.MISC).forGetter(WorkbenchRecipe::category),
                 Identifier.CODEC.fieldOf("book_category").forGetter(WorkbenchRecipe::bookCategory)
-            ).apply(inst, (ing, res, time, cat, bookCat) -> 
-                new WorkbenchRecipe(ing, res, time, this.recipeType, this, cat, bookCat)));
+            ).apply(inst, (ing, res, time, cat, book) -> 
+                new WorkbenchRecipe(ing, res, time, this.recipeType, this, cat, book)));
 
-            // 2. Updated StreamCodec to use CraftingBookCategory
+            // STREAM CODEC (For Network)
+            // We use ByteBufCodecs.registry to force everything into RegistryFriendlyByteBuf
             this.streamCodec = StreamCodec.composite(
                 Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()), WorkbenchRecipe::ingredients,
                 ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()), WorkbenchRecipe::results,
-                ByteBufCodecs.VAR_INT, WorkbenchRecipe::cookTime,
-                // Changed CookingBookCategory to CraftingBookCategory
-                CraftingBookCategory.STREAM_CODEC, WorkbenchRecipe::category,
-                Identifier.STREAM_CODEC, WorkbenchRecipe::bookCategory,
-                (ing, res, time, cat, bookCat) -> 
-                    new WorkbenchRecipe(ing, res, time, this.recipeType, this, cat, bookCat)
+                ByteBufCodecs.VAR_INT.cast(), WorkbenchRecipe::cookTime,
+                CraftingBookCategory.STREAM_CODEC.cast(), WorkbenchRecipe::category,
+                Identifier.STREAM_CODEC.cast(), WorkbenchRecipe::bookCategory,
+                (ing, res, time, cat, book) -> 
+                    new WorkbenchRecipe(ing, res, time, this.recipeType, this, cat, book)
             );
         }
 
         /**
-         * Provides the MapCodec used to serialize and deserialize WorkbenchRecipe instances.
+         * Provides the JSON map codec for serializing and deserializing this recipe.
          *
-         * @return the MapCodec for encoding and decoding WorkbenchRecipe objects
+         * @return the MapCodec used for JSON (map) serialization of WorkbenchRecipe instances
          */
         @Override
-        public MapCodec<WorkbenchRecipe> codec() {
-            return codec;
-        }
+        public MapCodec<WorkbenchRecipe> codec() { return codec; }
 
         /**
-         * Provides the binary stream codec used to serialize and deserialize WorkbenchRecipe instances.
+         * Provides the network stream codec used for serializing and deserializing WorkbenchRecipe instances.
          *
          * @return the StreamCodec that encodes and decodes WorkbenchRecipe objects to and from a RegistryFriendlyByteBuf
          */
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, WorkbenchRecipe> streamCodec() {
-            return streamCodec;
-        }
+        public StreamCodec<RegistryFriendlyByteBuf, WorkbenchRecipe> streamCodec() { return streamCodec; }
     }
 }

@@ -5,6 +5,7 @@ import java.util.function.Function;
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.CampfireWorkbench;
 import com.tcm.MineTale.block.workbenches.FurnaceWorkbench;
+import com.tcm.MineTale.block.workbenches.WorkbenchWorkbench;
 
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.Registry;
@@ -30,6 +31,13 @@ public class ModBlocks {
 	public static final Block CAMPFIRE_WORKBENCH_BLOCK = register(
 		"campfire_workbench_block", 
 		CampfireWorkbench::new, 
+		BlockBehaviour.Properties.of().sound(SoundType.WOOD), 
+		true
+	);
+
+	public static final Block WORKBENCH_WORKBENCH_BLOCK = register(
+		"workbench_workbench_block",
+		WorkbenchWorkbench::new,
 		BlockBehaviour.Properties.of().sound(SoundType.WOOD), 
 		true
 	);
@@ -82,13 +90,16 @@ public class ModBlocks {
 	public static final Block WILD_WISTERIA_WOOD = register("wild_wisteria_wood", RotatedPillarBlock::new, BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava(), true);
 
     /**
-     * Registers this mod's blocks into the Functional Blocks creative tab and records the registration.
+     * Adds the mod's workbench and furnace blocks to the Functional Blocks creative tab.
      *
-     * Adds CAMPFIRE_WORKBENCH_BLOCK and FURNACE_WORKBENCH_BLOCK to CreativeModeTabs.FUNCTIONAL_BLOCKS and prints a registration message including the mod ID.
+     * Registers CAMPFIRE_WORKBENCH_BLOCK, WORKBENCH_WORKBENCH_BLOCK, FURNACE_WORKBENCH_BLOCK_T1,
+     * and FURNACE_WORKBENCH_BLOCK_T2 to CreativeModeTabs.FUNCTIONAL_BLOCKS and prints a registration
+     * message containing the mod ID.
      */
     public static void initialize() { 
 		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(entries -> {
         	entries.accept(CAMPFIRE_WORKBENCH_BLOCK);
+			entries.accept(WORKBENCH_WORKBENCH_BLOCK);
 			entries.accept(FURNACE_WORKBENCH_BLOCK_T1);
 			entries.accept(FURNACE_WORKBENCH_BLOCK_T2);
     	});

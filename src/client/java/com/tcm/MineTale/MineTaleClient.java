@@ -1,25 +1,66 @@
 package com.tcm.MineTale;
 
 import com.tcm.MineTale.block.workbenches.screen.FurnaceWorkbenchScreen;
+import com.tcm.MineTale.block.workbenches.screen.WorkbenchWorkbenchScreen;
+import com.tcm.MineTale.network.ClientboundNearbyInventorySyncPacket;
+
+import java.util.List;
+
+import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
 import com.tcm.MineTale.block.workbenches.screen.CampfireWorkbenchScreen;
 import com.tcm.MineTale.registry.ModMenuTypes;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
+import net.minecraft.world.item.ItemStack;
 
 public class MineTaleClient implements ClientModInitializer {
-
-	
-
 	/**
-	 * Registers client-side screen factories for custom workbench menu types.
+	 * Register client-side screen factories for custom workbench menu types.
 	 *
-	 * Binds the furnace and campfire workbench menu types to their corresponding screen constructors
-	 * so the client can create the appropriate GUI when those menus are opened.
+	 * Binds ModMenuTypes.FURNACE_WORKBENCH_MENU to FurnaceWorkbenchScreen,
+	 * ModMenuTypes.CAMPFIRE_WORKBENCH_MENU to CampfireWorkbenchScreen, and
+	 * ModMenuTypes.WORKBENCH_WORKBENCH_MENU to WorkbenchWorkbenchScreen so the client
+	 * can create the appropriate GUI when those menus open.
 	 */
 	@Override
 	public void onInitializeClient() {
 		MenuScreens.register(ModMenuTypes.FURNACE_WORKBENCH_MENU, FurnaceWorkbenchScreen::new);
 		MenuScreens.register(ModMenuTypes.CAMPFIRE_WORKBENCH_MENU, CampfireWorkbenchScreen::new);
+		MenuScreens.register(ModMenuTypes.WORKBENCH_WORKBENCH_MENU, WorkbenchWorkbenchScreen::new);
+
+		ClientPlayNetworking.registerGlobalReceiver(ClientboundNearbyInventorySyncPacket.TYPE, (payload, context) -> {
+			List<ItemStack> items = payload.items();
+			
+			// We create a task that can re-run itself if the menu isn't ready yet
+			context.client().execute(new Runnable() {
+				int retries = 0;
+
+				@Override
+				public void run() {
+					if (context.client().player != null && context.client().player.containerMenu instanceof AbstractWorkbenchContainerMenu menu) {
+						applyItemsToMenu(menu, items, context.client().screen);
+					} else if (retries < 10) { // Try for up to 10 frames (~0.5 seconds)
+						retries++;
+						// Re-submit to the next tick
+						context.client().execute(this);
+					} else {
+						System.out.println("CLIENT: Failed to sync nearby items after 10 retries.");
+					}
+				}
+			});
+		});
+	}
+
+	// Helper method to keep things clean
+	private static void applyItemsToMenu(AbstractWorkbenchContainerMenu menu, List<ItemStack> items, Screen screen) {
+		System.out.println("CLIENT: Successfully applied " + items.size() + " stacks to the Workbench Menu.");
+		menu.setNetworkedNearbyItems(items);
+		if (screen instanceof RecipeUpdateListener listener) {
+			listener.recipesUpdated();
+		}
 	}
 }

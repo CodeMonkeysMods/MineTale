@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
+import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.recipe.WorkbenchRecipe;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
 
@@ -15,12 +16,14 @@ import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -30,6 +33,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.ItemLike;
 
 public class WorkbenchRecipeBuilder implements RecipeBuilder {
     private final RecipeType<WorkbenchRecipe> type;
@@ -42,29 +46,6 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
         .getKey(ModRecipeDisplay.CAMPFIRE_SEARCH);
     private int cookTime = 200;
     @Nullable private String group;
-
-//    /**
-//  * Creates a MapCodec that serializes and deserializes WorkbenchRecipe instances bound to the given recipe type and serializer.
-//  *
-//  * The codec encodes the recipe's ingredients, results, and cookTime (default 200) and constructs a WorkbenchRecipe using the provided type and serializer.
-//  *
-//  * @param type the RecipeType associated with the encoded WorkbenchRecipe
-//  * @param serializer the RecipeSerializer used to (de)serialize the WorkbenchRecipe
-//  * @return a MapCodec for WorkbenchRecipe that reads/writes ingredients, results, and cookTime and produces WorkbenchRecipe instances tied to the given type and serializer
-//  */
-// public static final MapCodec<WorkbenchRecipe> CODEC(RecipeType<WorkbenchRecipe> type, RecipeSerializer<WorkbenchRecipe> serializer) {
-//         return RecordCodecBuilder.mapCodec(inst -> inst.group(
-//             Ingredient.CODEC.listOf().fieldOf("ingredients").forGetter(WorkbenchRecipe::ingredients),
-//             ItemStack.STRICT_CODEC.listOf().fieldOf("results").forGetter(WorkbenchRecipe::results),
-//             Codec.INT.optionalFieldOf("cookTime", 200).forGetter(WorkbenchRecipe::cookTime),
-//             // Updated to CraftingBookCategory codec
-//             CraftingBookCategory.CODEC.optionalFieldOf("category", CraftingBookCategory.MISC).forGetter(WorkbenchRecipe::category),
-//             Identifier.CODEC.fieldOf("book_category").forGetter(WorkbenchRecipe::bookCategory)
-//         ).apply(inst, (ingredients, results, cookTime, category, bookCategory) -> 
-//             // 2. Pass the new bookCategory into the constructor
-//             new WorkbenchRecipe(ingredients, results, cookTime, type, serializer, category, bookCategory)
-//         ));
-//     }
 
     /**
      * Create a new WorkbenchRecipeBuilder configured for a specific recipe type and its serializer.
@@ -87,6 +68,20 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
     public static WorkbenchRecipeBuilder create(RecipeType<WorkbenchRecipe> type, RecipeSerializer<WorkbenchRecipe> serializer) {
         return new WorkbenchRecipeBuilder(type, serializer);
     }
+
+    /**
+     * Adds an input ingredient multiple times to represent a required count.
+     *
+     * @param ingredient the ingredient to add
+     * @param count      how many of this ingredient are required
+     * @return           this builder instance
+     */
+    public WorkbenchRecipeBuilder input(Ingredient ingredient, int count) {
+        for (int i = 0; i < count; i++) {
+            this.ingredients.add(ingredient);
+        }
+        return this;
+    }
     
     /**
      * Adds an input ingredient to the recipe being built.
@@ -99,6 +94,50 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
         return this;
     }
 
+    /**
+     * Adds the given item as an ingredient multiple times to this builder.
+     *
+     * @param item  the item to use as an ingredient
+     * @param count the number of times to add the ingredient (if less than or equal to zero, no ingredients are added)
+     * @return      this builder instance
+     */
+    public WorkbenchRecipeBuilder input(ItemLike item, int count) {
+        Ingredient ingredient = Ingredient.of(item);
+        for (int i = 0; i < count; i++) {
+            this.ingredients.add(ingredient);
+        }
+        return this;
+    }
+
+    /**
+     * Adds the ingredient represented by the given item tag to the recipe inputs the specified number of times.
+     *
+     * @param tag the item tag whose matching items will be used as the ingredient
+     * @param registries a registry lookup provider used to resolve the tag (typically the provider from a RecipeProvider)
+     * @param count the number of times to add the resolved ingredient; if zero nothing is added
+     * @return this builder instance
+     */
+    public WorkbenchRecipeBuilder input(TagKey<Item> tag, HolderLookup.Provider registries, int count) {
+        // 1. Get the lookup for the Item registry from the provider
+        var itemLookup = registries.lookupOrThrow(Registries.ITEM);
+        
+        // 2. Now you can use getOrThrow with the TagKey
+        Ingredient ingredient = Ingredient.of(itemLookup.getOrThrow(tag));
+        
+        for (int i = 0; i < count; i++) {
+            this.ingredients.add(ingredient);
+        }
+        return this;
+    }
+
+
+
+    /**
+     * Set the crafting book category used to classify the recipe in the crafting book.
+     *
+     * @param category the crafting book category to assign to the recipe
+     * @return the same WorkbenchRecipeBuilder instance
+     */
     public WorkbenchRecipeBuilder category(CraftingBookCategory category) {
         this.category = category;
         return this;
@@ -171,13 +210,15 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
     }
 
     /**
-     * Saves this builder's recipe to the given exporter under the specified identifier.
+     * Registers this builder's recipe with the provided RecipeOutput using the given recipe name.
+     *
+     * The provided name is used as the path component to construct a recipe ResourceKey scoped to the MineTale mod.
      *
      * @param exporter the RecipeOutput that will receive the recipe
-     * @param id the identifier to use for the saved recipe
+     * @param name     the recipe name (path component) to use when creating the recipe's Identifier
      */
-    public void save(RecipeOutput exporter, Identifier id) {
-        this.save(exporter, ResourceKey.create(Registries.RECIPE, id));
+    public void save(RecipeOutput exporter, String name) {
+        this.save(exporter, ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(MineTale.MOD_ID, name)));
     }
 
     /**

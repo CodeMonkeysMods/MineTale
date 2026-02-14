@@ -3,7 +3,8 @@
 	"package": "com.tcm.MineTale.mixin.client",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"ExampleClientMixin"
+		"RecipeBookComponentAccessor",
+		"ClientRecipeBookAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

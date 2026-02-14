@@ -1,12 +1,26 @@
 package com.tcm.MineTale;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
+import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
+import com.tcm.MineTale.block.workbenches.menu.WorkbenchWorkbenchMenu;
+import com.tcm.MineTale.network.ClientboundNearbyInventorySyncPacket;
+import com.tcm.MineTale.network.CraftRequestPayload;
+import com.tcm.MineTale.recipe.WorkbenchRecipe;
 import com.tcm.MineTale.registry.ModBlockEntities;
 import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModEntities;
@@ -18,6 +32,9 @@ import com.tcm.MineTale.registry.ModRecipes;
 
 import static com.tcm.MineTale.item.ModCreativeTab.MINETALE_CREATIVE_TAB;
 import static com.tcm.MineTale.item.ModCreativeTab.MINETALE_CREATIVE_TAB_KEY;
+
+import java.util.List;
+import java.util.Optional;
 
 public class MineTale implements ModInitializer {
 	public static final String MOD_ID = "minetale";
@@ -55,8 +72,139 @@ public class MineTale implements ModInitializer {
 		ModEntityDataSerializers.initialize();
 
 		RecipeSynchronization.synchronizeRecipeSerializer(ModRecipes.FURNACE_SERIALIZER);
-		// This helps the search bar "see" items in your custom categories
+
+		// Register the payload type and codec so the game knows how to handle it
+		PayloadTypeRegistry.playC2S().register(CraftRequestPayload.TYPE, CraftRequestPayload.CODEC);
+
+		PayloadTypeRegistry.playS2C().register(ClientboundNearbyInventorySyncPacket.TYPE, ClientboundNearbyInventorySyncPacket.STREAM_CODEC);
+
+		// Register the server-side receiver using .TYPE
+		ServerPlayNetworking.registerGlobalReceiver(CraftRequestPayload.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				ServerPlayer player = context.player();
+
+				// --- SECURITY GUARD ---
+				// Ensure the player actually has the Workbench UI open before processing the craft
+				if (!(player.containerMenu instanceof WorkbenchWorkbenchMenu)) {
+					return; 
+				}
+
+				ItemStack requestedResult = payload.resultItem();
+				int amount = payload.amount();
+				
+				// 1. Get the RecipeManager from the server level
+				RecipeManager recipeManager = player.level().recipeAccess();
+
+				// 2. Find the recipe by matching the output ItemStack
+				Optional<RecipeHolder<WorkbenchRecipe>> recipeOpt = recipeManager.getAllOfType(ModRecipes.WORKBENCH_TYPE).stream()
+					.filter(holder -> {
+						// Guard against recipes with no results before accessing index 0
+						if (holder.value().results().isEmpty()) {
+							return false;
+						}
+						
+						// Compare the first result of the workbench recipe to the requested item
+						ItemStack result = holder.value().results().get(0);
+						return ItemStack.isSameItem(result, requestedResult);
+					})
+					.findFirst();
+
+				if (recipeOpt.isPresent()) {
+					WorkbenchRecipe recipe = recipeOpt.get().value();
+					
+					// 2. Determine craft limit (Handle "All" logic)
+					int limit = (amount == -1) ? 64 : Math.min(Math.max(amount, 0), 64);
+
+					for (int i = 0; i < limit; i++) {
+						if (hasIngredients(player, recipe)) {
+							consumeIngredients(player, recipe);
+							player.getInventory().add(recipe.results().get(0).copy());
+						} else {
+							break; 
+						}
+					}
+					
+					// 3. Sync inventory changes to the client screen
+					player.containerMenu.broadcastChanges();
+				}
+			});
+		});
 
 		LOGGER.info("Hello Fabric world!");
+	}
+
+	private boolean hasIngredients(ServerPlayer player, WorkbenchRecipe recipe) {
+        if (!(player.containerMenu instanceof AbstractWorkbenchContainerMenu menu)) return false;
+        AbstractWorkbenchEntity be = menu.getBlockEntity();
+
+        // 1. Create a "Mental Map" of what we found in Player + Chests
+        // We use a Map to track how many of each item we have available to "spend"
+        java.util.Map<net.minecraft.world.item.Item, Integer> available = new java.util.HashMap<>();
+        
+        // Add Player Inventory
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
+            if (!stack.isEmpty()) available.merge(stack.getItem(), stack.getCount(), Integer::sum);
+        }
+        
+        // Add Nearby Chests
+        if (be != null && be.isCanPullFromNearby()) {
+            for (net.minecraft.world.Container chest : be.getNearbyInventories()) {
+                for (int i = 0; i < chest.getContainerSize(); i++) {
+                    ItemStack stack = chest.getItem(i);
+                    if (!stack.isEmpty()) available.merge(stack.getItem(), stack.getCount(), Integer::sum);
+                }
+            }
+        }
+
+        // 2. Try to "spend" each ingredient from the JSON list
+        for (Ingredient ingredient : recipe.ingredients()) {
+            boolean matched = false;
+            for (net.minecraft.world.item.Item item : available.keySet()) {
+                if (ingredient.test(item.getDefaultInstance())) {
+                    int count = available.get(item);
+                    if (count > 0) {
+                        available.put(item, count - 1);
+                        matched = true;
+                        break;
+                    }
+                }
+            }
+            if (!matched) return false; // Ran out of a specific log or stick!
+        }
+        return true;
+    }
+
+	private void consumeIngredients(ServerPlayer player, WorkbenchRecipe recipe) {
+		if (!(player.containerMenu instanceof AbstractWorkbenchContainerMenu menu)) return;
+		AbstractWorkbenchEntity be = menu.getBlockEntity();
+
+		for (Ingredient ingredient : recipe.ingredients()) {
+			boolean consumed = false;
+
+			// 1. Try Player first
+			for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
+				if (!stack.isEmpty() && ingredient.test(stack)) {
+					stack.shrink(1);
+					consumed = true;
+					break;
+				}
+			}
+
+			// 2. Try Chests second
+			if (!consumed && be != null && be.isCanPullFromNearby()) {
+				for (net.minecraft.world.Container chest : be.getNearbyInventories()) {
+					for (int i = 0; i < chest.getContainerSize(); i++) {
+						ItemStack stack = chest.getItem(i);
+						if (!stack.isEmpty() && ingredient.test(stack)) {
+							stack.shrink(1);
+							chest.setChanged();
+							consumed = true;
+							break;
+						}
+					}
+					if (consumed) break;
+				}
+			}
+		}
 	}
 }
