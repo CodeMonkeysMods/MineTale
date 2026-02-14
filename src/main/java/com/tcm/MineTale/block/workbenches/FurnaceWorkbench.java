@@ -85,9 +85,12 @@ public class FurnaceWorkbench extends AbstractWorkbench<FurnaceWorkbenchEntity> 
     }
 
     /**
-     * Ensures the block is rendered using its model so the 2x2 workbench model is visible.
+     * Selects the render shape so only the master (LEFT) or single workbench block renders its model.
      *
-     * @return {@code RenderShape.MODEL} to render the block with its model
+     * Returns `RenderShape.MODEL` when the block state's `TYPE` is `LEFT` or `SINGLE`; returns
+     * `RenderShape.INVISIBLE` otherwise, hiding non-master halves while preserving their collision shape.
+     *
+     * @return `RenderShape.MODEL` when `TYPE` is `LEFT` or `SINGLE`; `RenderShape.INVISIBLE` otherwise
      */
     @Override
     public RenderShape getRenderShape(BlockState state) {
@@ -113,6 +116,17 @@ public class FurnaceWorkbench extends AbstractWorkbench<FurnaceWorkbenchEntity> 
     private static final VoxelShape RAW_UL = Shapes.or(TOP_SLAB, FURNACE_CHIMNEY);
     private static final VoxelShape RAW_UR = Shapes.or(mirrorX(TOP_SLAB), mirrorX(FURNACE_CHIMNEY));
 
+    /**
+     * Computes the block's voxel shape according to its facing, upper/lower half, and multi-block side.
+     *
+     * The returned shape corresponds to the appropriate quadrant of the 2×2 workbench model and is rotated to match the block's facing.
+     *
+     * @param state   the block state used to determine facing, half (upper/lower), and left/single vs right side
+     * @param level   the world context (unused for shape selection but provided by the framework)
+     * @param pos     the block position (unused for shape selection but provided by the framework)
+     * @param context the collision context (unused for shape selection but provided by the framework)
+     * @return the voxel shape for this block state, rotated to the block's facing direction
+     */
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         Direction dir = state.getValue(FACING);
@@ -128,9 +142,10 @@ public class FurnaceWorkbench extends AbstractWorkbench<FurnaceWorkbenchEntity> 
     }
 
     /**
-     * Mirrors a VoxelShape horizontally across the X-axis (West/East).
-     * @param shape The original shape to mirror.
-     * @return A new VoxelShape mirrored on the X-axis.
+     * Create a new VoxelShape that is the horizontal mirror of the given shape across the West/East (X) axis.
+     *
+     * @param shape the original VoxelShape to mirror
+     * @return the mirrored VoxelShape with X coordinates reflected across the block's center
      */
     public static VoxelShape mirrorX(VoxelShape shape) {
         VoxelShape[] result = { Shapes.empty() };
