@@ -7,14 +7,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.tcm.MineTale.MineTale;
-import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
 import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
 import com.tcm.MineTale.block.workbenches.menu.WorkbenchWorkbenchMenu;
 import com.tcm.MineTale.mixin.client.ClientRecipeBookAccessor;
 import com.tcm.MineTale.mixin.client.RecipeBookComponentAccessor;
 import com.tcm.MineTale.network.CraftRequestPayload;
 import com.tcm.MineTale.recipe.MineTaleRecipeBookComponent;
-import com.tcm.MineTale.recipe.WorkbenchRecipe;
 import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
 import com.tcm.MineTale.registry.ModRecipes;
@@ -30,7 +28,6 @@ import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.HolderSet;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -231,6 +228,7 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
             // IF we use a helper that handles the hashing correctly.
             
             // Strategy: Use the stream of holders as a List key (Lists have stable hashcodes)
+            @SuppressWarnings("deprecation")
             HolderSet<Item> key = ing.items().collect(Collectors.collectingAndThen(Collectors.toList(), HolderSet::direct));
             
             aggregatedRequirements.put(key, aggregatedRequirements.getOrDefault(key, 0) + 1);

@@ -1,6 +1,5 @@
 package com.tcm.MineTale.block.workbenches.entity;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -297,85 +296,6 @@ public ItemStack getItem(int slot) { return this.inventory.getItem(slot); }
      * @param tier the new tier value for this workstation
      */
     public void setTier(int tier) { this.tier = tier; setChanged(); }
-
-    /**
-     * Collects nearby inventory-containing block entities within the configured scan radius and vertical range.
-     *
-     * Scans a square area centered on this entity from -scanRadius..+scanRadius on X/Z and -2..+2 on Y, gathers any
-     * block entities implementing `Container`, and returns them sorted by increasing distance to this entity.
-     *
-     * @return a list of nearby `Container` instances sorted by proximity; an empty list if none are found or if the world (`level`) is null
-     */
-    // public List<Container> getNearbyInventories() {
-    //     List<Container> inventories = new ArrayList<>();
-    //     if (level == null) {
-    //         return inventories;
-    //     } 
-    //     BlockPos.betweenClosed(
-    //         worldPosition.offset((int)-scanRadius, -2, (int)-scanRadius),
-    //         worldPosition.offset((int)scanRadius, 2, (int)scanRadius)
-    //     ).forEach(pos -> {
-    //         BlockEntity be = level.getBlockEntity(pos);
-    //         if (be instanceof Container container) {
-    //             inventories.add(container);
-    //         }
-    //     });
-        
-    //     // Prioritization: Sort by proximity to prevent "chest prioritization" issues
-    //     inventories.sort((a, b) -> {
-    //         double distA = ((BlockEntity)a).getBlockPos().distSqr(this.worldPosition);
-    //         double distB = ((BlockEntity)b).getBlockPos().distSqr(this.worldPosition);
-    //         return Double.compare(distA, distB);
-    //     });
-        
-    //     return inventories;
-    // }
-
-    // public List<Container> getNearbyInventories() {
-    //     List<Container> inventories = new ArrayList<>();
-    //     if (level == null) return inventories; 
-
-    //     int radius = (int) this.scanRadius;
-        
-    //     // Check a box around the workbench
-    //     BlockPos center = this.worldPosition;
-    //     for (BlockPos pos : BlockPos.betweenClosed(center.offset(-radius, -2, -radius), center.offset(radius, 2, radius))) {
-    //         if (pos.equals(center)) continue;
-
-    //         BlockEntity be = level.getBlockEntity(pos);
-    //         // On the client, level.getBlockEntity(pos) only works if the block is within render distance
-    //         if (be instanceof Container container) {
-    //             inventories.add(container);
-    //         }
-    //     }
-        
-    //     return inventories;
-    // }
-
-    // public List<Container> getNearbyInventories() {
-    //     List<Container> inventories = new ArrayList<>();
-    //     if (level == null) return inventories;
-
-    //     int radius = (int) this.scanRadius;
-    //     BlockPos center = this.worldPosition;
-        
-    //     for (BlockPos pos : BlockPos.betweenClosed(center.offset(-radius, -2, -radius), center.offset(radius, 2, radius))) {
-    //         if (pos.equals(center)) continue;
-
-    //         BlockEntity be = level.getBlockEntity(pos);
-            
-    //         // DEBUG: Check if we find the block but fail the Container check
-    //         if (level.isClientSide() && be != null && !(be instanceof Container)) {
-    //             // This might happen if it's a modded chest that doesn't use the Container interface
-    //             System.out.println("DEBUG: Found BE at " + pos + " but it is not a Container!");
-    //         }
-
-    //         if (be instanceof ChestBlockEntity chest) {
-    //             inventories.add(chest);
-    //         }
-    //     }
-    //     return inventories;
-    // }
 
     public List<Container> getNearbyInventories() {
         List<Container> inventories = new java.util.ArrayList<>();

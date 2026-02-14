@@ -33,7 +33,6 @@ import com.tcm.MineTale.registry.ModRecipes;
 import static com.tcm.MineTale.item.ModCreativeTab.MINETALE_CREATIVE_TAB;
 import static com.tcm.MineTale.item.ModCreativeTab.MINETALE_CREATIVE_TAB_KEY;
 
-import java.util.List;
 import java.util.Optional;
 
 public class MineTale implements ModInitializer {

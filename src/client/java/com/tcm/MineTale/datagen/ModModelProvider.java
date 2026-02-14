@@ -1,5 +1,6 @@
 package com.tcm.MineTale.datagen;
 
+import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.registry.ModBlocks;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -7,13 +8,11 @@ import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.data.models.blockstates.PropertyDispatch;
-import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.client.renderer.block.model.VariantMutator;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 
 public class ModModelProvider extends FabricModelProvider {
@@ -72,38 +71,28 @@ public class ModModelProvider extends FabricModelProvider {
         blockStateModelGenerator.woodProvider(ModBlocks.WINDWILLOW_LOG).logWithHorizontal(ModBlocks.WINDWILLOW_LOG);
         blockStateModelGenerator.woodProvider(ModBlocks.WILD_WISTERIA_LOG).logWithHorizontal(ModBlocks.WILD_WISTERIA_LOG).wood(ModBlocks.WILD_WISTERIA_WOOD);
 
-        registerLargeWorkbench(blockStateModelGenerator, ModBlocks.FURNACE_WORKBENCH_BLOCK_T1);
-        registerLargeWorkbench(blockStateModelGenerator, ModBlocks.FURNACE_WORKBENCH_BLOCK_T2);
+        registerFurnaceWorkbench(blockStateModelGenerator, ModBlocks.FURNACE_WORKBENCH_BLOCK_T1);
+        registerFurnaceWorkbench(blockStateModelGenerator, ModBlocks.FURNACE_WORKBENCH_BLOCK_T2);
     }
 
-    private void registerLargeWorkbench(BlockModelGenerators generator, Block block) {
-        // 1. Get the base identifier (e.g., minetale:block/furnace_workbench_block_t1)
-        Identifier blockId = ModelLocationUtils.getModelLocation(block);
+    private void registerFurnaceWorkbench(BlockModelGenerators generator, Block block) {
+        // 1. Manually define the shared model paths
+        // Path: assets/minetale/models/block/bench/furnace_top.json
+        Identifier topModel = Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "block/bench/furnace_top");
+        Identifier bottomModel = Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "block/bench/furnace_bottom");
+        Identifier inventoryModel = Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "block/bench/furnace_inventory");
 
-        // 2. Build the references to your manual JSON files
-        // .withSuffix() creates: minetale:block/furnace_workbench_block_t1_bottom_left, etc.
-        Identifier bottomLeft  = blockId.withSuffix("_bottom_left");
-        Identifier bottomRight = blockId.withSuffix("_bottom_right");
-        Identifier topLeft     = blockId.withSuffix("_top_left");
-        Identifier topRight    = blockId.withSuffix("_top_right");
-        Identifier inventory   = blockId.withSuffix("_inventory");
-
-        // 3. Dispatch to Blockstate (Tells the game which model to show for each state)
+        // 4. Dispatch to Blockstate
         generator.blockStateOutput.accept(MultiVariantGenerator.dispatch(block)
-            .with(PropertyDispatch.initial(BlockStateProperties.DOUBLE_BLOCK_HALF, BlockStateProperties.CHEST_TYPE)
-                .select(DoubleBlockHalf.LOWER, ChestType.LEFT,   BlockModelGenerators.plainVariant(bottomLeft))
-                .select(DoubleBlockHalf.LOWER, ChestType.RIGHT,  BlockModelGenerators.plainVariant(bottomRight))
-                .select(DoubleBlockHalf.UPPER, ChestType.LEFT,   BlockModelGenerators.plainVariant(topLeft))
-                .select(DoubleBlockHalf.UPPER, ChestType.RIGHT,  BlockModelGenerators.plainVariant(topRight))
-                // Support the 'SINGLE' state as a fallback
-                .select(DoubleBlockHalf.LOWER, ChestType.SINGLE, BlockModelGenerators.plainVariant(bottomLeft))
-                .select(DoubleBlockHalf.UPPER, ChestType.SINGLE, BlockModelGenerators.plainVariant(topLeft))
+            .with(PropertyDispatch.initial(BlockStateProperties.DOUBLE_BLOCK_HALF)
+                .select(DoubleBlockHalf.LOWER, BlockModelGenerators.plainVariant(bottomModel))
+                .select(DoubleBlockHalf.UPPER, BlockModelGenerators.plainVariant(topModel))
             )
             .with(WORKBENCH_ROTATION)
         );
 
-        // 4. Map the Item in your hand to the inventory JSON
-        generator.registerSimpleItemModel(block, inventory);
+        // 5. Register the Item Model
+        generator.registerSimpleItemModel(block, inventoryModel);
     }
 
     /**
