@@ -4,17 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.tcm.MineTale.MineTale;
-import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
 import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
 import com.tcm.MineTale.block.workbenches.menu.WorkbenchWorkbenchMenu;
 import com.tcm.MineTale.mixin.client.ClientRecipeBookAccessor;
 import com.tcm.MineTale.mixin.client.RecipeBookComponentAccessor;
 import com.tcm.MineTale.network.CraftRequestPayload;
 import com.tcm.MineTale.recipe.MineTaleRecipeBookComponent;
-import com.tcm.MineTale.recipe.WorkbenchRecipe;
 import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
 import com.tcm.MineTale.registry.ModRecipes;
@@ -28,9 +25,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.core.HolderSet;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -211,37 +207,45 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
         renderTooltip(graphics, mouseX, mouseY);
     }
 
+    /**
+     * Determines whether the player has enough ingredients to craft the given recipe the specified number of times.
+     *
+     * @param player     the player whose inventory (and networked nearby items) will be checked; may be null
+     * @param entry      the recipe display entry providing crafting requirements; may be null
+     * @param craftCount the multiplier for required ingredient quantities (e.g., 1, 10, or -1 is not specially handled here)
+     * @return `true` if the player has at least the required quantity of each ingredient multiplied by `craftCount`, `false` otherwise (also returns `false` if `player` or `entry` is null or the recipe has no requirements)
+     */
     private boolean canCraft(Player player, RecipeDisplayEntry entry, int craftCount) {
         if (player == null || entry == null) return false;
 
         Optional<List<Ingredient>> reqs = entry.craftingRequirements();
         if (reqs.isEmpty()) return false;
 
-        // 1. Group ingredients by their underlying Item HolderSet.
-        // Since Ingredient doesn't override hashCode, we use the values field directly
-        // or use a List of Holders as the key for stable hashing.
-        Map<HolderSet<Item>, Integer> aggregatedRequirements = new HashMap<>();
-        
-        // Helper map to get back to an Ingredient object for the final check
-        Map<HolderSet<Item>, Ingredient> holderToIngredient = new HashMap<>();
+        // 1. Group ingredients by their underlying Item Holders.
+        // Using List<Holder<Item>> as the key ensures structural equality (content-based hashing).
+        Map<List<Holder<Item>>, Integer> aggregatedRequirements = new HashMap<>();
+        Map<List<Holder<Item>>, Ingredient> holderToIngredient = new HashMap<>();
 
         for (Ingredient ing : reqs.get()) {
-            // Accessing the 'values' via a custom accessor or reflection if private, 
-            // but based on your source, we can use the Ingredient object itself 
-            // IF we use a helper that handles the hashing correctly.
-            
-            // Strategy: Use the stream of holders as a List key (Lists have stable hashcodes)
-            HolderSet<Item> key = ing.items().collect(Collectors.collectingAndThen(Collectors.toList(), HolderSet::direct));
-            
+            // Collect holders into a List to get a stable hashCode() and equals()
+            @SuppressWarnings("deprecation")
+            List<Holder<Item>> key = ing.items().toList(); 
+
+            // Aggregate the counts (how many of this specific ingredient set are required)
             aggregatedRequirements.put(key, aggregatedRequirements.getOrDefault(key, 0) + 1);
+
+            // Map the list back to the original ingredient for use in hasIngredientAmount
             holderToIngredient.putIfAbsent(key, ing);
         }
 
-        // 2. Check the player's inventory
+        // 2. Check the player's inventory against the aggregated totals
         Inventory inv = player.getInventory();
-        for (Map.Entry<HolderSet<Item>, Integer> entryReq : aggregatedRequirements.entrySet()) {
+        for (Map.Entry<List<Holder<Item>>, Integer> entryReq : aggregatedRequirements.entrySet()) {
+            List<Holder<Item>> key = entryReq.getKey();
             int totalNeeded = entryReq.getValue() * craftCount;
-            Ingredient originalIng = holderToIngredient.get(entryReq.getKey());
+            
+            // Retrieve the original Ingredient object associated with this list of holders
+            Ingredient originalIng = holderToIngredient.get(key);
             
             if (!hasIngredientAmount(inv, originalIng, totalNeeded)) {
                 return false;
