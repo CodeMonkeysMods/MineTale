@@ -73,6 +73,7 @@ public class ModModelProvider extends FabricModelProvider {
         blockStateModelGenerator.woodProvider(ModBlocks.WILD_WISTERIA_LOG).logWithHorizontal(ModBlocks.WILD_WISTERIA_LOG).wood(ModBlocks.WILD_WISTERIA_WOOD);
 
         registerLargeWorkbench(blockStateModelGenerator, ModBlocks.FURNACE_WORKBENCH_BLOCK_T1);
+        registerLargeWorkbench(blockStateModelGenerator, ModBlocks.FURNACE_WORKBENCH_BLOCK_T2);
     }
 
     private void registerLargeWorkbench(BlockModelGenerators generator, Block block) {

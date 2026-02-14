@@ -41,7 +41,7 @@ public class MineTaleClient implements ClientModInitializer {
 
 				@Override
 				public void run() {
-					if (context.client().player.containerMenu instanceof AbstractWorkbenchContainerMenu menu) {
+					if (context.client().player != null && context.client().player.containerMenu instanceof AbstractWorkbenchContainerMenu menu) {
 						applyItemsToMenu(menu, items, context.client().screen);
 					} else if (retries < 10) { // Try for up to 10 frames (~0.5 seconds)
 						retries++;

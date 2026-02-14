@@ -105,13 +105,6 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
         // --- PLAYER INVENTORY ---
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);
-
-        if (playerInventory.player instanceof ServerPlayer serverPlayer) {
-            AbstractWorkbenchEntity be = this.getBlockEntity();
-            if (be != null && be.isCanPullFromNearby()) { // Only sync if the feature is enabled
-                be.syncNearbyToPlayer(serverPlayer);
-            }
-        }
     }
 
     /**
@@ -246,6 +239,8 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
+        if (this.outputEnd <= 0) return ItemStack.EMPTY;
+
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
 
@@ -299,42 +294,6 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
     }
 
     public abstract @Nullable AbstractWorkbenchEntity getBlockEntity();
-
-    // @Override
-    // public RecipeBookMenu.PostPlaceAction handlePlacement(boolean placeAll, boolean isSpecial, RecipeHolder<?> recipe, ServerLevel serverLevel, Inventory inventory) {
-    //     if (!(recipe.value() instanceof WorkbenchRecipe workbenchRecipe)) return PostPlaceAction.NOTHING;
-
-    //     AbstractWorkbenchEntity be = this.getBlockEntity();
-    //     boolean isSlotless = this.outputEnd < 0;
-
-    //     // 1. Handle slot-based pulling
-    //     if (!isSlotless && be != null && be.isCanPullFromNearby()) {
-    //         StackedItemContents contents = new StackedItemContents();
-    //         inventory.fillStackedContents(contents);
-            
-    //         // Manual fill because Container doesn't have the method
-    //         for (int i = 0; i < this.container.getContainerSize(); i++) {
-    //             contents.accountStack(this.container.getItem(i));
-    //         }
-
-    //         be.fillMissingIngredientsFromNearby(workbenchRecipe, contents, Constants.INPUT_START, this.inputEnd);
-    //     }
-
-    //     // 2. Handle the Crafting Action
-    //     if (isSlotless && be != null) {
-    //         if (this.canCraftSlotless(workbenchRecipe, inventory, be)) {
-    //             this.consumeAndGiveToPlayer(workbenchRecipe, inventory, be);
-    //             // We return NOTHING because we've already manually moved the items
-    //             return PostPlaceAction.NOTHING; 
-    //         }
-    //         return PostPlaceAction.NOTHING;
-    //     } else {
-    //         // This replaces the undefined 'handleStandardPlacement' 
-    //         // using the logic we built previously with ServerPlaceRecipe
-    //         return this.performStandardPlacement(placeAll, recipe, serverLevel, inventory);
-    //     }
-    // }
-
 
     @Override
     public RecipeBookMenu.PostPlaceAction handlePlacement(boolean placeAll, boolean isSpecial, RecipeHolder<?> recipe, ServerLevel serverLevel, Inventory inventory) {

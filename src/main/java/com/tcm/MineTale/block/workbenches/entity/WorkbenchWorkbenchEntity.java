@@ -142,7 +142,7 @@ public class WorkbenchWorkbenchEntity extends AbstractWorkbenchEntity {
             this.syncNearbyToPlayer(serverPlayer);
         }
 
-        // 2. Return the menu as usual
+        // // 2. Return the menu as usual
         return new WorkbenchWorkbenchMenu(syncId, playerInventory, this.data, this);
     }
     

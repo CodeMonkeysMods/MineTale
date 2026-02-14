@@ -470,50 +470,6 @@ public ItemStack getItem(int slot) { return this.inventory.getItem(slot); }
         return canPullFromNearby;
     }
 
-    // public void fillMissingIngredientsFromNearby(WorkbenchRecipe recipe, StackedItemContents playerContents) {
-    //     if (this.level == null || this.level.isClientSide()) return;
-
-    //     List<Ingredient> ingredients = recipe.ingredients();
-    //     List<Container> nearby = this.getNearbyInventories();
-        
-    //     // We target our input slots
-    //     int[] targetSlots = { Constants.INPUT_START, this.inputEnd };
-
-    //     for (int i = 0; i < ingredients.size(); i++) {
-    //         Ingredient ingredient = ingredients.get(i);
-    //         if (ingredient.isEmpty()) continue;
-
-    //         // CHECK PRIORITY: Does the player (or workbench) already have this?
-    //         // stackedContents.canCraft returns how many times the recipe can be made.
-    //         // We check if the ingredient is 'accounted for'.
-    //         if (playerContents.has(ingredient.getStackingIds().get(0))) {
-    //             // Player has it! Standard Minecraft logic will handle moving it.
-    //             continue; 
-    //         }
-
-    //         // PLAYER DOES NOT HAVE IT: Search nearby chests
-    //         int slotIndex = (i < targetSlots.length) ? targetSlots[i] : -1;
-    //         if (slotIndex == -1) continue;
-
-    //         for (Container external : nearby) {
-    //             if (external == this.inventory) continue;
-
-    //             for (int j = 0; j < external.getContainerSize(); j++) {
-    //                 ItemStack remoteStack = external.getItem(j);
-    //                 if (!remoteStack.isEmpty() && ingredient.test(remoteStack)) {
-    //                     // Found it! Pull 1 into the workbench slot
-    //                     ItemStack taken = external.removeItem(j, 1);
-    //                     this.inventory.setItem(slotIndex, taken);
-                        
-    //                     external.setChanged();
-    //                     this.setChanged();
-    //                     return; // Move to next ingredient
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
     public void fillMissingIngredientsFromNearby(WorkbenchRecipe recipe, StackedItemContents playerContents, int start, int end) {
         if (this.level == null || this.level.isClientSide() || start < 0) return;
 
@@ -524,9 +480,6 @@ public ItemStack getItem(int slot) { return this.inventory.getItem(slot); }
             Ingredient ingredient = ingredients.get(i);
             if (ingredient.isEmpty()) continue;
 
-            // --- UPDATED CHECK FOR 1.21.1 ---
-            // We check if the playerContents has ANY item that matches the ingredient.
-            // StackedItemContents is essentially a map of Item ID -> Count.
             if (hasIngredient(playerContents, ingredient)) {
                 continue; 
             }

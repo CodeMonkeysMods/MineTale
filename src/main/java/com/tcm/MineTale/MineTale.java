@@ -117,7 +117,7 @@ public class MineTale implements ModInitializer {
 					WorkbenchRecipe recipe = recipeOpt.get().value();
 					
 					// 2. Determine craft limit (Handle "All" logic)
-					int limit = (amount == -1) ? 64 : Math.min(Math.max(amount, 0), 64);; 
+					int limit = (amount == -1) ? 64 : Math.min(Math.max(amount, 0), 64);
 
 					for (int i = 0; i < limit; i++) {
 						if (hasIngredients(player, recipe)) {
@@ -136,34 +136,6 @@ public class MineTale implements ModInitializer {
 
 		LOGGER.info("Hello Fabric world!");
 	}
-
-	/**
-     * Checks whether the player's inventory contains the necessary ingredients to craft the given recipe without modifying the real inventory.
-     *
-     * @param player the server player whose inventory will be simulated
-     * @param recipe the workbench recipe to validate against the player's inventory
-     * @return `true` if all required ingredients can be satisfied from the player's current inventory, `false` otherwise
-     */
-    // private boolean hasIngredients(ServerPlayer player, WorkbenchRecipe recipe) {
-    //     // We simulate the craft using a copy of the inventory
-    //     List<ItemStack> tempInv = new java.util.ArrayList<>();
-    //     for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-    //         tempInv.add(player.getInventory().getItem(i).copy());
-    //     }
-
-    //     for (Ingredient ingredient : recipe.ingredients()) {
-    //         boolean found = false;
-    //         for (ItemStack stack : tempInv) {
-    //             if (!stack.isEmpty() && ingredient.test(stack)) {
-    //                 stack.shrink(1);
-    //                 found = true;
-    //                 break;
-    //             }
-    //         }
-    //         if (!found) return false;
-    //     }
-    //     return true;
-    // }
 
 	private boolean hasIngredients(ServerPlayer player, WorkbenchRecipe recipe) {
         if (!(player.containerMenu instanceof AbstractWorkbenchContainerMenu menu)) return false;
@@ -205,24 +177,6 @@ public class MineTale implements ModInitializer {
         }
         return true;
     }
-
-    /**
-     * Consumes one matching item from the player's inventory for each ingredient in the given workbench recipe.
-     *
-     * @param player the player whose inventory will be modified
-     * @param recipe the workbench recipe whose ingredients should be consumed
-     */
-    // private void consumeIngredients(ServerPlayer player, WorkbenchRecipe recipe) {
-    //     for (Ingredient ingredient : recipe.ingredients()) {
-    //         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-    //             ItemStack stack = player.getInventory().getItem(i);
-    //             if (!stack.isEmpty() && ingredient.test(stack)) {
-    //                 stack.shrink(1);
-    //                 break; 
-    //             }
-    //         }
-    //     }
-    // }
 
 	private void consumeIngredients(ServerPlayer player, WorkbenchRecipe recipe) {
 		if (!(player.containerMenu instanceof AbstractWorkbenchContainerMenu menu)) return;

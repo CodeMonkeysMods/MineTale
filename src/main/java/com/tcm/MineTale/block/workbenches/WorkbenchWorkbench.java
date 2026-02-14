@@ -46,7 +46,6 @@ public class WorkbenchWorkbench extends AbstractWorkbench<WorkbenchWorkbenchEnti
      * @param supplier   supplier that provides the BlockEntityType for the WorkbenchWorkbenchEntity
      */
     public WorkbenchWorkbench(Properties properties, Supplier<BlockEntityType<? extends WorkbenchWorkbenchEntity>> supplier) {
-        // isWide = false, isTall = false (1x1 footprint)
         super(properties, supplier, IS_WIDE, IS_TALL, 1);
     }
 
