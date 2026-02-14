@@ -64,7 +64,9 @@ public class ModItems {
     public static final Item YELLOW_CLOTH = register("yellow_cloth", Item::new, new Item.Properties());
 
     // --- SEEDS & FARMING (Bags and Bulbs) ---
-    public static final Item LETTUCE = register("lettuce", Item::new, new Item.Properties());
+    public static final Item LETTUCE = register("lettuce", Item::new, new Item.Properties().food(
+        new FoodProperties.Builder().nutrition(2).saturationModifier(0.3f).build()
+    ));
     public static final Item CHILLI_SEED_BAG = register("chilli_seed_bag", Item::new, new Item.Properties());
     public static final Item CHILLI_SEED_BAG_ETERNAL = register("chilli_seed_bag_eternal", Item::new, new Item.Properties());
     public static final Item SUNFLOWER_SEED_BAG = register("sunflower_seed_bag", Item::new, new Item.Properties());
