@@ -131,11 +131,11 @@ public class FurnaceWorkbench extends AbstractWorkbench<FurnaceWorkbenchEntity> 
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         Direction dir = state.getValue(FACING);
         boolean isUpper = state.getValue(HALF) == DoubleBlockHalf.UPPER;
-        boolean isRightSide = state.getValue(TYPE) == ChestType.LEFT || state.getValue(TYPE) == ChestType.SINGLE;
+        boolean isLeftSide = state.getValue(TYPE) == ChestType.LEFT || state.getValue(TYPE) == ChestType.SINGLE;
 
         VoxelShape baseShape = isUpper 
-            ? (isRightSide ? RAW_UL : RAW_UR) 
-            : (isRightSide ? RAW_LL : RAW_LR);
+            ? (isLeftSide ? RAW_UL : RAW_UR) 
+            : (isLeftSide ? RAW_LL : RAW_LR);
 
         // Call the method now living in AbstractWorkbench
         return rotateShape(dir, baseShape);

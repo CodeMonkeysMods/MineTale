@@ -86,22 +86,25 @@ public class ModModelProvider extends FabricModelProvider {
      * @param block the furnace workbench block to register models for
      */
     private void registerFurnaceWorkbench(BlockModelGenerators generator, Block block) {
-        // 1. Manually define the shared model paths
-        // Path: assets/minetale/models/block/bench/furnace_top.json
         Identifier topModel = Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "block/bench/furnace_top");
         Identifier bottomModel = Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "block/bench/furnace_bottom");
         Identifier inventoryModel = Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "block/bench/furnace_inventory");
 
-        // 4. Dispatch to Blockstate
         generator.blockStateOutput.accept(MultiVariantGenerator.dispatch(block)
-            .with(PropertyDispatch.initial(BlockStateProperties.DOUBLE_BLOCK_HALF)
-                .select(DoubleBlockHalf.LOWER, BlockModelGenerators.plainVariant(bottomModel))
-                .select(DoubleBlockHalf.UPPER, BlockModelGenerators.plainVariant(topModel))
+            .with(PropertyDispatch.initial(
+                    BlockStateProperties.DOUBLE_BLOCK_HALF, 
+                    BlockStateProperties.CHEST_TYPE, 
+                    BlockStateProperties.LIT
+                )
+                .generate((half, type, lit) -> {
+                    return half == DoubleBlockHalf.UPPER 
+                        ? BlockModelGenerators.plainVariant(topModel) 
+                        : BlockModelGenerators.plainVariant(bottomModel);
+                })
             )
             .with(WORKBENCH_ROTATION)
         );
 
-        // 5. Register the Item Model
         generator.registerSimpleItemModel(block, inventoryModel);
     }
 
