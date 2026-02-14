@@ -27,7 +27,8 @@ public class ModLangProvider extends FabricLanguageProvider {
         translationBuilder.add("minetale.creative_tab.title", "MineTale Stuffs");
 
 
-        translationBuilder.add("block.minetale.furnace_workbench_block", "Furnace Workbench");
+        translationBuilder.add("block.minetale.furnace_workbench_block_t1", "Furnace Workbench - Tier One");
+        translationBuilder.add("block.minetale.furnace_workbench_block_t2", "Furnace Workbench - Tier Two");
         translationBuilder.add("block.minetale.campfire_workbench_block", "Campfire Workbench");
 
         translationBuilder.add("block.minetale.amber_log", "Amber Log");
