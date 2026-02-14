@@ -3,6 +3,7 @@ package com.tcm.MineTale.registry;
 import java.util.function.Function;
 
 import com.tcm.MineTale.MineTale;
+import com.tcm.MineTale.item.ModCreativeTab;
 
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -94,6 +95,12 @@ public class ModItems {
         ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MineTale.MOD_ID, name));
         GenericItem item = itemFactory.apply(settings.setId(itemKey));
         Registry.register(BuiltInRegistries.ITEM, itemKey, item);
+
+        // 4. ADD TO CREATIVE TAB AUTOMATICALLY
+        ItemGroupEvents.modifyEntriesEvent(ModCreativeTab.MINETALE_CREATIVE_TAB_KEY).register(entries -> {
+            entries.add(item);
+        });
+        
         return item;
     }
 }
