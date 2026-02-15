@@ -13,12 +13,9 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.Ingredient;
 
 public class ModRecipeProvider extends FabricRecipeProvider {
 	/**
@@ -32,25 +29,32 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 	}
 
     /**
-	 * Creates a RecipeProvider that registers the mod's recipe set: a campfire cooking recipe
-	 * that cooks a porkchop into a cooked porkchop, a furnace cooking recipe that converts a
-	 * porkchop into an acacia boat, and a workbench crafting recipe that assembles a chest from
-	 * logs and sticks.
+	 * Create a RecipeProvider that registers the mod's recipe set to the provided exporter.
 	 *
-	 * Each recipe includes its unlock condition, crafting category, book category, processing time,
-	 * and is saved to the provided exporter under the mod-specific paths:
-	 * "campfire_pork_cooking", "furnace_pork_cooking", and "workbench_wood_chest".
+	 * <p>The produced provider registers these recipes:
+	 * - Campfire pork cooking: cooks a porkchop into a cooked porkchop and is saved as "campfire_pork_cooking".
+	 * - Workbench recipes:
+	 *   - Armorers workbench (produces the armorers workbench block) saved as "workbench_armorers_workbench".
+	 *   - Furnace workbench T1 (produces the furnace workbench T1 block) saved as "workbench_furnace_workbench_t1".
+	 *   - Wood chest (crafts a chest from logs) saved as "workbench_wood_chest".
+	 * - Furnace T1 ingot: smelts copper ore into a copper ingot and is saved as "furnace_t1_copper_ingot".
 	 *
 	 * @param registryLookup provider for looking up game registries and tags used when building recipes
 	 * @param exporter       destination used to write the generated recipe JSON files
-	 * @return               a RecipeProvider that produces and saves the described recipes to the exporter
+	 * @return               a RecipeProvider that generates and saves the described recipes to the exporter
 	 */
 	@Override
 	protected RecipeProvider createRecipeProvider(HolderLookup.Provider registryLookup, RecipeOutput exporter) {
 		return new RecipeProvider(registryLookup, exporter) {
 			/**
-			 * Registers three mod-specific recipes with the recipe exporter:
-			 * a campfire pork cooking recipe producing cooked porkchop (unlocked by having a porkchop, saved as "campfire_pork_cooking"), a furnace pork cooking recipe producing an acacia boat (unlocked by having a porkchop, saved as "furnace_pork_cooking"), and a workbench recipe that crafts a chest from 5 logs and 10 sticks (unlocked by having logs, saved as "workbench_wood_chest").
+			 * Register the mod's recipes with the recipe exporter.
+			 *
+			 * <p>Registers the following recipes and their unlock conditions, categories, and export names:
+			 * - Campfire: porkchop → cooked porkchop (unlock: has porkchop; category: MISC; saved as "campfire_pork_cooking").
+			 * - Workbench (Armorers): 2 copper ingots, 10 logs, 5 stone tool materials → armorers workbench (unlock: has workbench; saved as "workbench_armorers_workbench").
+			 * - Workbench (Furnace T1): 6 logs, 6 stone tool materials → furnace workbench T1 (unlock: has workbench; saved as "workbench_furnace_workbench_t1").
+			 * - Workbench (Chests): 10 logs → chest (unlock: has logs; category: MISC; saved as "workbench_wood_chest").
+			 * - Furnace T1 (Ingots): copper ore → copper ingot (time: 10; unlock: has copper ore; saved as "furnace_t1_copper_ingot").
 			 */
 			@Override
 			public void buildRecipes() {
@@ -65,6 +69,8 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 					.save(exporter, "campfire_pork_cooking");
 
 				// Workbench Recipes
+
+				// 1. Workbenches
 				new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
 					.input(Items.COPPER_INGOT, 2)
 					.input(ItemTags.LOGS, registryLookup, 10)
@@ -75,6 +81,16 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 					.save(exporter, "workbench_armorers_workbench");
 
 				new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+					.input(ItemTags.LOGS, registryLookup, 6)
+					.input(ItemTags.STONE_TOOL_MATERIALS, registryLookup, 6)
+					.output(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1.asItem())
+					.unlockedBy("has_workbench", has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+					.bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+					.save(exporter, "workbench_furnace_workbench_t1");
+
+
+				// 2. Chests
+				new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
 					.input(ItemTags.LOGS, registryLookup, 10)
 					.output(Items.CHEST)
 					.unlockedBy("has_logs", has(ItemTags.LOGS))
@@ -83,6 +99,8 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 					.save(exporter, "workbench_wood_chest");
 
 				// Furnace Recipes
+
+				// 1. Ingots
 				new WorkbenchRecipeBuilder(ModRecipes.FURNACE_T1_TYPE, ModRecipes.FURNACE_SERIALIZER)
 					.input(Items.COPPER_ORE)
 					.output(Items.COPPER_INGOT)
