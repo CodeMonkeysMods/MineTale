@@ -31,13 +31,13 @@ public class ModModelProvider extends FabricModelProvider {
             .select(Direction.WEST, BlockModelGenerators.Y_ROT_270);
 
     /**
-     * Registers block state and model definitions for the mod's custom log blocks and furnace workbenches.
-     *
-     * Configures horizontal and vertical variants for each custom log block and registers the wood model for
-     * WILD_WISTERIA_LOG; registers blockstate variants and item models for the mod's furnace workbench blocks.
-     *
-     * @param blockStateModelGenerator generator used to create block state and model entries
-     */
+         * Register block state and model definitions for the mod's custom log blocks and furnace workbenches.
+         *
+         * Generates horizontal/vertical variants and associated wood models for the mod's logs (including a wood model for
+         * WILD_WISTERIA_LOG) and registers blockstate variants and item models for the furnace workbench blocks.
+         *
+         * @param blockStateModelGenerator generator used to create block state and model entries
+         */
     @Override
     public void generateBlockStateModels(BlockModelGenerators blockStateModelGenerator) {
         blockStateModelGenerator.woodProvider(ModBlocks.AMBER_LOG).logWithHorizontal(ModBlocks.AMBER_LOG);
