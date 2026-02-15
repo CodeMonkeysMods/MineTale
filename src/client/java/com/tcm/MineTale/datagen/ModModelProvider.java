@@ -88,7 +88,7 @@ public class ModModelProvider extends FabricModelProvider {
     private void registerFurnaceWorkbench(BlockModelGenerators generator, Block block) {
         Identifier topModel = Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "block/bench/furnace_top");
         Identifier bottomModel = Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "block/bench/furnace_bottom");
-        Identifier inventoryModel = Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "block/bench/furnace_inventory");
+        Identifier inventoryModel = Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "item/bench/furnace");
 
         generator.blockStateOutput.accept(MultiVariantGenerator.dispatch(block)
             .with(PropertyDispatch.initial(
