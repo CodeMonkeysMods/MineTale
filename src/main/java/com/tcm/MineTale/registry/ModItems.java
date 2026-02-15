@@ -44,7 +44,11 @@ public class ModItems {
     public static final Item ADAMANTITE_INGOT = register("adamantite_ingot", Item::new, new Item.Properties());
     public static final Item MITHRIL_INGOT = register("mithril_ingot", Item::new, new Item.Properties());
     public static final Item BRONZE_INGOT = register("bronze_ingot", Item::new, new Item.Properties());
-    public static final Item STEEL_INGOT = register("steel_ingot", Item::new, new Item.Properties());
+    
+    public static final Item THORIUM_ORE = register("thorium_ore", Item::new, new Item.Properties());
+    public static final Item COBALT_ORE = register("cobalt_ore", Item::new, new Item.Properties());
+    public static final Item ADAMANTITE_ORE = register("adamantite_ore", Item::new, new Item.Properties());
+    public static final Item MITHRIL_ORE = register("mithril_ore", Item::new, new Item.Properties());
 
     // --- MOB DROPS, HIDES & LEATHERS ---
     public static final Item LIGHT_HIDE = register("light_hide", Item::new, new Item.Properties());
