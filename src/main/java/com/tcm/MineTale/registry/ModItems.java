@@ -5,11 +5,13 @@ import java.util.function.Function;
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.item.ModCreativeTab;
 
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 
 public class ModItems {
@@ -100,7 +102,7 @@ public class ModItems {
 
         // 4. ADD TO CREATIVE TAB AUTOMATICALLY
         ItemGroupEvents.modifyEntriesEvent(ModCreativeTab.MINETALE_CREATIVE_TAB_KEY).register(entries -> {
-            entries.add(item);
+            entries.accept(item);
         });
         
         return item;
