@@ -4,6 +4,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.datagen.builders.WorkbenchRecipeBuilder;
+import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
 import com.tcm.MineTale.registry.ModRecipes;
 
@@ -12,6 +13,7 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -52,33 +54,42 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 			 */
 			@Override
 			public void buildRecipes() {
+				// Campfire Recipes
 				new WorkbenchRecipeBuilder(ModRecipes.CAMPFIRE_TYPE, ModRecipes.CAMPFIRE_SERIALIZER)
-					.input(Ingredient.of(Items.PORKCHOP))
-					.output(new ItemStack(Items.COOKED_PORKCHOP))
+					.input(Items.PORKCHOP)
+					.output(Items.COOKED_PORKCHOP)
 					.time(10)
 					.unlockedBy("has_porkchop", has(Items.PORKCHOP))
 					.category(CraftingBookCategory.MISC)
 					.bookCategory(ModRecipeDisplay.CAMPFIRE_SEARCH)
 					.save(exporter, "campfire_pork_cooking");
 
-				new WorkbenchRecipeBuilder(ModRecipes.FURNACE_T1_TYPE, ModRecipes.FURNACE_SERIALIZER)
-					.input(Ingredient.of(Items.PORKCHOP))
-					.output(new ItemStack(Items.ACACIA_BOAT))
-					.time(10)
-					.unlockedBy("has_porkchop", has(Items.PORKCHOP))
-					.category(CraftingBookCategory.MISC)
-					.bookCategory(ModRecipeDisplay.FURNACE_T1_SEARCH)
-					.save(exporter, "furnace_pork_cooking");
+				// Workbench Recipes
+				new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+					.input(Items.COPPER_INGOT, 2)
+					.input(ItemTags.LOGS, registryLookup, 10)
+					.input(ItemTags.STONE_TOOL_MATERIALS, registryLookup, 5)
+					.output(ModBlocks.ARMORERS_WORKBENCH_BLOCK.asItem())
+					.unlockedBy("has_workbench", has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+					.bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+					.save(exporter, "workbench_armorers_workbench");
 
 				new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-					.input(ItemTags.LOGS, registryLookup, 5)
-					.input(Items.STICK, 10)
-					.output(new ItemStack(Items.CHEST)) 
-					.time(50)
+					.input(ItemTags.LOGS, registryLookup, 10)
+					.output(Items.CHEST)
 					.unlockedBy("has_logs", has(ItemTags.LOGS))
 					.category(CraftingBookCategory.MISC)
 					.bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
 					.save(exporter, "workbench_wood_chest");
+
+				// Furnace Recipes
+				new WorkbenchRecipeBuilder(ModRecipes.FURNACE_T1_TYPE, ModRecipes.FURNACE_SERIALIZER)
+					.input(Items.COPPER_ORE)
+					.output(Items.COPPER_INGOT)
+					.time(10)
+					.unlockedBy("has_copper_ore", has(Items.COPPER_ORE))
+					.bookCategory(ModRecipeDisplay.FURNACE_T1_SEARCH)
+					.save(exporter, "furnace_t1_copper_ingot");
 			}
 		};
 	}

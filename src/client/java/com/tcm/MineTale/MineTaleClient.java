@@ -7,14 +7,18 @@ import com.tcm.MineTale.network.ClientboundNearbyInventorySyncPacket;
 import java.util.List;
 
 import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
+import com.tcm.MineTale.block.workbenches.screen.ArmorersWorkbenchScreen;
 import com.tcm.MineTale.block.workbenches.screen.CampfireWorkbenchScreen;
+import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModMenuTypes;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.world.item.ItemStack;
 
 public class MineTaleClient implements ClientModInitializer {
@@ -31,6 +35,10 @@ public class MineTaleClient implements ClientModInitializer {
 		MenuScreens.register(ModMenuTypes.FURNACE_WORKBENCH_MENU, FurnaceWorkbenchScreen::new);
 		MenuScreens.register(ModMenuTypes.CAMPFIRE_WORKBENCH_MENU, CampfireWorkbenchScreen::new);
 		MenuScreens.register(ModMenuTypes.WORKBENCH_WORKBENCH_MENU, WorkbenchWorkbenchScreen::new);
+		MenuScreens.register(ModMenuTypes.ARMORERS_WORKBENCH_MENU, ArmorersWorkbenchScreen::new);
+
+		BlockRenderLayerMap.putBlock(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1, ChunkSectionLayer.CUTOUT);
+		BlockRenderLayerMap.putBlock(ModBlocks.FURNACE_WORKBENCH_BLOCK_T2, ChunkSectionLayer.CUTOUT);
 
 		ClientPlayNetworking.registerGlobalReceiver(ClientboundNearbyInventorySyncPacket.TYPE, (payload, context) -> {
 			List<ItemStack> items = payload.items();

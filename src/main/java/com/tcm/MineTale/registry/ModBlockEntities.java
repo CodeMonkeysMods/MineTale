@@ -1,6 +1,7 @@
 package com.tcm.MineTale.registry;
 
 import com.tcm.MineTale.MineTale;
+import com.tcm.MineTale.block.workbenches.entity.ArmorersWorkbenchEntity;
 import com.tcm.MineTale.block.workbenches.entity.CampfireWorkbenchEntity;
 import com.tcm.MineTale.block.workbenches.entity.FurnaceWorkbenchEntity;
 import com.tcm.MineTale.block.workbenches.entity.WorkbenchWorkbenchEntity;
@@ -24,6 +25,12 @@ public class ModBlockEntities {
         "workbench_workbench_be", 
         WorkbenchWorkbenchEntity::new,
         ModBlocks.WORKBENCH_WORKBENCH_BLOCK
+    );
+
+    public static final BlockEntityType<ArmorersWorkbenchEntity> ARMORERS_WORKBENCH_BE = register(
+        "armorers_workbench_be",
+        ArmorersWorkbenchEntity::new,
+        ModBlocks.ARMORERS_WORKBENCH_BLOCK
     );
 
     /**

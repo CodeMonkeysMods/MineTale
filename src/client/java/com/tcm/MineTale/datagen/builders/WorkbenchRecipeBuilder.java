@@ -69,6 +69,12 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
         return new WorkbenchRecipeBuilder(type, serializer);
     }
 
+    public WorkbenchRecipeBuilder input(Ingredient ingredient) {
+        this.ingredients.add(ingredient);
+
+        return this;
+    }
+
     /**
      * Adds an input ingredient multiple times to represent a required count.
      *
@@ -89,8 +95,8 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
      * @param ingredient the ingredient to add as an input
      * @return           this builder instance for method chaining
      */
-    public WorkbenchRecipeBuilder input(Ingredient ingredient) {
-        this.ingredients.add(ingredient);
+    public WorkbenchRecipeBuilder input(ItemLike ingredient) {
+        this.ingredients.add(Ingredient.of(ingredient));
         return this;
     }
 
@@ -106,6 +112,18 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
         for (int i = 0; i < count; i++) {
             this.ingredients.add(ingredient);
         }
+        return this;
+    }
+
+    public WorkbenchRecipeBuilder input(TagKey<Item> tag, HolderLookup.Provider registries) {
+        // 1. Get the lookup for the Item registry from the provider
+        var itemLookup = registries.lookupOrThrow(Registries.ITEM);
+        
+        // 2. Now you can use getOrThrow with the TagKey
+        Ingredient ingredient = Ingredient.of(itemLookup.getOrThrow(tag));
+        
+        this.ingredients.add(ingredient);
+    
         return this;
     }
 
@@ -129,8 +147,6 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
         }
         return this;
     }
-
-
 
     /**
      * Set the crafting book category used to classify the recipe in the crafting book.
@@ -158,19 +174,19 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
      * @param stack the output ItemStack to add
      * @return this builder instance for chaining
      */
-    public WorkbenchRecipeBuilder output(ItemStack stack) {
-        this.results.add(stack);
+    public WorkbenchRecipeBuilder output(ItemLike stack) {
+        this.results.add(new ItemStack(stack));
         return this;
     }
 
     /**
-     * Set the recipe cook time in ticks.
+     * Set the recipe cook time in seconds.
      *
-     * @param ticks the cook time in game ticks
+     * @param seconds the cook time in seconds
      * @return the builder instance
      */
-    public WorkbenchRecipeBuilder time(int ticks) {
-        this.cookTime = ticks;
+    public WorkbenchRecipeBuilder time(int seconds) {
+        this.cookTime = seconds * 20;
         return this;
     }
 

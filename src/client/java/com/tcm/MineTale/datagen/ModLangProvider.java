@@ -18,6 +18,7 @@ public class ModLangProvider extends FabricLanguageProvider {
 
         // --- BLOCKS ---
         translationBuilder.add("block.minetale.workbench_workbench_block", "Workbench");
+        translationBuilder.add("block.minetale.armorers_workbench_block", "Armorer's Workbench");
         translationBuilder.add("block.minetale.furnace_workbench_block_t1", "Furnace Workbench - Tier One");
         translationBuilder.add("block.minetale.furnace_workbench_block_t2", "Furnace Workbench - Tier Two");
         translationBuilder.add("block.minetale.campfire_workbench_block", "Campfire Workbench");

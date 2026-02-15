@@ -3,6 +3,7 @@ package com.tcm.MineTale.registry;
 import java.util.function.Function;
 
 import com.tcm.MineTale.MineTale;
+import com.tcm.MineTale.block.workbenches.ArmorersWorkbench;
 import com.tcm.MineTale.block.workbenches.CampfireWorkbench;
 import com.tcm.MineTale.block.workbenches.FurnaceWorkbench;
 import com.tcm.MineTale.block.workbenches.WorkbenchWorkbench;
@@ -39,6 +40,13 @@ public class ModBlocks {
 		"workbench_workbench_block",
 		WorkbenchWorkbench::new,
 		BlockBehaviour.Properties.of().sound(SoundType.WOOD), 
+		true
+	);
+
+	public static final Block ARMORERS_WORKBENCH_BLOCK = register(
+		"armorers_workbench_block",
+		ArmorersWorkbench::new,
+		BlockBehaviour.Properties.of().sound(SoundType.WOOD),
 		true
 	);
 

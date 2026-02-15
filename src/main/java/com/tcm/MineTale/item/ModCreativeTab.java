@@ -20,6 +20,7 @@ public class ModCreativeTab {
                 output.accept(ModBlocks.FURNACE_WORKBENCH_BLOCK_T2);
                 output.accept(ModBlocks.CAMPFIRE_WORKBENCH_BLOCK);
                 output.accept(ModBlocks.WORKBENCH_WORKBENCH_BLOCK);
+                output.accept(ModBlocks.ARMORERS_WORKBENCH_BLOCK);
                 output.accept(ModBlocks.AMBER_LOG);
                 output.accept(ModBlocks.ASH_LOG);
                 output.accept(ModBlocks.ASPEN_LOG);
