@@ -41,9 +41,6 @@ public class ModModelProvider extends FabricModelProvider {
     @Override
     public void generateBlockStateModels(BlockModelGenerators blockStateModelGenerator) {
         blockStateModelGenerator.woodProvider(ModBlocks.AMBER_LOG).logWithHorizontal(ModBlocks.AMBER_LOG);
-        blockStateModelGenerator.woodProvider(ModBlocks.ASH_LOG).logWithHorizontal(ModBlocks.ASH_LOG);
-        blockStateModelGenerator.woodProvider(ModBlocks.ASPEN_LOG).logWithHorizontal(ModBlocks.ASPEN_LOG);
-        blockStateModelGenerator.woodProvider(ModBlocks.AZURE_LOG).logWithHorizontal(ModBlocks.AZURE_LOG);
         blockStateModelGenerator.woodProvider(ModBlocks.BAMBOO_LOG).logWithHorizontal(ModBlocks.BAMBOO_LOG);
         blockStateModelGenerator.woodProvider(ModBlocks.BAMBOO_LOG_DECO).logWithHorizontal(ModBlocks.BAMBOO_LOG_DECO);
         blockStateModelGenerator.woodProvider(ModBlocks.BANYAN_LOG).logWithHorizontal(ModBlocks.BANYAN_LOG);
@@ -51,17 +48,13 @@ public class ModModelProvider extends FabricModelProvider {
         blockStateModelGenerator.woodProvider(ModBlocks.BOTTLETREE_LOG).logWithHorizontal(ModBlocks.BOTTLETREE_LOG);
         blockStateModelGenerator.woodProvider(ModBlocks.BURNT_LOG).logWithHorizontal(ModBlocks.BURNT_LOG);
         blockStateModelGenerator.woodProvider(ModBlocks.CAMPHOR_LOG).logWithHorizontal(ModBlocks.CAMPHOR_LOG);
-        blockStateModelGenerator.woodProvider(ModBlocks.CEDAR_LOG).logWithHorizontal(ModBlocks.CEDAR_LOG);
         blockStateModelGenerator.woodProvider(ModBlocks.CRYSTALWOOD_LOG).logWithHorizontal(ModBlocks.CRYSTALWOOD_LOG);
-        blockStateModelGenerator.woodProvider(ModBlocks.DRY_LOG).logWithHorizontal(ModBlocks.DRY_LOG);
-        blockStateModelGenerator.woodProvider(ModBlocks.BLUE_FIG_LOG).logWithHorizontal(ModBlocks.BLUE_FIG_LOG);
         blockStateModelGenerator.woodProvider(ModBlocks.FIRE_LOG).logWithHorizontal(ModBlocks.FIRE_LOG);
         blockStateModelGenerator.woodProvider(ModBlocks.GUMBOAB_LOG).logWithHorizontal(ModBlocks.GUMBOAB_LOG);
         blockStateModelGenerator.woodProvider(ModBlocks.ICE_LOG).logWithHorizontal(ModBlocks.ICE_LOG);
         blockStateModelGenerator.woodProvider(ModBlocks.MAPLE_LOG).logWithHorizontal(ModBlocks.MAPLE_LOG);
         blockStateModelGenerator.woodProvider(ModBlocks.PALM_TREE_LOG).logWithHorizontal(ModBlocks.PALM_TREE_LOG);
         blockStateModelGenerator.woodProvider(ModBlocks.PALO_LOG).logWithHorizontal(ModBlocks.PALO_LOG);
-        blockStateModelGenerator.woodProvider(ModBlocks.PETRIFIED_LOG).logWithHorizontal(ModBlocks.PETRIFIED_LOG);
         blockStateModelGenerator.woodProvider(ModBlocks.POISONED_LOG).logWithHorizontal(ModBlocks.POISONED_LOG);
         blockStateModelGenerator.woodProvider(ModBlocks.REDWOOD_LOG).logWithHorizontal(ModBlocks.REDWOOD_LOG);
         blockStateModelGenerator.woodProvider(ModBlocks.SALLOW_LOG).logWithHorizontal(ModBlocks.SALLOW_LOG);

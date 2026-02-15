@@ -22,9 +22,6 @@ public class ModCreativeTab {
                 output.accept(ModBlocks.WORKBENCH_WORKBENCH_BLOCK);
                 output.accept(ModBlocks.ARMORERS_WORKBENCH_BLOCK);
                 output.accept(ModBlocks.AMBER_LOG);
-                output.accept(ModBlocks.ASH_LOG);
-                output.accept(ModBlocks.ASPEN_LOG);
-                output.accept(ModBlocks.AZURE_LOG);
                 output.accept(ModBlocks.BAMBOO_LOG);
                 output.accept(ModBlocks.BAMBOO_LOG_DECO);
                 output.accept(ModBlocks.BANYAN_LOG);
@@ -32,17 +29,13 @@ public class ModCreativeTab {
                 output.accept(ModBlocks.BOTTLETREE_LOG);
                 output.accept(ModBlocks.BURNT_LOG);
                 output.accept(ModBlocks.CAMPHOR_LOG);
-                output.accept(ModBlocks.CEDAR_LOG);
                 output.accept(ModBlocks.CRYSTALWOOD_LOG);
-                output.accept(ModBlocks.DRY_LOG);
-                output.accept(ModBlocks.BLUE_FIG_LOG);
                 output.accept(ModBlocks.FIRE_LOG);
                 output.accept(ModBlocks.GUMBOAB_LOG);
                 output.accept(ModBlocks.ICE_LOG);
                 output.accept(ModBlocks.MAPLE_LOG);
                 output.accept(ModBlocks.PALM_TREE_LOG);
                 output.accept(ModBlocks.PALO_LOG);
-                output.accept(ModBlocks.PETRIFIED_LOG);
                 output.accept(ModBlocks.POISONED_LOG);
                 output.accept(ModBlocks.REDWOOD_LOG);
                 output.accept(ModBlocks.SALLOW_LOG);
