@@ -220,11 +220,11 @@ public class ModBlocks {
 	// public static final Block THORIUM_ORE_SANDSTONE = registerOreBlock("thorium_ore_sandstone", Block::new, BlockBehaviour.Properties.of().strength(2).requiresCorrectToolForDrops(), Blocks.SANDSTONE, Items.COPPER_ORE, 1);
 
     /**
-     * Adds the mod's workbench and furnace blocks to the Functional Blocks creative tab.
+     * Adds all mod-registered blocks to the MineTale creative tab and logs the action.
      *
-     * Registers CAMPFIRE_WORKBENCH_BLOCK, WORKBENCH_WORKBENCH_BLOCK, FURNACE_WORKBENCH_BLOCK_T1,
-     * and FURNACE_WORKBENCH_BLOCK_T2 to CreativeModeTabs.FUNCTIONAL_BLOCKS and prints a registration
-     * message containing the mod ID.
+     * Subscribes an entries-modification handler for ModCreativeTab.MINETALE_CREATIVE_TAB_KEY that
+     * inserts every block collected in REGISTERED_BLOCKS into the creative tab, then prints a
+     * registration message that includes the mod ID.
      */
     public static void initialize() { 
 		ItemGroupEvents.modifyEntriesEvent(ModCreativeTab.MINETALE_CREATIVE_TAB_KEY).register(entries -> {
@@ -235,7 +235,17 @@ public class ModBlocks {
         System.out.println("Registered Mod Blocks for " + MineTale.MOD_ID);
     }
 
-    private static Block register(String name, Function<BlockBehaviour.Properties, Block> blockFactory, BlockBehaviour.Properties settings, boolean shouldRegisterItem) {
+    /**
+	 * Register a block under the mod's namespace, optionally create and register its corresponding BlockItem,
+	 * and add the block to the internal list of registered blocks.
+	 *
+	 * @param name              the registry name (path) to use for the block and item
+	 * @param blockFactory      factory that creates the Block from provided BlockBehaviour.Properties
+	 * @param settings          the BlockBehaviour.Properties to apply to the block; this method will set the block's registry ID on it
+	 * @param shouldRegisterItem if `true`, a BlockItem for the block will be created and registered with the same name
+	 * @return                  the registered Block instance
+	 */
+	private static Block register(String name, Function<BlockBehaviour.Properties, Block> blockFactory, BlockBehaviour.Properties settings, boolean shouldRegisterItem) {
 		// Create a registry key for the block
 		ResourceKey<Block> blockKey = keyOfBlock(name);
 		// Create the block instance
@@ -257,6 +267,21 @@ public class ModBlocks {
 		return Registry.register(BuiltInRegistries.BLOCK, blockKey, block);
 	}
 
+	/**
+	 * Creates and registers an ore block and its corresponding BlockItem in the mod registries.
+	 *
+	 * The created block is configured to require the correct tool for drops and is added to the
+	 * internal REGISTERED_BLOCKS list. A BlockItem for the block is also created and registered
+	 * under the same name.
+	 *
+	 * @param name the registry name (path) for the block and its item
+	 * @param blockFactory a factory that produces the Block given BlockBehaviour.Properties
+	 * @param settings base block properties to apply to the created block
+	 * @param baseBlock an existing block used as the ore's base reference (semantic association)
+	 * @param itemToDrop the item that the ore is intended to drop when mined
+	 * @param count the number of items the ore is intended to drop
+	 * @return the registered Block instance
+	 */
 	private static Block registerOreBlock(String name, Function<BlockBehaviour.Properties, Block> blockFactory, BlockBehaviour.Properties settings, Block baseBlock, Item itemToDrop, int count) {
 		ResourceKey<Block> blockKey = keyOfBlock(name);
 		
