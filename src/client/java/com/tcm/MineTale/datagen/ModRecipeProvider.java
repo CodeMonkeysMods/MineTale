@@ -13,12 +13,9 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.Ingredient;
 
 public class ModRecipeProvider extends FabricRecipeProvider {
 	/**
@@ -65,6 +62,8 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 					.save(exporter, "campfire_pork_cooking");
 
 				// Workbench Recipes
+
+				// 1. Workbenches
 				new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
 					.input(Items.COPPER_INGOT, 2)
 					.input(ItemTags.LOGS, registryLookup, 10)
@@ -75,6 +74,16 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 					.save(exporter, "workbench_armorers_workbench");
 
 				new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+					.input(ItemTags.LOGS, registryLookup, 6)
+					.input(ItemTags.STONE_TOOL_MATERIALS, registryLookup, 6)
+					.output(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1.asItem())
+					.unlockedBy("has_workbench", has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+					.bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+					.save(exporter, "workbench_furnace_workbench_t1");
+
+
+				// 2. Chests
+				new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
 					.input(ItemTags.LOGS, registryLookup, 10)
 					.output(Items.CHEST)
 					.unlockedBy("has_logs", has(ItemTags.LOGS))
@@ -83,6 +92,8 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 					.save(exporter, "workbench_wood_chest");
 
 				// Furnace Recipes
+
+				// 1. Ingots
 				new WorkbenchRecipeBuilder(ModRecipes.FURNACE_T1_TYPE, ModRecipes.FURNACE_SERIALIZER)
 					.input(Items.COPPER_ORE)
 					.output(Items.COPPER_INGOT)
