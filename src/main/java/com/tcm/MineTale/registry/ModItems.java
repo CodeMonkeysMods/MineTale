@@ -1,5 +1,7 @@
 package com.tcm.MineTale.registry;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 import com.tcm.MineTale.MineTale;
@@ -16,8 +18,13 @@ import net.minecraft.world.item.Item;
 
 public class ModItems {
 
+    private static final List<Item> REGISTERED_ITEMS = new ArrayList<>();
+
     public static void initialize() {
         System.out.println("Registered Mod Items for " + MineTale.MOD_ID);
+        ItemGroupEvents.modifyEntriesEvent(ModCreativeTab.MINETALE_CREATIVE_TAB_KEY).register(entries -> {
+            REGISTERED_ITEMS.forEach(entries::accept);
+        });
     }
 
     // --- NATURAL MATERIALS & GATHERABLES ---
@@ -101,9 +108,7 @@ public class ModItems {
         Registry.register(BuiltInRegistries.ITEM, itemKey, item);
 
         // 4. ADD TO CREATIVE TAB AUTOMATICALLY
-        ItemGroupEvents.modifyEntriesEvent(ModCreativeTab.MINETALE_CREATIVE_TAB_KEY).register(entries -> {
-            entries.accept(item);
-        });
+        REGISTERED_ITEMS.add(item);
         
         return item;
     }
