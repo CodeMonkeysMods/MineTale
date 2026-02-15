@@ -15,36 +15,6 @@ public class ModCreativeTab {
     public static final CreativeModeTab MINETALE_CREATIVE_TAB = FabricItemGroup.builder()
             .icon(() -> new ItemStack(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1))
             .title(Component.translatable("minetale.creative_tab.title"))
-            .displayItems((params, output) -> {
-                output.accept(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1);
-                // output.accept(ModBlocks.FURNACE_WORKBENCH_BLOCK_T2);
-                // output.accept(ModBlocks.CAMPFIRE_WORKBENCH_BLOCK);
-                // output.accept(ModBlocks.WORKBENCH_WORKBENCH_BLOCK);
-                // output.accept(ModBlocks.ARMORERS_WORKBENCH_BLOCK);
-                // output.accept(ModBlocks.AMBER_LOG);
-                // output.accept(ModBlocks.BAMBOO_LOG);
-                // output.accept(ModBlocks.BAMBOO_LOG_DECO);
-                // output.accept(ModBlocks.BANYAN_LOG);
-                // output.accept(ModBlocks.BEECH_LOG);
-                // output.accept(ModBlocks.BOTTLETREE_LOG);
-                // output.accept(ModBlocks.BURNT_LOG);
-                // output.accept(ModBlocks.CAMPHOR_LOG);
-                // output.accept(ModBlocks.CRYSTALWOOD_LOG);
-                // output.accept(ModBlocks.FIRE_LOG);
-                // output.accept(ModBlocks.GUMBOAB_LOG);
-                // output.accept(ModBlocks.ICE_LOG);
-                // output.accept(ModBlocks.MAPLE_LOG);
-                // output.accept(ModBlocks.PALM_TREE_LOG);
-                // output.accept(ModBlocks.PALO_LOG);
-                // output.accept(ModBlocks.POISONED_LOG);
-                // output.accept(ModBlocks.REDWOOD_LOG);
-                // output.accept(ModBlocks.SALLOW_LOG);
-                // output.accept(ModBlocks.SPIRAL_LOG);
-                // output.accept(ModBlocks.STORMBARK_LOG);
-                // output.accept(ModBlocks.STRIPPED_LOG);
-                // output.accept(ModBlocks.WINDWILLOW_LOG);
-                // output.accept(ModBlocks.WILD_WISTERIA_LOG);
-            })
             .build();
 }
 
