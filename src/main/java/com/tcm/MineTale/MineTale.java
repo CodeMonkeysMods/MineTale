@@ -1,5 +1,6 @@
 package com.tcm.MineTale;
 
+import com.tcm.MineTale.util.ModLootTableModifiers;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -72,6 +73,8 @@ public class MineTale implements ModInitializer {
 
 		RecipeSynchronization.synchronizeRecipeSerializer(ModRecipes.FURNACE_SERIALIZER);
 
+		ModLootTableModifiers.modifyLootTables();
+
 		// Register the payload type and codec so the game knows how to handle it
 		PayloadTypeRegistry.playC2S().register(CraftRequestPayload.TYPE, CraftRequestPayload.CODEC);
 
@@ -129,7 +132,7 @@ public class MineTale implements ModInitializer {
 			});
 		});
 
-		LOGGER.info("Hello Fabric world!");
+		LOGGER.info("MineTale Loaded!");
 	}
 
 	private boolean hasIngredients(ServerPlayer player, WorkbenchRecipe recipe) {

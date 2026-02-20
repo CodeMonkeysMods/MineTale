@@ -1,5 +1,6 @@
 package com.tcm.MineTale.datagen;
 
+import com.jcraft.jorbis.Block;
 import com.tcm.MineTale.registry.ModBlocks;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
@@ -28,6 +29,14 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
      */
     @Override
     protected void addTags(HolderLookup.Provider provider) {
+        valueLookupBuilder(BlockTags.MINEABLE_WITH_PICKAXE)
+                .add(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1)
+                .add(ModBlocks.FURNACE_WORKBENCH_BLOCK_T2)
+                .add(ModBlocks.ARMORERS_WORKBENCH_BLOCK);
+        valueLookupBuilder(BlockTags.MINEABLE_WITH_AXE)
+                .add(ModBlocks.CAMPFIRE_WORKBENCH_BLOCK)
+                .add(ModBlocks.WORKBENCH_WORKBENCH_BLOCK);
+
         valueLookupBuilder(BlockTags.LOGS)
                 .add(ModBlocks.AMBER_LOG)
                 .add(ModBlocks.BAMBOO_LOG)

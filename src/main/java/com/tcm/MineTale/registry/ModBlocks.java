@@ -28,6 +28,7 @@ import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.Blocks;
 
+import static net.minecraft.world.level.block.Blocks.litBlockEmission;
 import static net.minecraft.world.level.block.Blocks.logProperties;
 
 public class ModBlocks {
@@ -59,14 +60,18 @@ public class ModBlocks {
 	public static final Block FURNACE_WORKBENCH_BLOCK_T1 = register(
 		"furnace_workbench_block_t1",
 		(props) -> new FurnaceWorkbench(props, ModTiers.TIER_1),
-		BlockBehaviour.Properties.of().sound(SoundType.STONE).noOcclusion(),
-		true
+		BlockBehaviour.Properties.of().sound(SoundType.STONE).noOcclusion()
+				.requiresCorrectToolForDrops().strength(3.5F)
+				.lightLevel(litBlockEmission(13)),
+			true
 	);
 
 	public static final Block FURNACE_WORKBENCH_BLOCK_T2 = register(
 		"furnace_workbench_block_t2",
 		(props) -> new FurnaceWorkbench(props, ModTiers.TIER_2),
-		BlockBehaviour.Properties.of().sound(SoundType.STONE).noOcclusion(),
+		BlockBehaviour.Properties.of().sound(SoundType.STONE).noOcclusion()
+				.requiresCorrectToolForDrops().strength(3.5F)
+				.lightLevel(litBlockEmission(13)),
 		true
 	);
 
