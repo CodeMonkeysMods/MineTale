@@ -355,6 +355,24 @@ public abstract class AbstractWorkbench<E extends AbstractWorkbenchEntity> exten
         return 1.0F;
     }
 
+    /**
+     * Handle teardown of a multi-block workbench when a player destroys one of its parts,
+     * ensuring the master/slave parts are removed consistently and loot is produced exactly once.
+     *
+     * <p>Server-side behavior:
+     * - Computes the master (bottom-left) position for the workbench and whether the broken part is the master.
+     * - Iterates the workbench footprint (2x2 if wide and tall, or the corresponding subset) and removes other parts:
+     *   - If the master is broken, other parts are removed silently (no drops).
+     *   - If a slave is broken, the master is destroyed (producing drops unless the player is in creative) and other slaves are removed silently.
+     * - Emits GameEvent.BLOCK_DESTROY for each part that is removed.
+     * - If a slave was broken by a non-creative player, prevents the slave part itself from dropping to avoid duplicate loot.
+     *
+     * @param level  the world where the destruction occurs
+     * @param pos    the position of the part being destroyed
+     * @param state  the block state of the part being destroyed (may be modified to suppress drops)
+     * @param player the player performing the destruction
+     * @return the BlockState returned by the superclass implementation after custom teardown handling
+     */
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         if (!level.isClientSide()) {
