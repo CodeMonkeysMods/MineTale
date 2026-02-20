@@ -35,8 +35,6 @@ public class ModLootTableProvider extends FabricBlockLootTableProvider {
     @Override
     public void generate() {
         ///Block Drops Itself
-        dropSelf(ModBlocks.ARMORERS_WORKBENCH_BLOCK);
-
         this.add(ModBlocks.ARMORERS_WORKBENCH_BLOCK, 
             LootTable.lootTable() // Use the static factory method to start the builder
                 .withPool(LootPool.lootPool()
