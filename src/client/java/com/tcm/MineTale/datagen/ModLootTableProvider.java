@@ -1,20 +1,27 @@
 package com.tcm.MineTale.datagen;
 
+import com.tcm.MineTale.block.workbenches.AbstractWorkbench;
 import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
+import net.minecraft.advancements.criterion.StatePropertiesPredicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.properties.ChestType;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
+import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
@@ -30,11 +37,26 @@ public class ModLootTableProvider extends FabricBlockLootTableProvider {
         ///Block Drops Itself
         //Bug!! Workbenches currently drop items based on the amount of blocks
         //the multiblock is. For example the Furnaces currently drop 4 furnaces.
-        dropSelf(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1);
-        dropSelf(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1);
+        // dropSelf(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1);
+        // dropSelf(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1);
         dropSelf(ModBlocks.ARMORERS_WORKBENCH_BLOCK);
         dropSelf(ModBlocks.CAMPFIRE_WORKBENCH_BLOCK);
         dropSelf(ModBlocks.WORKBENCH_WORKBENCH_BLOCK);
+
+        this.add(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1, 
+            LootTable.lootTable() // Use the static factory method to start the builder
+                .withPool(LootPool.lootPool()
+                    .setRolls(ConstantValue.exactly(1.0F))
+                    .add(LootItem.lootTableItem(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1))
+                    .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1)
+                        .setProperties(StatePropertiesPredicate.Builder.properties()
+                            .hasProperty(AbstractWorkbench.HALF, DoubleBlockHalf.LOWER)
+                            .hasProperty(AbstractWorkbench.TYPE, ChestType.LEFT)
+                        )
+                    )
+                    .when(ExplosionCondition.survivesExplosion())
+                )
+        );
     }
 
 

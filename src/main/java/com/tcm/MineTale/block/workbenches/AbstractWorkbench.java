@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.*;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -32,6 +33,8 @@ import org.jetbrains.annotations.Nullable;
 import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
 
 import java.util.function.Supplier;
+
+// DoorBlock
 
 public abstract class AbstractWorkbench<E extends AbstractWorkbenchEntity> extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
@@ -350,5 +353,53 @@ public abstract class AbstractWorkbench<E extends AbstractWorkbenchEntity> exten
         // In your source: return blockState.isCollisionShapeFullBlock(...) ? 0.2F : 1.0F;
         // We want 1.0F to ensure the block doesn't cast a pitch-black shadow on itself.
         return 1.0F;
+    }
+
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide()) {
+            BlockPos masterPos = getMasterPos(state, pos);
+            boolean isMaster = pos.equals(masterPos);
+
+            // Iterate through the entire 2x2 or 1x2 structure
+            for (int y = 0; y <= (isTall ? 1 : 0); y++) {
+                for (int x = 0; x <= (isWide ? 1 : 0); x++) {
+                    Direction facing = state.getValue(FACING);
+                    BlockPos targetPos = masterPos.above(y).relative(facing.getClockWise(), x);
+
+                    // Skip the block the player is currently mining
+                    if (targetPos.equals(pos)) continue;
+
+                    BlockState targetState = level.getBlockState(targetPos);
+                    if (targetState.is(this) && getMasterPos(targetState, targetPos).equals(masterPos)) {
+                        if (isMaster) {
+                            // If we are mining the Master, destroy others SILENTLY
+                            level.setBlock(targetPos, Blocks.AIR.defaultBlockState(), 35);
+                        } else {
+                            // If we are mining a Slave block, we need to handle the Master carefully.
+                            // If the Master is at this targetPos, destroy it WITH drops.
+                            if (targetPos.equals(masterPos)) {
+                                level.destroyBlock(targetPos, !player.isCreative());
+                            } else {
+                                // Otherwise, it's just another slave block, remove silently.
+                                level.setBlock(targetPos, Blocks.AIR.defaultBlockState(), 35);
+                            }
+                        }
+                        level.gameEvent(GameEvent.BLOCK_DESTROY, targetPos, GameEvent.Context.of(player, targetState));
+                    }
+                }
+            }
+
+            // Final tweak: If the player is mining a SLAVE block, 
+            // we must prevent the slave block itself from dropping.
+            if (!isMaster && !player.isCreative()) {
+                // This prevents the current block from dropping its loot table 
+                // because we already triggered the Master's drop above.
+                state = state.setValue(BlockStateProperties.LIT, false); // Optional: change state to desync loot
+                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 35);
+            }
+        }
+
+        return super.playerWillDestroy(level, pos, state, player);
     }
 }
