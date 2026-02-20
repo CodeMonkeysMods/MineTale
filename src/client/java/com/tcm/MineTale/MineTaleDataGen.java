@@ -8,10 +8,10 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 public class MineTaleDataGen implements DataGeneratorEntrypoint {
 
     /**
-     * Initialize a data pack and register the mod's data providers.
+     * Initialize a data pack and register the mod's data providers for data generation.
      *
-     * Creates a data pack from the given Fabric data generator and adds the language
-     * and model providers so they will run during data generation.
+     * Registers language, model, recipe, block tag, and loot table providers so they
+     * will run as part of the Fabric data generation pack created from the given generator.
      *
      * @param fabricDataGenerator the Fabric data generator used to create the data pack
      */

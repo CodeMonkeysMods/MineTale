@@ -21,11 +21,13 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     }
 
     /**
-     * Populates the BlockTags.LOGS tag with this mod's log blocks.
+     * Populate block tags with this mod's blocks.
      *
-     * Registers each mod-defined log block so they are included in the game's LOGS tag mapping.
+     * Adds mod-defined blocks to relevant vanilla block tags (for example
+     * MINEABLE_WITH_PICKAXE, MINEABLE_WITH_AXE, and LOGS) so they are included
+     * in the game's tag mappings.
      *
-     * @param provider a registry lookup provider used to resolve holders during tag population
+     * @param provider registry lookup provider used to resolve holders during tag population
      */
     @Override
     protected void addTags(HolderLookup.Provider provider) {

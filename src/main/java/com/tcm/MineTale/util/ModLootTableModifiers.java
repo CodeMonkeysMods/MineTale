@@ -13,6 +13,16 @@ public class ModLootTableModifiers {
     private static final Identifier SHORT_GRASS_ID = Identifier.fromNamespaceAndPath("minecraft", "blocks/short_grass");
     private static final Identifier TALL_GRASS_ID = Identifier.fromNamespaceAndPath("minecraft", "blocks/tall_grass");
 
+    /**
+     * Registers a listener that modifies the loot tables for short and tall grass.
+     *
+     * <p>When the listener sees the short grass loot table, it replaces its pools with a single-roll
+     * pool that can produce AIR (count exactly 1) and STICK (count between 1 and 3). When the listener
+     * sees the tall grass loot table, it replaces its pools with a single-roll pool that can produce
+     * STICK (weight 1, count between 1 and 4).
+     *
+     * <p>This method registers the modification via LootTableEvents.MODIFY.
+     */
     public static void modifyLootTables() {
         LootTableEvents.MODIFY.register((key, tableBuilder, sources, registry) -> {
             if (SHORT_GRASS_ID.equals(key.identifier())) {

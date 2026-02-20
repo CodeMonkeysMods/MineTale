@@ -135,7 +135,16 @@ public class MineTale implements ModInitializer {
 		LOGGER.info("MineTale Loaded!");
 	}
 
-	private boolean hasIngredients(ServerPlayer player, WorkbenchRecipe recipe) {
+	/**
+     * Determines whether the player (and nearby pullable chests, if the workbench allows) collectively contain all item ingredients required by the given workbench recipe.
+     *
+     * This check requires the player's open container to be an AbstractWorkbenchContainerMenu; if it is not, the method returns `false`. It examines the player's non-equipment inventory and, when the workbench permits pulling, the contents of nearby inventories. Each recipe ingredient must be satisfied by a distinct matching item instance from those inventories.
+     *
+     * @param player the server player whose inventories are checked
+     * @param recipe the workbench recipe whose ingredient requirements are being validated
+     * @return `true` if all ingredients of the recipe can be satisfied from the player and allowed nearby inventories, `false` otherwise
+     */
+    private boolean hasIngredients(ServerPlayer player, WorkbenchRecipe recipe) {
         if (!(player.containerMenu instanceof AbstractWorkbenchContainerMenu menu)) return false;
         AbstractWorkbenchEntity be = menu.getBlockEntity();
 
