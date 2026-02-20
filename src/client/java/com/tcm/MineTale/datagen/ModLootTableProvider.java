@@ -35,13 +35,52 @@ public class ModLootTableProvider extends FabricBlockLootTableProvider {
     @Override
     public void generate() {
         ///Block Drops Itself
-        //Bug!! Workbenches currently drop items based on the amount of blocks
-        //the multiblock is. For example the Furnaces currently drop 4 furnaces.
-        // dropSelf(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1);
-        // dropSelf(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1);
         dropSelf(ModBlocks.ARMORERS_WORKBENCH_BLOCK);
-        dropSelf(ModBlocks.CAMPFIRE_WORKBENCH_BLOCK);
-        dropSelf(ModBlocks.WORKBENCH_WORKBENCH_BLOCK);
+
+        this.add(ModBlocks.ARMORERS_WORKBENCH_BLOCK, 
+            LootTable.lootTable() // Use the static factory method to start the builder
+                .withPool(LootPool.lootPool()
+                    .setRolls(ConstantValue.exactly(1.0F))
+                    .add(LootItem.lootTableItem(ModBlocks.ARMORERS_WORKBENCH_BLOCK))
+                    .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.ARMORERS_WORKBENCH_BLOCK)
+                        .setProperties(StatePropertiesPredicate.Builder.properties()
+                            .hasProperty(AbstractWorkbench.HALF, DoubleBlockHalf.LOWER)
+                            .hasProperty(AbstractWorkbench.TYPE, ChestType.LEFT)
+                        )
+                    )
+                    .when(ExplosionCondition.survivesExplosion())
+                )
+        );
+
+        this.add(ModBlocks.CAMPFIRE_WORKBENCH_BLOCK, 
+            LootTable.lootTable() // Use the static factory method to start the builder
+                .withPool(LootPool.lootPool()
+                    .setRolls(ConstantValue.exactly(1.0F))
+                    .add(LootItem.lootTableItem(ModBlocks.CAMPFIRE_WORKBENCH_BLOCK))
+                    .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.CAMPFIRE_WORKBENCH_BLOCK)
+                        .setProperties(StatePropertiesPredicate.Builder.properties()
+                            .hasProperty(AbstractWorkbench.HALF, DoubleBlockHalf.LOWER)
+                            .hasProperty(AbstractWorkbench.TYPE, ChestType.SINGLE)
+                        )
+                    )
+                    .when(ExplosionCondition.survivesExplosion())
+                )
+        );
+
+        this.add(ModBlocks.WORKBENCH_WORKBENCH_BLOCK, 
+            LootTable.lootTable() // Use the static factory method to start the builder
+                .withPool(LootPool.lootPool()
+                    .setRolls(ConstantValue.exactly(1.0F))
+                    .add(LootItem.lootTableItem(ModBlocks.WORKBENCH_WORKBENCH_BLOCK))
+                    .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.WORKBENCH_WORKBENCH_BLOCK)
+                        .setProperties(StatePropertiesPredicate.Builder.properties()
+                            .hasProperty(AbstractWorkbench.HALF, DoubleBlockHalf.LOWER)
+                            .hasProperty(AbstractWorkbench.TYPE, ChestType.LEFT)
+                        )
+                    )
+                    .when(ExplosionCondition.survivesExplosion())
+                )
+        );
 
         this.add(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1, 
             LootTable.lootTable() // Use the static factory method to start the builder
@@ -49,6 +88,21 @@ public class ModLootTableProvider extends FabricBlockLootTableProvider {
                     .setRolls(ConstantValue.exactly(1.0F))
                     .add(LootItem.lootTableItem(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1))
                     .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1)
+                        .setProperties(StatePropertiesPredicate.Builder.properties()
+                            .hasProperty(AbstractWorkbench.HALF, DoubleBlockHalf.LOWER)
+                            .hasProperty(AbstractWorkbench.TYPE, ChestType.LEFT)
+                        )
+                    )
+                    .when(ExplosionCondition.survivesExplosion())
+                )
+        );
+
+        this.add(ModBlocks.FURNACE_WORKBENCH_BLOCK_T2, 
+            LootTable.lootTable() // Use the static factory method to start the builder
+                .withPool(LootPool.lootPool()
+                    .setRolls(ConstantValue.exactly(1.0F))
+                    .add(LootItem.lootTableItem(ModBlocks.FURNACE_WORKBENCH_BLOCK_T2))
+                    .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.FURNACE_WORKBENCH_BLOCK_T2)
                         .setProperties(StatePropertiesPredicate.Builder.properties()
                             .hasProperty(AbstractWorkbench.HALF, DoubleBlockHalf.LOWER)
                             .hasProperty(AbstractWorkbench.TYPE, ChestType.LEFT)
