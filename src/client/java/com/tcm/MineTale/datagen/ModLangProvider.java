@@ -24,9 +24,6 @@ public class ModLangProvider extends FabricLanguageProvider {
         translationBuilder.add("block.minetale.campfire_workbench_block", "Campfire Workbench");
 
         translationBuilder.add("block.minetale.amber_log", "Amber Log");
-        translationBuilder.add("block.minetale.ash_log", "Ash Log");
-        translationBuilder.add("block.minetale.aspen_log", "Aspen Log");
-        translationBuilder.add("block.minetale.azure_log", "Azure Log");
         translationBuilder.add("block.minetale.bamboo_log", "Bamboo Log");
         translationBuilder.add("block.minetale.bamboo_log_deco", "Bamboo Log Deco");
         translationBuilder.add("block.minetale.banyan_log", "Banyan Log");
@@ -34,17 +31,12 @@ public class ModLangProvider extends FabricLanguageProvider {
         translationBuilder.add("block.minetale.bottletree_log", "Bottletree Log");
         translationBuilder.add("block.minetale.burnt_log", "Burnt Log");
         translationBuilder.add("block.minetale.camphor_log", "Camphor Log");
-        translationBuilder.add("block.minetale.cedar_log", "Cedar Log");
-        translationBuilder.add("block.minetale.crystalwood_log", "Crystalwood Log");
-        translationBuilder.add("block.minetale.dry_log", "Dry Log");
-        translationBuilder.add("block.minetale.blue_fig_log", "Blue Fig Log");
         translationBuilder.add("block.minetale.fire_log", "Fire Log");
         translationBuilder.add("block.minetale.gumboab_log", "Gumboab Log");
         translationBuilder.add("block.minetale.ice_log", "Ice Log");
         translationBuilder.add("block.minetale.maple_log", "Maple Log");
         translationBuilder.add("block.minetale.palm_tree_log", "Palm Tree Log");
         translationBuilder.add("block.minetale.palo_log", "Palo Log");
-        translationBuilder.add("block.minetale.petrified_log", "Petrified Log");
         translationBuilder.add("block.minetale.poisoned_log", "Poisoned Log");
         translationBuilder.add("block.minetale.redwood_log", "Redwood Log");
         translationBuilder.add("block.minetale.sallow_log", "Sallow Log");
@@ -54,6 +46,55 @@ public class ModLangProvider extends FabricLanguageProvider {
         translationBuilder.add("block.minetale.windwillow_log", "Windwillow Log");
         translationBuilder.add("block.minetale.wild_wisteria_log", "Wild Wisteria Log");
         translationBuilder.add("block.minetale.wild_wisteria_wood", "Wild Wisteria Wood");
+
+        translationBuilder.add("block.minetale.copper_ore_basalt", "Basalt Copper Ore");
+        translationBuilder.add("block.minetale.copper_ore_volcanic", "Volcanic Copper Ore");
+        translationBuilder.add("block.minetale.copper_ore_shale", "Shale Copper Ore");
+        translationBuilder.add("block.minetale.copper_ore_sandstone", "Sandstone Copper Ore");
+        translationBuilder.add("block.minetale.onyxium_ore_basalt", "Basalt Onyxium Ore");
+        translationBuilder.add("block.minetale.onyxium_ore_volcanic", "Volcanic Onyxium Ore");
+        translationBuilder.add("block.minetale.onyxium_ore_shale", "Shale Onyxium Ore");
+        translationBuilder.add("block.minetale.onyxium_ore_stone", "Onyxium Ore");
+        translationBuilder.add("block.minetale.onyxium_ore_sandstone", "Sandstone Onyxium Ore");
+        translationBuilder.add("block.minetale.thorium_ore_basalt", "Basalt Thorium Ore");
+        translationBuilder.add("block.minetale.thorium_ore_volcanic", "Volcanic Thorium Ore");
+        translationBuilder.add("block.minetale.thorium_ore_shale", "Shale Thorium Ore");
+        translationBuilder.add("block.minetale.thorium_ore_stone", "Thorium Ore");
+        translationBuilder.add("block.minetale.thorium_ore_sandstone", "Sandstone Thorium Ore");
+        translationBuilder.add("block.minetale.thorium_ore_dry_mud", "Dry Mud Thorium Ore");
+        translationBuilder.add("block.minetale.adamantite_ore_basalt", "Basalt Adamantite Ore");
+        translationBuilder.add("block.minetale.adamantite_ore_volcanic", "Volcanic Adamantite Ore");
+        translationBuilder.add("block.minetale.adamantite_ore_shale", "Shale Adamantite Ore");
+        translationBuilder.add("block.minetale.adamantite_ore_stone", "Adamantite Ore");
+        translationBuilder.add("block.minetale.adamantite_ore_slate", "Slate Adamantite Ore");
+        translationBuilder.add("block.minetale.adamantite_ore_magma", "Magma Adamantite Ore");
+        translationBuilder.add("block.minetale.mithril_ore_basalt", "Basalt Mithril Ore");
+        translationBuilder.add("block.minetale.mithril_ore_volcanic", "Volcanic Mithril Ore");
+        translationBuilder.add("block.minetale.mithril_ore_slate", "Slate Mithril Ore");
+        translationBuilder.add("block.minetale.mithril_ore_stone", "Mithril Ore");
+        translationBuilder.add("block.minetale.mithril_ore_magma", "Magma Mithril Ore");
+        translationBuilder.add("block.minetale.cobalt_ore_basalt", "Basalt Cobalt Ore");
+        translationBuilder.add("block.minetale.cobalt_ore_volcanic", "Volcanic Cobalt Ore");
+        translationBuilder.add("block.minetale.cobalt_ore_shale", "Shale Cobalt Ore");
+        translationBuilder.add("block.minetale.cobalt_ore_stone", "Cobalt Ore");
+        translationBuilder.add("block.minetale.cobalt_ore_sandstone", "Sandstone Cobalt Ore");
+        translationBuilder.add("block.minetale.cobalt_ore_slate", "Slate Cobalt Ore");
+        translationBuilder.add("block.minetale.iron_ore_basalt", "Basalt Iron Ore");
+        translationBuilder.add("block.minetale.iron_ore_volcanic", "Volcanic Iron Ore");
+        translationBuilder.add("block.minetale.iron_ore_shale", "Shale Iron Ore");
+        translationBuilder.add("block.minetale.iron_ore_sandstone", "Sandstone Iron Ore");
+        translationBuilder.add("block.minetale.iron_ore_slate", "Slate Iron Ore");
+        translationBuilder.add("block.minetale.gold_ore_basalt", "Basalt Gold Ore");
+        translationBuilder.add("block.minetale.gold_ore_volcanic", "Volcanic Gold Ore");
+        translationBuilder.add("block.minetale.gold_ore_shale", "Shale Gold Ore");
+        translationBuilder.add("block.minetale.gold_ore_sandstone", "Sandstone Gold Ore");
+        translationBuilder.add("block.minetale.gold_ore_calcite", "Calcite Gold Ore");
+        translationBuilder.add("block.minetale.silver_ore_basalt", "Basalt Silver Ore");
+        translationBuilder.add("block.minetale.silver_ore_volcanic", "Volcanic Silver Ore");
+        translationBuilder.add("block.minetale.silver_ore_shale", "Shale Silver Ore");
+        translationBuilder.add("block.minetale.silver_ore_stone", "Silver Ore");
+        translationBuilder.add("block.minetale.silver_ore_sandstone", "Sandstone Silver Ore");
+        translationBuilder.add("block.minetale.silver_ore_slate", "Slate Silver Ore");
 
         // --- NATURAL MATERIALS & GATHERABLES ---
         translationBuilder.add("item.minetale.plant_fiber", "Plant Fiber");
@@ -73,6 +114,11 @@ public class ModLangProvider extends FabricLanguageProvider {
         translationBuilder.add("item.minetale.mithril_ingot", "Mithril Ingot");
         translationBuilder.add("item.minetale.bronze_ingot", "Bronze Ingot");
         translationBuilder.add("item.minetale.steel_ingot", "Steel Ingot");
+
+        translationBuilder.add("item.minetale.thorium_ore", "Thorium Ore");
+        translationBuilder.add("item.minetale.cobalt_ore", "Cobalt Ore");
+        translationBuilder.add("item.minetale.adamantite_ore", "Adamantite Ore");
+        translationBuilder.add("item.minetale.mithril_ore", "Mithril Ore");
 
         // --- MOB DROPS, HIDES & LEATHERS ---
         translationBuilder.add("item.minetale.light_hide", "Light Hide");
