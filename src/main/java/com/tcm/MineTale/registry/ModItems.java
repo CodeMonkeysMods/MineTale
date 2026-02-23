@@ -3,26 +3,18 @@ package com.tcm.MineTale.registry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.UnaryOperator;
 
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.item.ModCreativeTab;
 
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.Registry;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ItemContainerContents;
-import net.minecraft.world.level.block.Block;
-
-import static net.minecraft.world.item.Items.registerBlock;
 
 public class ModItems {
 

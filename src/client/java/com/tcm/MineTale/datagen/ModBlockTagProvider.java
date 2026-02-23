@@ -1,6 +1,5 @@
 package com.tcm.MineTale.datagen;
 
-import com.jcraft.jorbis.Block;
 import com.tcm.MineTale.registry.ModBlocks;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;

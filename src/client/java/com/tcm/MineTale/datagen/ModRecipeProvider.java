@@ -4,7 +4,10 @@ import java.util.concurrent.CompletableFuture;
 
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.datagen.builders.WorkbenchRecipeBuilder;
-import com.tcm.MineTale.registry.ModBlocks;
+import com.tcm.MineTale.datagen.recipes.ArmorRecipes;
+import com.tcm.MineTale.datagen.recipes.FurnitureRecipes;
+import com.tcm.MineTale.datagen.recipes.PlantFibreRecipes;
+import com.tcm.MineTale.datagen.recipes.WorkbenchRecipes;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
 import com.tcm.MineTale.registry.ModRecipes;
 
@@ -68,27 +71,6 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 					.bookCategory(ModRecipeDisplay.CAMPFIRE_SEARCH)
 					.save(exporter, "campfire_pork_cooking");
 
-				// Workbench Recipes
-
-				// 1. Workbenches
-				new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-					.input(Items.COPPER_INGOT, 2)
-					.input(ItemTags.LOGS, registryLookup, 10)
-					.input(ItemTags.STONE_TOOL_MATERIALS, registryLookup, 5)
-					.output(ModBlocks.ARMORERS_WORKBENCH_BLOCK.asItem())
-					.unlockedBy("has_workbench", has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
-					.bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-					.save(exporter, "workbench_armorers_workbench");
-
-				new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-					.input(ItemTags.LOGS, registryLookup, 6)
-					.input(ItemTags.STONE_TOOL_MATERIALS, registryLookup, 6)
-					.output(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1.asItem())
-					.unlockedBy("has_workbench", has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
-					.bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-					.save(exporter, "workbench_furnace_workbench_t1");
-
-
 				// 2. Chests
 				new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
 					.input(ItemTags.LOGS, registryLookup, 10)
@@ -108,6 +90,18 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 					.unlockedBy("has_copper_ore", has(Items.COPPER_ORE))
 					.bookCategory(ModRecipeDisplay.FURNACE_T1_SEARCH)
 					.save(exporter, "furnace_t1_copper_ingot");
+
+				// Crafting Recipes
+				PlantFibreRecipes.buildRecipes(this, exporter, registryLookup);
+
+				// Workbench Recipes
+				WorkbenchRecipes.buildRecipes(this, exporter, registryLookup);
+
+				// Armor Recipes
+				ArmorRecipes.buildRecipes(this, exporter, registryLookup);
+
+				// Furniture Recipes
+				FurnitureRecipes.buildRecipes(this, exporter, registryLookup);
 			}
 		};
 	}
