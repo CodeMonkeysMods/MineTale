@@ -5,8 +5,9 @@ import java.util.concurrent.CompletableFuture;
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.datagen.builders.WorkbenchRecipeBuilder;
 import com.tcm.MineTale.datagen.recipes.ArmorRecipes;
+import com.tcm.MineTale.datagen.recipes.BuilderRecipes;
+import com.tcm.MineTale.datagen.recipes.FarmerRecipes;
 import com.tcm.MineTale.datagen.recipes.FurnitureRecipes;
-import com.tcm.MineTale.datagen.recipes.PlantFibreRecipes;
 import com.tcm.MineTale.datagen.recipes.WorkbenchRecipes;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
 import com.tcm.MineTale.registry.ModRecipes;
@@ -91,9 +92,6 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 					.bookCategory(ModRecipeDisplay.FURNACE_T1_SEARCH)
 					.save(exporter, "furnace_t1_copper_ingot");
 
-				// Crafting Recipes
-				PlantFibreRecipes.buildRecipes(this, exporter, registryLookup);
-
 				// Workbench Recipes
 				WorkbenchRecipes.buildRecipes(this, exporter, registryLookup);
 
@@ -102,6 +100,12 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 
 				// Furniture Recipes
 				FurnitureRecipes.buildRecipes(this, exporter, registryLookup);
+
+				// Builder Recipes
+				BuilderRecipes.buildRecipes(this, exporter, registryLookup);
+
+				// Farmer Recipes
+				FarmerRecipes.buildRecipes(this, exporter, registryLookup);
 			}
 		};
 	}

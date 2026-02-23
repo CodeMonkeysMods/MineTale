@@ -43,5 +43,16 @@ public class FurnitureRecipes {
         //     .unlockedBy("has_furniture_workbench", provider.has(ModBlocks.FURNITURE_WORKBENCH_BLOCK))
         //     .bookCategory(ModRecipeDisplay.FURNITURE_SEARCH)
         //     .save(exporter, "KWEEBEC_PLUSHIE");
+
+        // TODO: OLD_SCROLL & FURNITURE_WORKBENCH_BLOCK Not Implemented
+        // new WorkbenchRecipeBuilder(ModRecipes.FURNITURE_TYPE, ModRecipes.FURNITURE_SERIALIZER)
+        //     .input(ModItems.PLANT_FIBER, 4)
+        //     .input(Items.STICK, 2)
+        //     .output(ModBlocks.OLD_SCROLL.asItem())
+        //     .unlockedBy("has_furniture_workbench", provider.has(ModBlocks.FURNITURE_WORKBENCH_BLOCK))
+        //     .bookCategory(ModRecipeDisplay.FURNITURE_SEARCH)
+        //     .save(exporter, "OLD_SCROLL");
+
+        
     }
 }
