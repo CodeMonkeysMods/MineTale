@@ -27,6 +27,9 @@ public class ModRecipeDisplay {
     public static final RecipeDisplay.Type<WorkbenchRecipeDisplay> WORKBENCH_TYPE = 
         new RecipeDisplay.Type<>(WorkbenchRecipeDisplay.CODEC, STREAM_CODEC);
 
+    public static final RecipeDisplay.Type<WorkbenchRecipeDisplay> ARMORERS_TYPE = 
+        new RecipeDisplay.Type<>(WorkbenchRecipeDisplay.CODEC, STREAM_CODEC);
+
     // 1. Declare the fields but don't assign them yet
     public static final RecipeBookCategory CAMPFIRE_SEARCH = registerCategory("campfire_recipe_book_category");
     public static final RecipeBookCategory WORKBENCH_SEARCH = registerCategory("workbench_recipe_book_category");

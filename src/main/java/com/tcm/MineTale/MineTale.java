@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
 import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
+import com.tcm.MineTale.block.workbenches.menu.ArmorersWorkbenchMenu;
 import com.tcm.MineTale.block.workbenches.menu.WorkbenchWorkbenchMenu;
 import com.tcm.MineTale.network.ClientboundNearbyInventorySyncPacket;
 import com.tcm.MineTale.network.CraftRequestPayload;
@@ -81,31 +82,82 @@ public class MineTale implements ModInitializer {
 		PayloadTypeRegistry.playS2C().register(ClientboundNearbyInventorySyncPacket.TYPE, ClientboundNearbyInventorySyncPacket.STREAM_CODEC);
 
 		// Register the server-side receiver using .TYPE
+		// ServerPlayNetworking.registerGlobalReceiver(CraftRequestPayload.TYPE, (payload, context) -> {
+		// 	context.server().execute(() -> {
+		// 		ServerPlayer player = context.player();
+
+		// 		// --- SECURITY GUARD ---
+		// 		// Ensure the player actually has the Workbench UI open before processing the craft
+		// 		if (!(player.containerMenu instanceof WorkbenchWorkbenchMenu)) {
+		// 			return; 
+		// 		}
+
+		// 		ItemStack requestedResult = payload.resultItem();
+		// 		int amount = payload.amount();
+				
+		// 		// 1. Get the RecipeManager from the server level
+		// 		RecipeManager recipeManager = player.level().recipeAccess();
+
+		// 		// 2. Find the recipe by matching the output ItemStack
+		// 		Optional<RecipeHolder<WorkbenchRecipe>> recipeOpt = recipeManager.getAllOfType(ModRecipes.WORKBENCH_TYPE).stream()
+		// 			.filter(holder -> {
+		// 				// Guard against recipes with no results before accessing index 0
+		// 				if (holder.value().results().isEmpty()) {
+		// 					return false;
+		// 				}
+						
+		// 				// Compare the first result of the workbench recipe to the requested item
+		// 				ItemStack result = holder.value().results().get(0);
+		// 				return ItemStack.isSameItem(result, requestedResult);
+		// 			})
+		// 			.findFirst();
+
+		// 		if (recipeOpt.isPresent()) {
+		// 			WorkbenchRecipe recipe = recipeOpt.get().value();
+					
+		// 			// 2. Determine craft limit (Handle "All" logic)
+		// 			int limit = (amount == -1) ? 64 : Math.min(Math.max(amount, 0), 64);
+
+		// 			for (int i = 0; i < limit; i++) {
+		// 				if (hasIngredients(player, recipe)) {
+		// 					consumeIngredients(player, recipe);
+		// 					player.getInventory().add(recipe.results().get(0).copy());
+		// 				} else {
+		// 					break; 
+		// 				}
+		// 			}
+					
+		// 			// 3. Sync inventory changes to the client screen
+		// 			player.containerMenu.broadcastChanges();
+		// 		}
+		// 	});
+		// });
+
 		ServerPlayNetworking.registerGlobalReceiver(CraftRequestPayload.TYPE, (payload, context) -> {
 			context.server().execute(() -> {
 				ServerPlayer player = context.player();
+				
+				// --- SELECTIVE SECURITY GUARD ---
+				// Only proceed if the menu is one of the two specific workbenches
+				boolean isWorkbench = player.containerMenu instanceof WorkbenchWorkbenchMenu;
+				boolean isArmorers = player.containerMenu instanceof ArmorersWorkbenchMenu;
 
-				// --- SECURITY GUARD ---
-				// Ensure the player actually has the Workbench UI open before processing the craft
-				if (!(player.containerMenu instanceof WorkbenchWorkbenchMenu)) {
-					return; 
+				if (!isWorkbench && !isArmorers) {
+					return; // Reject packets from Campfires, Furnaces, or other menus
 				}
 
 				ItemStack requestedResult = payload.resultItem();
 				int amount = payload.amount();
-				
-				// 1. Get the RecipeManager from the server level
 				RecipeManager recipeManager = player.level().recipeAccess();
 
-				// 2. Find the recipe by matching the output ItemStack
-				Optional<RecipeHolder<WorkbenchRecipe>> recipeOpt = recipeManager.getAllOfType(ModRecipes.WORKBENCH_TYPE).stream()
+				// 1. Determine which Recipe Type to search based on the open menu
+				var targetType = isWorkbench ? ModRecipes.WORKBENCH_TYPE : ModRecipes.ARMORERS_TYPE;
+
+				// 2. Find the recipe within that specific type
+				Optional<RecipeHolder<WorkbenchRecipe>> recipeOpt = recipeManager.getAllOfType(targetType).stream()
 					.filter(holder -> {
-						// Guard against recipes with no results before accessing index 0
-						if (holder.value().results().isEmpty()) {
-							return false;
-						}
+						if (holder.value().results().isEmpty()) return false;
 						
-						// Compare the first result of the workbench recipe to the requested item
 						ItemStack result = holder.value().results().get(0);
 						return ItemStack.isSameItem(result, requestedResult);
 					})
@@ -114,19 +166,24 @@ public class MineTale implements ModInitializer {
 				if (recipeOpt.isPresent()) {
 					WorkbenchRecipe recipe = recipeOpt.get().value();
 					
-					// 2. Determine craft limit (Handle "All" logic)
+					// 3. Logic for crafting amount
 					int limit = (amount == -1) ? 64 : Math.min(Math.max(amount, 0), 64);
 
 					for (int i = 0; i < limit; i++) {
+						// IMPORTANT: Ensure these methods check nearby items if your benches use them!
 						if (hasIngredients(player, recipe)) {
 							consumeIngredients(player, recipe);
-							player.getInventory().add(recipe.results().get(0).copy());
+							
+							// Give the item to the player
+							ItemStack output = recipe.results().get(0).copy();
+							if (!player.getInventory().add(output)) {
+								player.drop(output, false); // Drop on floor if inventory is full
+							}
 						} else {
 							break; 
 						}
 					}
 					
-					// 3. Sync inventory changes to the client screen
 					player.containerMenu.broadcastChanges();
 				}
 			});
