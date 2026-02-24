@@ -28,7 +28,7 @@ import net.minecraft.world.level.Level;
 public record WorkbenchRecipe(
     List<Ingredient> ingredients, 
     List<ItemStack> results, 
-    int cookTime,
+    float cookTime,
     RecipeType<WorkbenchRecipe> recipeType,
     RecipeSerializer<WorkbenchRecipe> recipeSerializer,
     CraftingBookCategory category,
@@ -168,7 +168,7 @@ public record WorkbenchRecipe(
             this.codec = RecordCodecBuilder.mapCodec(inst -> inst.group(
                 Ingredient.CODEC.listOf().fieldOf("ingredients").forGetter(WorkbenchRecipe::ingredients),
                 ItemStack.STRICT_CODEC.listOf().fieldOf("results").forGetter(WorkbenchRecipe::results),
-                Codec.INT.optionalFieldOf("cookTime", 200).forGetter(WorkbenchRecipe::cookTime),
+                Codec.FLOAT.optionalFieldOf("cookTime", 200f).forGetter(WorkbenchRecipe::cookTime),
                 CraftingBookCategory.CODEC.optionalFieldOf("category", CraftingBookCategory.MISC).forGetter(WorkbenchRecipe::category),
                 Identifier.CODEC.fieldOf("book_category").forGetter(WorkbenchRecipe::bookCategory)
             ).apply(inst, (ing, res, time, cat, book) -> 
@@ -179,7 +179,7 @@ public record WorkbenchRecipe(
             this.streamCodec = StreamCodec.composite(
                 Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()), WorkbenchRecipe::ingredients,
                 ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()), WorkbenchRecipe::results,
-                ByteBufCodecs.VAR_INT.cast(), WorkbenchRecipe::cookTime,
+                ByteBufCodecs.FLOAT.cast(), WorkbenchRecipe::cookTime,
                 CraftingBookCategory.STREAM_CODEC.cast(), WorkbenchRecipe::category,
                 Identifier.STREAM_CODEC.cast(), WorkbenchRecipe::bookCategory,
                 (ing, res, time, cat, book) -> 

@@ -73,14 +73,14 @@ public class WorkbenchRecipes {
         //     .save(exporter, "workbench_hay_target");
 
         // TODO: CRUDE_TORCH Not Implemented
-        new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-            .input(ModItems.PLANT_FIBER)
-            .input(ModItems.TREE_SAP)
-            .input(Items.STICK)
-            .time(0.5)
-            .output(ModBlocks.CRUDE_TORCH.asItem(), 4)
-            .unlockedBy("has_furniture_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
-            .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-            .save(exporter, "CRUDE_TORCH");
+        // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+        //     .input(ModItems.PLANT_FIBER)
+        //     .input(ModItems.TREE_SAP)
+        //     .input(Items.STICK)
+        //     .time(0.5)
+        //     .output(ModBlocks.CRUDE_TORCH.asItem(), 4)
+        //     .unlockedBy("has_furniture_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+        //     .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+        //     .save(exporter, "CRUDE_TORCH");
     }
 }
