@@ -42,17 +42,6 @@ public class WorkbenchRecipes {
         //     .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
         //     .save(exporter, "workbench_farmers_workbench");
 
-        // TODO: ChickenCoop Not Implemented
-        // new WorkbenchRecipeBuilder(ModRecipes.FARMERS_TYPE, ModRecipes.FARMERS_SERIALIZER)
-        //     .input(ItemTags.PLANKS, lookup, 20)
-        //     .input(ModItems.ESSENCE_OF_LIFE, 50)
-        //     .input(ModItems.PLANT_FIBER, 6)
-        //     .output(ModBlocks.CHICKEN_COOP.asItem())
-        //     .time(2)
-        //     .unlockedBy("has_workbench", provider.has(ModBlocks.FARMERS_WORKBENCH.asItem()))
-        //     .bookCategory(ModRecipeDisplay.FARMERS_SEARCH)
-        //     .save(exporter, "workbench_furnace_workbench_t1");
-
         // TODO: Builder's Workbench Not Implemented
         // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
         //     .input(ItemTags.LOGS, lookup, 6)

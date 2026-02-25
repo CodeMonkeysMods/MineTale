@@ -1,21 +1,22 @@
 package com.tcm.MineTale.datagen.recipes;
 
-import com.tcm.MineTale.datagen.builders.WorkbenchRecipeBuilder;
-import com.tcm.MineTale.registry.ModBlocks;
-import com.tcm.MineTale.registry.ModItems;
-import com.tcm.MineTale.registry.ModRecipeDisplay;
-import com.tcm.MineTale.registry.ModRecipes;
-
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Blocks;
 
 public class FarmerRecipes {
     public static void buildRecipes(RecipeProvider provider, RecipeOutput exporter, HolderLookup.Provider lookup) {
+        // TODO: ChickenCoop Not Implemented
+        // new WorkbenchRecipeBuilder(ModRecipes.FARMERS_TYPE, ModRecipes.FARMERS_SERIALIZER)
+        //     .input(ItemTags.PLANKS, lookup, 20)
+        //     .input(ModItems.ESSENCE_OF_LIFE, 50)
+        //     .input(ModItems.PLANT_FIBER, 6)
+        //     .output(ModBlocks.CHICKEN_COOP.asItem())
+        //     .time(2)
+        //     .unlockedBy("has_workbench", provider.has(ModBlocks.FARMERS_WORKBENCH.asItem()))
+        //     .bookCategory(ModRecipeDisplay.FARMERS_SEARCH)
+        //     .save(exporter, "CHICKEN_COOP");
+
         // TODO: LOTS Not Implemented
         // new WorkbenchRecipeBuilder(ModRecipes.FARMER_TYPE, ModRecipes.FARMER_SERIALIZER)
         //     .input(ModItems.GREATER_ESSENCE_OF_LIFE, 100)

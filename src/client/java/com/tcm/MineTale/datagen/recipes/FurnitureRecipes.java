@@ -1,16 +1,8 @@
 package com.tcm.MineTale.datagen.recipes;
 
-import com.tcm.MineTale.datagen.builders.WorkbenchRecipeBuilder;
-import com.tcm.MineTale.registry.ModBlocks;
-import com.tcm.MineTale.registry.ModItems;
-import com.tcm.MineTale.registry.ModRecipeDisplay;
-import com.tcm.MineTale.registry.ModRecipes;
-
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.world.item.Items;
 
 public class FurnitureRecipes {
     public static void buildRecipes(RecipeProvider provider, RecipeOutput exporter, HolderLookup.Provider lookup) {
@@ -61,7 +53,7 @@ public class FurnitureRecipes {
         //     .bookCategory(ModRecipeDisplay.FURNITURE_SEARCH)
         //     .save(exporter, "OLD_SCROLL");
 
-        // TODO: ANCIENT_SCROLL & FURNITURE_WORKBENCH_BLOCK Not Implemented
+        // TODO: ANCIENT_CANDLE & FURNITURE_WORKBENCH_BLOCK Not Implemented
         // new WorkbenchRecipeBuilder(ModRecipes.FURNITURE_TYPE, ModRecipes.FURNITURE_SERIALIZER)
         //     .input(ModItems.PLANT_FIBER, 2)
         //     .input(ModItems.TREE_SAP, 2)
