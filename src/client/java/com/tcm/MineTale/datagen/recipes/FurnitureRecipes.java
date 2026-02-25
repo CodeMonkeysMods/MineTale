@@ -81,15 +81,6 @@ public class FurnitureRecipes {
         //     .bookCategory(ModRecipeDisplay.FURNITURE_SEARCH)
         //     .save(exporter, "SMALL_RED_DOTTED_CHRISTMAS_PACKET");
 
-        // TODO: CRUDE_BEDROLL & FURNITURE_WORKBENCH_BLOCK Not Implemented
-        // new WorkbenchRecipeBuilder(ModRecipes.FURNITURE_TYPE, ModRecipes.FURNITURE_SERIALIZER)
-        //     .input(ModItems.PLANT_FIBER, 3)
-        //     .input(ModItems.LIGHT_HIDE, 2)
-        //     .output(ModBlocks.CRUDE_BEDROLL.asItem())
-        //     .unlockedBy("has_furniture_workbench", provider.has(ModBlocks.FURNITURE_WORKBENCH_BLOCK))
-        //     .bookCategory(ModRecipeDisplay.FURNITURE_SEARCH)
-        //     .save(exporter, "CRUDE_BEDROLL");
-
         // TODO: SMALL_RED_CHRISTMAS_PACKET & FURNITURE_WORKBENCH_BLOCK Not Implemented
         // new WorkbenchRecipeBuilder(ModRecipes.FURNITURE_TYPE, ModRecipes.FURNITURE_SERIALIZER)
         //     .input(ModItems.PLANT_FIBER, 2)
