@@ -44,7 +44,7 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
     private CraftingBookCategory category = CraftingBookCategory.MISC;
     private Identifier bookCategory = BuiltInRegistries.RECIPE_BOOK_CATEGORY
         .getKey(ModRecipeDisplay.CAMPFIRE_SEARCH);
-    private int cookTime = 200;
+    private float cookTime = 200;
     @Nullable private String group;
 
     /**
@@ -185,7 +185,7 @@ public class WorkbenchRecipeBuilder implements RecipeBuilder {
      * @param seconds the cook time in seconds
      * @return the builder instance
      */
-    public WorkbenchRecipeBuilder time(int seconds) {
+    public WorkbenchRecipeBuilder time(float seconds) {
         this.cookTime = seconds * 20;
         return this;
     }

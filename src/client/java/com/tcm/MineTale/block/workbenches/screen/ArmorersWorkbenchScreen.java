@@ -9,7 +9,6 @@ import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
 import com.tcm.MineTale.block.workbenches.menu.ArmorersWorkbenchMenu;
 import com.tcm.MineTale.mixin.client.ClientRecipeBookAccessor;
-import com.tcm.MineTale.mixin.client.RecipeBookComponentAccessor;
 import com.tcm.MineTale.network.CraftRequestPayload;
 import com.tcm.MineTale.recipe.MineTaleRecipeBookComponent;
 import com.tcm.MineTale.registry.ModBlocks;
@@ -23,7 +22,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
-import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
@@ -42,6 +40,8 @@ public class ArmorersWorkbenchScreen extends AbstractRecipeBookScreen<ArmorersWo
         Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "textures/gui/container/workbench_workbench.png");
 
     private final MineTaleRecipeBookComponent mineTaleRecipeBook;
+
+    private RecipeDisplayId lastKnownSelectedId = null;
 
     private Button craftOneBtn;
     private Button craftTenBtn;
@@ -81,10 +81,10 @@ public class ArmorersWorkbenchScreen extends AbstractRecipeBookScreen<ArmorersWo
         ItemStack tabIcon = new ItemStack(ModBlocks.ARMORERS_WORKBENCH_BLOCK.asItem());
         
         List<RecipeBookComponent.TabInfo> tabs = List.of(
-            new RecipeBookComponent.TabInfo(tabIcon.getItem(), ModRecipeDisplay.WORKBENCH_SEARCH)
+            new RecipeBookComponent.TabInfo(tabIcon.getItem(), ModRecipeDisplay.ARMORERS_SEARCH)
         );
 
-        return new MineTaleRecipeBookComponent(menu, tabs, ModRecipes.WORKBENCH_TYPE);
+        return new MineTaleRecipeBookComponent(menu, tabs, ModRecipes.ARMORERS_TYPE);
     }
 
     /**
@@ -128,34 +128,52 @@ public class ArmorersWorkbenchScreen extends AbstractRecipeBookScreen<ArmorersWo
      * @param amount the quantity to craft; use -1 to request crafting of the full available stack ("All")
      */
 
-    private void handleCraftRequest(int amount) {
-        // 1. Cast the book component to the Accessor to get the selected data
-        RecipeBookComponentAccessor accessor = (RecipeBookComponentAccessor) this.mineTaleRecipeBook;
+    // private void handleCraftRequest(int amount) {
+    //     // 1. Cast the book component to the Accessor to get the selected data
+    //     RecipeBookComponentAccessor accessor = (RecipeBookComponentAccessor) this.mineTaleRecipeBook;
         
-        RecipeCollection collection = accessor.getLastRecipeCollection();
-        RecipeDisplayId displayId = accessor.getLastRecipe();
+    //     RecipeCollection collection = accessor.getLastRecipeCollection();
+    //     RecipeDisplayId displayId = accessor.getLastRecipe();
 
-        if (collection != null && displayId != null) {
-            // 2. Find the visual entry
-            for (RecipeDisplayEntry entry : collection.getSelectedRecipes(RecipeCollection.CraftableStatus.ANY)) {
-                if (entry.id().equals(displayId)) {
-                    // 3. Resolve result for the packet
-                    List<ItemStack> results = entry.resultItems(SlotDisplayContext.fromLevel(this.minecraft.level));
+    //     if (collection != null && displayId != null) {
+    //         // 2. Find the visual entry
+    //         for (RecipeDisplayEntry entry : collection.getSelectedRecipes(RecipeCollection.CraftableStatus.ANY)) {
+    //             if (entry.id().equals(displayId)) {
+    //                 // 3. Resolve result for the packet
+    //                 List<ItemStack> results = entry.resultItems(SlotDisplayContext.fromLevel(this.minecraft.level));
                     
-                    if (!results.isEmpty()) {
-                        ItemStack resultStack = results.get(0);
+    //                 if (!results.isEmpty()) {
+    //                     ItemStack resultStack = results.get(0);
                         
-                        // 4. LOG FOR DEBUGGING
-                        System.out.println("Sending craft request for: " + resultStack + " amount: " + amount);
+    //                     // 4. LOG FOR DEBUGGING
+    //                     System.out.println("Sending craft request for: " + resultStack + " amount: " + amount);
                         
-                        ClientPlayNetworking.send(new CraftRequestPayload(resultStack, amount));
-                    }
-                    break;
+    //                     ClientPlayNetworking.send(new CraftRequestPayload(resultStack, amount));
+    //                 }
+    //                 break;
+    //             }
+    //         }
+    //     } else {
+    //         System.out.println("Request failed: Collection or DisplayID is null!");
+    //     }
+    // }
+
+    private void handleCraftRequest(int amount) {
+        // Look at our "Memory" instead of the component
+        if (this.lastKnownSelectedId != null) {
+            ClientRecipeBook book = this.minecraft.player.getRecipeBook();
+            RecipeDisplayEntry entry = ((ClientRecipeBookAccessor) book).getKnown().get(this.lastKnownSelectedId);
+
+            if (entry != null) {
+                List<ItemStack> results = entry.resultItems(SlotDisplayContext.fromLevel(this.minecraft.level));
+                if (!results.isEmpty()) {
+                    System.out.println("Persistent Selection Success: " + results.get(0));
+                    ClientPlayNetworking.send(new CraftRequestPayload(results.get(0), amount));
+                    return;
                 }
             }
-        } else {
-            System.out.println("Request failed: Collection or DisplayID is null!");
         }
+        System.out.println("Request failed: No recipe was ever selected!");
     }
 
     /**
@@ -177,18 +195,22 @@ public class ArmorersWorkbenchScreen extends AbstractRecipeBookScreen<ArmorersWo
         renderBackground(graphics, mouseX, mouseY, delta);
         super.render(graphics, mouseX, mouseY, delta);
 
-        // Get the ID of the recipe clicked in the ghost-book
-        RecipeDisplayId displayId = this.mineTaleRecipeBook.getSelectedRecipeId();
-        RecipeDisplayEntry selectedEntry = null;
-
-        if (displayId != null && this.minecraft.level != null) {
-            ClientRecipeBook book = this.minecraft.player.getRecipeBook();
-            // Accessing the known recipes via your Accessor
-            Map<RecipeDisplayId, RecipeDisplayEntry> knownRecipes = ((ClientRecipeBookAccessor) book).getKnown();
-            selectedEntry = knownRecipes.get(displayId);
+        // 1. Get the current selection from the book
+        RecipeDisplayId currentId = this.mineTaleRecipeBook.getSelectedRecipeId();
+        
+        // 2. If it's NOT null, remember it!
+        if (currentId != null) {
+            this.lastKnownSelectedId = currentId;
         }
 
-        // 2. Button Activation Logic
+        // 3. Use the remembered ID to find the entry for button activation
+        RecipeDisplayEntry selectedEntry = null;
+        if (this.lastKnownSelectedId != null && this.minecraft.level != null) {
+            ClientRecipeBook book = this.minecraft.player.getRecipeBook();
+            selectedEntry = ((ClientRecipeBookAccessor) book).getKnown().get(this.lastKnownSelectedId);
+        }
+
+        // Logic for enabling/disabling buttons...
         if (selectedEntry != null) {
             // We use the entry directly. It contains the 15 ingredients needed!
             boolean canCraftOne = canCraft(this.minecraft.player, selectedEntry, 1);

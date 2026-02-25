@@ -42,7 +42,7 @@ public abstract class AbstractWorkbenchEntity extends BlockEntity implements Men
     // Slot Mapping: 0-1 Inputs, 2 Fuel, 3-6 Outputs
     protected final SimpleContainer inventory = new SimpleContainer(7);
     protected int progress = 0;
-    protected int maxProgress = 200;
+    protected float maxProgress = 200;
     protected boolean canPullFromNearby = false;
 
     /**

@@ -2,7 +2,6 @@ package com.tcm.MineTale.datagen;
 
 import com.tcm.MineTale.block.workbenches.AbstractWorkbench;
 import com.tcm.MineTale.registry.ModBlocks;
-import com.tcm.MineTale.registry.ModItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
 import net.minecraft.advancements.criterion.StatePropertiesPredicate;
