@@ -39,14 +39,14 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
 
     /**
-     * Creates a workbench menu associated with the given player inventory and optional block entity.
+     * Initialises a workbench menu bound to a player inventory and an optional block entity.
      *
-     * Uses an empty internal container (size 0) and the class's data size for syncing numeric state.
+     * The menu uses an empty internal container (size 0) and the class's data size for numeric state syncing.
      *
-     * @param syncId synchronization id for this menu
-     * @param playerInventory the player's inventory used for slot access and recipe-book integration
-     * @param data container data used to sync numeric state between server and client
-     * @param blockEntity nullable block entity this menu is bound to, or {@code null} if not bound
+     * @param syncId           synchronization id for this menu
+     * @param playerInventory  the player's inventory used for slot access and recipe-book integration
+     * @param data             container data used to sync numeric state between server and client
+     * @param blockEntity      nullable block entity this menu is bound to, or {@code null} if not bound
      */
     public WorkbenchWorkbenchMenu(int syncId, Inventory playerInventory, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {        // Note: The order of arguments depends on your AbstractWorkbenchContainerMenu,
         // but the 'expectedSize' parameter MUST be 0.
@@ -76,11 +76,10 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
 
     /**
-     * Populate the provided StackedItemContents with all item stacks available to the crafting UI.
+     * Populate the given StackedItemContents with all item stacks available to the crafting UI.
      *
-     * <p>Accounts for items in the player's pockets, items stored in this menu's internal container,
-     * and nearby items delivered by the server (network-synced). When running on the client and
-     * networked nearby items are present, a debug message may be printed.
+     * Accounts for items in the player's inventory, items in this menu's internal container,
+     * and nearby item stacks synchronised from the server so the recipe book can consider them.
      *
      * @param contents the StackedItemContents to populate with available item stacks
      */

@@ -88,12 +88,12 @@ public class ArmorersWorkbenchScreen extends AbstractRecipeBookScreen<ArmorersWo
     }
 
     /**
-         * Configure the screen's GUI dimensions and initialize widgets.
-         *
-         * Sets the layout size (imageWidth = 176, imageHeight = 166), delegates remaining
-         * layout initialization to the superclass, and creates the three craft buttons
-         * ("1", "10", "All") wired to their respective handlers.
-         */
+     * Initialises the screen size and adds the three crafting buttons.
+     *
+     * Sets the GUI image dimensions, delegates further initialisation to the superclass,
+     * and creates/registers three buttons wired to craft one, ten or all items
+     * (they invoke handleCraftRequest with 1, 10 and -1 respectively; -1 signifies "All").
+     */
     @Override
     protected void init() {
         // Important: Set your GUI size before super.init()

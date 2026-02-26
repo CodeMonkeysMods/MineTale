@@ -30,7 +30,7 @@ public class FarmersWorkbench extends AbstractWorkbench<FarmersWorkbenchEntity> 
     public static final MapCodec<FarmersWorkbench> CODEC = simpleCodec(FarmersWorkbench::new);
 
     /**
-     * Creates a FarmersWorkbench preconfigured to use ModBlockEntities.FARMERS_WORKBENCH_BE as its block entity type.
+     * Initialise a FarmersWorkbench that uses the mod's FARMERS_WORKBENCH_BE block-entity type and default size.
      *
      * @param properties block properties for this workbench
      */
@@ -40,10 +40,10 @@ public class FarmersWorkbench extends AbstractWorkbench<FarmersWorkbenchEntity> 
     }
 
     /**
-     * Create a FarmersWorkbench with the given block properties and a supplier for its block-entity type.
+     * Constructs a FarmersWorkbench with the supplied block properties and block-entity type supplier.
      *
      * @param properties block properties to apply to this workbench
-     * @param supplier supplier that provides the specific BlockEntityType to use for FarmersWorkbenchEntity
+     * @param supplier supplier of the BlockEntityType to use for the workbench's block entity
      */
     public FarmersWorkbench(Properties properties, Supplier<BlockEntityType<? extends FarmersWorkbenchEntity>> supplier) {
         super(properties, supplier, IS_WIDE, IS_TALL, 1);

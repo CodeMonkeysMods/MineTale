@@ -24,15 +24,15 @@ import net.minecraft.world.item.ItemStack;
 
 public class MineTaleClient implements ClientModInitializer {
 	/**
-	 * Initializes client-side handlers for the MineTale mod.
+	 * Initialises client-side handlers for the MineTale mod.
 	 *
-	 * Registers screen factories for custom workbench menu types, configures block render
-	 * layers for furnace workbenches, and registers a global network receiver that applies
-	 * nearby inventory item lists to an open workbench menu when available.
+	 * Registers screen factories for custom workbench menu types, configures render
+	 * layers for furnace workbench blocks, and registers a global network receiver
+	 * that applies nearby inventory items to an open workbench menu.
 	 *
-	 * The network receiver schedules a client task that retries up to 10 frames if the
-	 * player's container menu is not yet an instance of the expected workbench menu and
-	 * logs a failure message if synchronization could not be applied after retries.
+	 * The network receiver schedules work on the client thread and retries application
+	 * for up to 10 client ticks if the expected workbench menu is not yet open; if
+	 * synchronization still fails it logs a failure message.
 	 */
 	@Override
 	public void onInitializeClient() {

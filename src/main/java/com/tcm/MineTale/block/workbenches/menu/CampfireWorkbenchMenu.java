@@ -24,12 +24,11 @@ public class CampfireWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     private final AbstractWorkbenchEntity blockEntity;
     
     /**
-     * Creates a CampfireWorkbenchMenu using default internal storage and data containers.
+     * Create a CampfireWorkbenchMenu initialised with the default internal inventory and data containers.
      *
-     * Constructs a menu with a new SimpleContainer of size {@code containerSize} and a new
-     * SimpleContainerData of size {@code containerDataSize}, then delegates to the primary constructor.
+     * The menu is constructed with a 7‑slot internal container and a data container sized by {@code containerDataSize}.
      *
-     * @param syncId          synchronization id for the menu
+     * @param syncId          the synchronization id for this menu
      * @param playerInventory the player's inventory interacting with this menu
      */
     public CampfireWorkbenchMenu(int syncId, Inventory playerInventory) {
@@ -37,13 +36,13 @@ public class CampfireWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
 
     /**
-     * Constructs a CampfireWorkbenchMenu connected to the given player inventory, container, and container data.
+     * Create a CampfireWorkbenchMenu bound to the given player inventory, container and container data.
      *
-     * @param syncId the synchronization id for this menu used for client/server container sync
+     * @param syncId the synchronisation id used for client–server container sync
      * @param playerInventory the player's inventory
-     * @param container the backing container for the workbench slots
-     * @param data the container data used for syncing additional numeric state
-     * @param blockEntity the associated workbench block entity, or `null` if not bound to a block
+     * @param container the backing container that provides the workbench slots
+     * @param data the container data used to synchronise numeric state
+     * @param blockEntity the associated workbench block entity, or {@code null} if not bound to a block
      */
     public CampfireWorkbenchMenu(int syncId, Inventory playerInventory, Container container, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {
         super(ModMenuTypes.CAMPFIRE_WORKBENCH_MENU, syncId, container, data, containerDataSize, playerInventory, Constants.INPUT_START + 1, 6, ModRecipes.CAMPFIRE_TYPE);

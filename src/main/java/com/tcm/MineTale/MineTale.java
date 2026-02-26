@@ -42,11 +42,12 @@ public class MineTale implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	/**
-	 * Initialize and register the mod's game content, network payloads, and runtime subsystems on startup.
+	 * Initialise the mod: register game content, networking codecs and runtime subsystems.
 	 *
-	 * <p>Registers blocks, items, block entities, entities, menus, recipes, recipe displays, creative tab,
-	 * entity data serializers, recipe serializer synchronization, and loot-table modifiers. Also registers
-	 * client↔server payload codecs and a global server receiver that processes craft requests from workbench-like menus.
+	 * Performs startup registration in dependency order (blocks, items, block entities, entities,
+	 * menus, recipes and recipe displays), registers the creative tab and entity data serializers,
+	 * synchronises the furnace recipe serializer, applies loot-table modifiers, registers client↔server
+	 * payload codecs and a global server receiver that processes craft requests from workbench-like menus.
 	 */
 	@Override
 	public void onInitialize() {

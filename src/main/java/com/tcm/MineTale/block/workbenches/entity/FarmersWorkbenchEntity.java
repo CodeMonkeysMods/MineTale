@@ -42,10 +42,10 @@ public class FarmersWorkbenchEntity extends AbstractWorkbenchEntity {
         }
 
         /**
-         * No-op setter: client-side attempts to change workbench UI data are ignored because the server is authoritative.
+         * Ignore attempts to modify the workbench's container data from the client; changes are a no-op.
          *
-         * @param index the data index (ignored)
-         * @param value the value to assign (ignored)
+         * @param index the data slot index (ignored)
+         * @param value the value provided (ignored)
          */
         @Override
         public void set(int index, int value) {

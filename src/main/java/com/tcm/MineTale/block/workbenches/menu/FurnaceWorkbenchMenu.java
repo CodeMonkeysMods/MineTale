@@ -24,7 +24,7 @@ public class FurnaceWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     private final AbstractFurnaceWorkbenchEntity blockEntity;
 
     /**
-     * Constructs a client-side FurnaceWorkbenchMenu backed by a new empty internal container and default container data.
+     * Create a client-side FurnaceWorkbenchMenu backed by a fresh internal container and default container data.
      *
      * @param syncId          the window synchronization id assigned by the client
      * @param playerInventory the player's inventory to attach to this menu
@@ -34,13 +34,13 @@ public class FurnaceWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
 
     /**
-     * Creates a FurnaceWorkbenchMenu bound to the provided player inventory, container, and optional block entity.
+     * Create a menu instance for a furnace workbench bound to the supplied player inventory, container and optional block entity.
      *
-     * @param syncId        window sync id used by the client-server menu sync
+     * @param syncId         the window sync id for client-server menu synchronisation
      * @param playerInventory the player's inventory
-     * @param container     the backing container holding slot items for this menu
-     * @param data          container data used for syncing menu state (e.g., progress fields)
-     * @param blockEntity   the associated AbstractFurnaceWorkbenchEntity instance, or {@code null} for client-side construction
+     * @param container      the backing container holding this menu's slot items
+     * @param data           container data used to sync menu state (for example progress fields)
+     * @param blockEntity    the associated AbstractFurnaceWorkbenchEntity, or {@code null} when constructed client-side
      */
     public FurnaceWorkbenchMenu(int syncId, Inventory playerInventory, Container container, ContainerData data, @Nullable AbstractFurnaceWorkbenchEntity blockEntity) {
         super(ModMenuTypes.FURNACE_WORKBENCH_MENU, syncId, container, data, containerDataSize, playerInventory, Constants.INPUT_START + 1, 6, ModRecipes.FURNACE_T1_TYPE);

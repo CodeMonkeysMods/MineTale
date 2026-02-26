@@ -90,11 +90,12 @@ public class FarmersWorkbenchScreen extends AbstractRecipeBookScreen<FarmersWork
     }
 
     /**
-     * Configure the screen layout size and initialize crafting widgets.
+     * Initialises the screen layout and registers the crafting controls.
      *
-     * Sets the GUI dimensions to 176x166 and creates three craft buttons:
-     * "Craft" (requests 1), "x10" (requests 10), and "All" (requests all, represented by -1),
-     * each wired to their respective handler.
+     * Sets the GUI dimensions to 176×166 and adds three buttons wired to craft requests:
+     * - "Craft" requests 1,
+     * - "x10" requests 10,
+     * - "All" requests all (represented by -1).
      */
     @Override
     protected void init() {
@@ -257,16 +258,13 @@ public class FarmersWorkbenchScreen extends AbstractRecipeBookScreen<FarmersWork
     }
 
     /**
-     * Checks whether the given inventory combined with the workbench's networked nearby items
-     * contains at least the requested number of items matching the provided ingredient.
+     * Determine whether the player inventory together with the workbench's networked nearby items
+     * contains at least the specified quantity of items matching the given ingredient.
      *
-     * Counts matching item stacks from the supplied player inventory and, when the screen's menu
-     * is an AbstractWorkbenchContainerMenu, from its networked nearby items list.
-     *
-     * @param inventory     the player's inventory to search
-     * @param ingredient    the ingredient matcher to test item stacks against
+     * @param inventory     the player's inventory to check
+     * @param ingredient    the ingredient matcher used to test item stacks
      * @param totalRequired the total number of matching items required
-     * @return `true` if the combined sources contain at least `totalRequired` matching items, `false` otherwise
+     * @return true if the combined sources contain at least totalRequired matching items, false otherwise
      */
     private boolean hasIngredientAmount(Inventory inventory, Ingredient ingredient, int totalRequired) {
         System.out.println("DEBUG: Searching inventory + nearby for " + totalRequired + "...");
@@ -303,10 +301,10 @@ public class FarmersWorkbenchScreen extends AbstractRecipeBookScreen<FarmersWork
     }
 
     /**
-     * Computes the on-screen position for the recipe book toggle button for this GUI.
-     *
-     * @return the screen position placed 5 pixels from the GUI's left edge and 49 pixels above the GUI's vertical center
-     */
+         * Get the screen position for the recipe book toggle button.
+         *
+         * @return the ScreenPosition located 5 pixels from the GUI's left edge and 49 pixels above the GUI's vertical centre
+         */
     @Override
     protected ScreenPosition getRecipeBookButtonPosition() {
         // 1. Calculate the start (left) of your workbench GUI

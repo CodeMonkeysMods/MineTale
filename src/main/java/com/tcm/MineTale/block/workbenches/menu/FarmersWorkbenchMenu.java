@@ -27,24 +27,24 @@ public class FarmersWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     private final Inventory playerInventory;
     
    /**
-     * Creates a client-side menu instance when the workbench UI is opened.
+     * Constructs a client-side FarmersWorkbenchMenu with no bound block entity and empty container data.
      *
-     * @param syncId the synchronization id used to match this menu with the server
-     * @param playerInventory the player's inventory bound to this menu
+     * @param syncId the menu synchronization id used to match this client menu with its server counterpart
+     * @param playerInventory the player's inventory to bind to the menu
      */
     public FarmersWorkbenchMenu(int syncId, Inventory playerInventory) {
         this(syncId, playerInventory, new SimpleContainerData(EMPTY_SIZE), null);
     }
 
     /**
-     * Creates a workbench menu associated with the given player inventory and optional block entity.
+     * Initialise a Farmers workbench menu bound to a player's inventory and an optional block entity.
      *
-     * Uses an empty internal container (size 0) and the class's data size for syncing numeric state.
+     * Uses an empty internal container and the menu's container data for server–client numeric syncing.
      *
      * @param syncId synchronization id for this menu
      * @param playerInventory the player's inventory used for slot access and recipe-book integration
      * @param data container data used to sync numeric state between server and client
-     * @param blockEntity nullable block entity this menu is bound to, or {@code null} if not bound
+     * @param blockEntity the block entity this menu is bound to, or {@code null} if not bound
      */
     public FarmersWorkbenchMenu(int syncId, Inventory playerInventory, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {
         // Note: The order of arguments depends on your AbstractWorkbenchContainerMenu,

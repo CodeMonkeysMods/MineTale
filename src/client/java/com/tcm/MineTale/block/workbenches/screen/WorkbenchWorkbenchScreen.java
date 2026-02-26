@@ -90,12 +90,14 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
     }
 
     /**
-         * Configure the screen's GUI dimensions and initialize widgets.
-         *
-         * Sets the layout size (imageWidth = 176, imageHeight = 166), delegates remaining
-         * layout initialization to the superclass, and creates the three craft buttons
-         * ("1", "10", "All") wired to their respective handlers.
-         */
+     * Initialises the workbench screen's GUI size and interactive widgets.
+     *
+     * Sets the screen image dimensions, delegates remaining setup to the superclass,
+     * computes default button positions and creates three craft buttons:
+     * - "Craft" (requests 1),
+     * - "x10" (requests 10),
+     * - "All" (requests -1 to indicate all).
+     */
     @Override
     protected void init() {
         // Important: Set your GUI size before super.init()
@@ -147,12 +149,12 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
     }
 
     /**
-    * Draws the workbench GUI background texture at the screen's top-left corner.
+    * Draws the workbench background texture at the screen's current GUI origin.
     *
     * @param guiGraphics the graphics context used to draw GUI elements
     * @param f           partial tick time for interpolation
-    * @param i           current mouse x coordinate relative to the window
-    * @param j           current mouse y coordinate relative to the window
+    * @param i           current mouse x coordinate
+    * @param j           current mouse y coordinate
     */
    protected void renderBg(GuiGraphics guiGraphics, float f, int i, int j) {
       int k = this.leftPos;
@@ -161,12 +163,11 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
    }
 
     /**
-     * Renders the screen, updates the remembered recipe selection, and enables or disables craft buttons based on the player's available ingredients.
+     * Render the screen, remember the current recipe selection and update craft-button availability.
      *
-     * <p>This method draws the background and the superclass UI, captures the current recipe selection (persisting it to
-     * {@code lastKnownSelectedId} when present), resolves the remembered selection against the client's known recipes
-     * (when a level and player are available), updates the activation state of the craft buttons for counts of 1, 2 and 10
-     * depending on whether the player has sufficient materials, and finally renders any tooltips.</p>
+     * Remembers the recipe selected in the recipe book, resolves that selection against the client's known recipes when possible,
+     * sets the craft buttons active or inactive according to whether the player has sufficient ingredients for counts of 1, 2 and 10,
+     * renders the background, the superclass UI and any tooltips.
      */
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
