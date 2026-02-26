@@ -18,8 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
 import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
-import com.tcm.MineTale.block.workbenches.menu.ArmorersWorkbenchMenu;
-import com.tcm.MineTale.block.workbenches.menu.FarmersWorkbenchMenu;
 import com.tcm.MineTale.network.ClientboundNearbyInventorySyncPacket;
 import com.tcm.MineTale.network.CraftRequestPayload;
 import com.tcm.MineTale.recipe.WorkbenchRecipe;

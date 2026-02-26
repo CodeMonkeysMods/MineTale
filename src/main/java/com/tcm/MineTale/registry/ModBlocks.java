@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.ArmorersWorkbench;
+import com.tcm.MineTale.block.workbenches.BuildersWorkbench;
 import com.tcm.MineTale.block.workbenches.CampfireWorkbench;
 import com.tcm.MineTale.block.workbenches.FarmersWorkbench;
 import com.tcm.MineTale.block.workbenches.FurnaceWorkbench;
@@ -79,6 +80,13 @@ public class ModBlocks {
 	public static final Block FARMERS_WORKBENCH_BLOCK = register(
 		"farmers_workbench",
 		FarmersWorkbench::new,
+		BlockBehaviour.Properties.of().sound(SoundType.WOOD),
+		true
+	);
+
+	public static final Block BUILDERS_WORKBENCH_BLOCK = register(
+		"builders_workbench",
+		BuildersWorkbench::new,
 		BlockBehaviour.Properties.of().sound(SoundType.WOOD),
 		true
 	);
@@ -173,6 +181,10 @@ public class ModBlocks {
 
     // Functional / Crafted
     public static final Block BAMBOO_PLANTER = register("bamboo_planter", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOD), true);
+
+	// Decorational
+	public static final Block ROPE = register("rope", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+	public static final Block ROPE_DIAGONAL = register("rope_diagonal", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
 
 	// Ores
 
