@@ -5,6 +5,7 @@ import org.jspecify.annotations.Nullable;
 import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
 import com.tcm.MineTale.recipe.WorkbenchRecipeInput;
 import com.tcm.MineTale.registry.ModMenuTypes;
+import com.tcm.MineTale.registry.ModRecipes;
 import com.tcm.MineTale.util.Constants;
 
 import net.minecraft.world.Container;
@@ -44,7 +45,7 @@ public class CampfireWorkbenchMenu extends AbstractWorkbenchContainerMenu {
      * @param data the container data used for syncing additional numeric state
      */
     public CampfireWorkbenchMenu(int syncId, Inventory playerInventory, Container container, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {
-        super(ModMenuTypes.CAMPFIRE_WORKBENCH_MENU, syncId, container, data, containerDataSize, playerInventory, Constants.INPUT_START + 1, 6);
+        super(ModMenuTypes.CAMPFIRE_WORKBENCH_MENU, syncId, container, data, containerDataSize, playerInventory, Constants.INPUT_START + 1, 6, ModRecipes.CAMPFIRE_TYPE);
         this.blockEntity = blockEntity;
     }
 

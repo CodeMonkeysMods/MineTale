@@ -2,6 +2,7 @@ package com.tcm.MineTale.datagen.recipes;
 
 import com.tcm.MineTale.datagen.builders.WorkbenchRecipeBuilder;
 import com.tcm.MineTale.registry.ModBlocks;
+import com.tcm.MineTale.registry.ModItems;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
 import com.tcm.MineTale.registry.ModRecipes;
 
@@ -17,30 +18,30 @@ public class WorkbenchRecipes {
             .input(Items.COPPER_INGOT, 2)
             .input(ItemTags.LOGS, lookup, 10)
             .input(ItemTags.STONE_TOOL_MATERIALS, lookup, 5)
-            .output(ModBlocks.ARMORERS_WORKBENCH_BLOCK.asItem())
+            .output(ModBlocks.ARMORERS_WORKBENCH_BLOCK)
             .time(3)
-            .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+            .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK))
             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
             .save(exporter, "workbench_armorers_workbench");
 
         new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
             .input(ItemTags.LOGS, lookup, 6)
             .input(ItemTags.STONE_TOOL_MATERIALS, lookup, 6)
-            .output(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1.asItem())
+            .output(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1)
             .time(3)
-            .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+            .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK))
             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
             .save(exporter, "workbench_furnace_workbench_t1");
 
         // TODO: FarmersWorkbench Not Implemented
-        // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-        //     .input(ItemTags.LOGS, lookup, 6)
-        //     .input(ModItems.PLANT_FIBER, 20)
-        //     .output(ModBlocks.FARMERS_WORKBENCH)
-        //     .time(3)
-        //     .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-        //     .save(exporter, "workbench_farmers_workbench");
+        new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+            .input(ItemTags.LOGS, lookup, 6)
+            .input(ModItems.PLANT_FIBER, 20)
+            .output(ModBlocks.FARMERS_WORKBENCH_BLOCK)
+            .time(3)
+            .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK))
+            .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+            .save(exporter, "workbench_farmers_workbench");
 
         // TODO: Builder's Workbench Not Implemented
         // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)

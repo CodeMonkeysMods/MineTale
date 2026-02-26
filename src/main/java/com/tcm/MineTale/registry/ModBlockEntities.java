@@ -5,6 +5,7 @@ import com.tcm.MineTale.block.workbenches.entity.ArmorersWorkbenchEntity;
 import com.tcm.MineTale.block.workbenches.entity.CampfireWorkbenchEntity;
 import com.tcm.MineTale.block.workbenches.entity.FurnaceWorkbenchEntity;
 import com.tcm.MineTale.block.workbenches.entity.WorkbenchWorkbenchEntity;
+import com.tcm.MineTale.block.workbenches.entity.FarmersWorkbenchEntity;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.Registry;
@@ -31,6 +32,12 @@ public class ModBlockEntities {
         "armorers_workbench_be",
         ArmorersWorkbenchEntity::new,
         ModBlocks.ARMORERS_WORKBENCH_BLOCK
+    );
+    
+    public static final BlockEntityType<FarmersWorkbenchEntity> FARMERS_WORKBENCH_BE = register(
+        "farmers_workbench_be",
+        FarmersWorkbenchEntity::new,
+        ModBlocks.FARMERS_WORKBENCH_BLOCK
     );
 
     /**

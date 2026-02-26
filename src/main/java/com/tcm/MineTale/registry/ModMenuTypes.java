@@ -3,6 +3,7 @@ package com.tcm.MineTale.registry;
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.menu.FurnaceWorkbenchMenu;
 import com.tcm.MineTale.block.workbenches.menu.WorkbenchWorkbenchMenu;
+import com.tcm.MineTale.block.workbenches.menu.FarmersWorkbenchMenu;
 import com.tcm.MineTale.block.workbenches.menu.ArmorersWorkbenchMenu;
 import com.tcm.MineTale.block.workbenches.menu.CampfireWorkbenchMenu;
 
@@ -33,6 +34,11 @@ public class ModMenuTypes {
     public static final MenuType<ArmorersWorkbenchMenu> ARMORERS_WORKBENCH_MENU = register(
         "armorers_workbench_menu",
         ArmorersWorkbenchMenu::new
+    );
+
+    public static final MenuType<FarmersWorkbenchMenu> FARMERS_WORKBENCH_MENU = register(
+        "farmers_workbench_menu",
+        FarmersWorkbenchMenu::new
     );
     
     /**

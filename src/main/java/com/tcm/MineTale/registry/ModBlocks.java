@@ -7,6 +7,7 @@ import java.util.function.Function;
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.ArmorersWorkbench;
 import com.tcm.MineTale.block.workbenches.CampfireWorkbench;
+import com.tcm.MineTale.block.workbenches.FarmersWorkbench;
 import com.tcm.MineTale.block.workbenches.FurnaceWorkbench;
 import com.tcm.MineTale.block.workbenches.WorkbenchWorkbench;
 import com.tcm.MineTale.item.ModCreativeTab;
@@ -75,6 +76,13 @@ public class ModBlocks {
 		true
 	);
 
+	public static final Block FARMERS_WORKBENCH_BLOCK = register(
+		"farmers_workbench",
+		FarmersWorkbench::new,
+		BlockBehaviour.Properties.of().sound(SoundType.WOOD),
+		true
+	);
+
 	//Logs
 	public static final Block AMBER_LOG = register("amber_log", RotatedPillarBlock::new, logProperties(MapColor.COLOR_ORANGE, MapColor.PODZOL, SoundType.WOOD), true);
 	public static final Block BAMBOO_LOG = register("bamboo_log", RotatedPillarBlock::new, logProperties(MapColor.COLOR_GREEN, MapColor.GRASS, SoundType.WOOD), true);
@@ -100,6 +108,71 @@ public class ModBlocks {
 	public static final Block WINDWILLOW_LOG = register("windwillow_log", RotatedPillarBlock::new, logProperties(MapColor.ICE, MapColor.SAND, SoundType.WOOD), true);
 	public static final Block WILD_WISTERIA_LOG = register("wild_wisteria_log", RotatedPillarBlock::new, logProperties(MapColor.SAND, MapColor.DIRT, SoundType.WOOD), true);
 	public static final Block WILD_WISTERIA_WOOD = register("wild_wisteria_wood", RotatedPillarBlock::new, BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava(), true);
+
+	// Base Moss (The raw materials used in recipes)
+    public static final Block MOSS = register("moss", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block BLUE_MOSS = register("blue_moss", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block RED_MOSS = register("red_moss", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block YELLOW_MOSS = register("yellow_moss", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block DARK_GREEN_MOSS = register("dark_green_moss", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+
+	// World Blocks (Natural Soils and Terrains)
+    public static final Block DRY_MUD = register("dry_mud", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MUD), true);
+    public static final Block LEAFY_SOIL = register("leafy_soil", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block SOIL_PATHWAY = register("soil_pathway", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block NEEDLED_SOIL = register("needled_soil", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block FULL_GRASS = register("full_grass", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block COLD_DIRT = register("cold_dirt", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block SUMMER_GRASS = register("summer_grass", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block WET_GRASS = register("wet_grass", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block DRY_GRASS = register("dry_grass", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block DRY_DIRT = register("dry_dirt", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block DEEP_GRASS = register("deep_grass", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block POISONED_DIRT = register("poisoned_dirt", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+
+    // Moss Blocks
+    public static final Block BLUE_MOSS_BLOCK = register("blue_moss_block", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block DARK_GREEN_MOSS_BLOCK = register("dark_green_moss_block", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block RED_MOSS_BLOCK = register("red_moss_block", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block YELLOW_MOSS_BLOCK = register("yellow_moss_block", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block GREEN_MOSS_BLOCK = register("green_moss_block", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+
+    // Moss Decoration (Rugs & Hanging)
+    public static final Block GREEN_MOSS_RUG = register("green_moss_rug", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block BLUE_MOSS_RUG = register("blue_moss_rug", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block DARK_GREEN_MOSS_RUG = register("dark_green_moss_rug", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block YELLOW_MOSS_RUG = register("yellow_moss_rug", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block RED_MOSS_RUG = register("red_moss_rug", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block SORREL_RUG = register("sorrel_rug", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block VINE_RUG = register("vine_rug", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+
+    public static final Block RED_HANGING_MOSS = register("red_hanging_moss", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block DARK_GREEN_HANGING_MOSS = register("dark_green_hanging_moss", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block BLUE_HANGING_MOSS = register("blue_hanging_moss", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block YELLOW_HANGING_MOSS = register("yellow_hanging_moss", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+    public static final Block GREEN_HANGING_MOSS = register("green_hanging_moss", Block::new, BlockBehaviour.Properties.of().sound(SoundType.MOSS), true);
+
+    // Short Moss & Plants
+    public static final Block SHORT_RED_MOSS = register("short_red_moss", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block SHORT_YELLOW_MOSS = register("short_yellow_moss", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block SHORT_BLUE_MOSS = register("short_blue_moss", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block SHORT_DARK_GREEN_MOSS = register("short_dark_green_moss", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block SHORT_MOSS = register("short_moss", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+
+    // Vines & Ivy
+    public static final Block LIANA = register("liana", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block VINE = register("vine", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block DRY_VINE = register("dry_vine", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block POISONED_IVY = register("poisoned_ivy", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block WALL_IVY = register("wall_ivy", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block IVY = register("ivy", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+
+    // Specialized Grasses
+    public static final Block COLD_GRASS = register("cold_grass", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+    public static final Block BURNT_GRASS = register("burnt_grass", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+
+    // Functional / Crafted
+    public static final Block BAMBOO_PLANTER = register("bamboo_planter", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOD), true);
 
 	// Ores
 

@@ -5,8 +5,10 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
+import com.tcm.MineTale.recipe.WorkbenchRecipe;
 import com.tcm.MineTale.recipe.WorkbenchRecipeInput;
 import com.tcm.MineTale.registry.ModMenuTypes;
+import com.tcm.MineTale.registry.ModRecipes;
 
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -15,6 +17,7 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeType;
 
 public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     // No internal inventory needed anymore, but we pass an empty container to the super
@@ -45,8 +48,7 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
      * @param data container data used to sync numeric state between server and client
      * @param blockEntity nullable block entity this menu is bound to, or {@code null} if not bound
      */
-    public WorkbenchWorkbenchMenu(int syncId, Inventory playerInventory, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {
-        // Note: The order of arguments depends on your AbstractWorkbenchContainerMenu,
+    public WorkbenchWorkbenchMenu(int syncId, Inventory playerInventory, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {        // Note: The order of arguments depends on your AbstractWorkbenchContainerMenu,
         // but the 'expectedSize' parameter MUST be 0.
         super(
             ModMenuTypes.WORKBENCH_WORKBENCH_MENU, 
@@ -56,7 +58,8 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
             DATA_SIZE, 
             playerInventory, 
             EMPTY_SIZE,
-            EMPTY_SIZE
+            EMPTY_SIZE,
+            ModRecipes.WORKBENCH_TYPE
         );
         this.blockEntity = blockEntity;
         this.playerInventory = playerInventory;
@@ -71,28 +74,6 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     public @Nullable AbstractWorkbenchEntity getBlockEntity() {
         return this.blockEntity;
     }
-
-    /**
-     * Populate the given StackedItemContents with the items available through this menu for recipe-book calculations.
-     *
-     * @param stackedItemContents container to receive consolidated item counts from the menu's inventories
-     */
-    // @Override
-    // public void fillCraftSlotsStackedContents(StackedItemContents stackedItemContents) {
-    //     // 1. Tell the book the player has items in their pockets
-    //     this.playerInventory.fillStackedContents(stackedItemContents);
-        
-    //     // 2. Tell the book the "Nearby Chests" items also count
-    //     AbstractWorkbenchEntity be = this.getBlockEntity();
-    //     if (be != null && be.isCanPullFromNearby()) {
-    //         // This runs on the CLIENT UI, making the icons turn WHITE
-    //         for (Container nearby : be.getNearbyInventories()) {
-    //             for (int i = 0; i < nearby.getContainerSize(); i++) {
-    //                 stackedItemContents.accountStack(nearby.getItem(i));
-    //             }
-    //         }
-    //     }
-    // }
 
     @Override
     public void fillCraftSlotsStackedContents(StackedItemContents contents) {

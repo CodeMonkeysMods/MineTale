@@ -33,7 +33,6 @@ public class ModItems {
     public static final Item SAP_GLOB = register("sap_glob", Item::new, new Item.Properties());
     public static final Item RUBBLE = register("rubble", Item::new, new Item.Properties());
     public static final Item TREE_BARK = register("tree_bark", Item::new, new Item.Properties());
-    public static final Item MOSS = register("moss", Item::new, new Item.Properties());
     public static final Item BLUE_CRYSTAL_SHARDS = register("blue_crystal_shards", Item::new, new Item.Properties());
     public static final Item GREEN_CRYSTAL_SHARDS = register("green_crystal_shards", Item::new, new Item.Properties());
     public static final Item YELLOW_CRYSTAL_SHARDS = register("yellow_crystal_shards", Item::new, new Item.Properties());

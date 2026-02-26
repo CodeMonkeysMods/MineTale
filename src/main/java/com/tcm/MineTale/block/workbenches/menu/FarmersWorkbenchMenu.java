@@ -17,7 +17,7 @@ import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 
-public class ArmorersWorkbenchMenu extends AbstractWorkbenchContainerMenu {
+public class FarmersWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     // No internal inventory needed anymore, but we pass an empty container to the super
     private static final int EMPTY_SIZE = 0;
     private static final int DATA_SIZE = 0;
@@ -32,7 +32,7 @@ public class ArmorersWorkbenchMenu extends AbstractWorkbenchContainerMenu {
      * @param syncId the synchronization id used to match this menu with the server
      * @param playerInventory the player's inventory bound to this menu
      */
-    public ArmorersWorkbenchMenu(int syncId, Inventory playerInventory) {
+    public FarmersWorkbenchMenu(int syncId, Inventory playerInventory) {
         this(syncId, playerInventory, new SimpleContainerData(EMPTY_SIZE), null);
     }
 
@@ -46,11 +46,11 @@ public class ArmorersWorkbenchMenu extends AbstractWorkbenchContainerMenu {
      * @param data container data used to sync numeric state between server and client
      * @param blockEntity nullable block entity this menu is bound to, or {@code null} if not bound
      */
-    public ArmorersWorkbenchMenu(int syncId, Inventory playerInventory, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {
+    public FarmersWorkbenchMenu(int syncId, Inventory playerInventory, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {
         // Note: The order of arguments depends on your AbstractWorkbenchContainerMenu,
         // but the 'expectedSize' parameter MUST be 0.
         super(
-            ModMenuTypes.ARMORERS_WORKBENCH_MENU, 
+            ModMenuTypes.FARMERS_WORKBENCH_MENU, 
             syncId, 
             new SimpleContainer(EMPTY_SIZE),
             data, 
@@ -58,7 +58,7 @@ public class ArmorersWorkbenchMenu extends AbstractWorkbenchContainerMenu {
             playerInventory, 
             EMPTY_SIZE,
             EMPTY_SIZE,
-            ModRecipes.ARMORERS_TYPE
+            ModRecipes.FARMERS_TYPE
         );
         this.blockEntity = blockEntity;
         this.playerInventory = playerInventory;

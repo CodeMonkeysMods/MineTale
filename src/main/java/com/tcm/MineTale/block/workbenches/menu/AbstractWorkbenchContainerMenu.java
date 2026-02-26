@@ -27,6 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
 
 public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu implements StackedContentsCompatible {
     protected final Container container;
@@ -36,6 +37,9 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
     protected final int outputEnd;
 
     protected final Inventory playerInventory;
+
+    @Nullable
+    private final RecipeType<WorkbenchRecipe> recipeType;
 
     private List<ItemStack> networkedNearbyItems = new ArrayList<>();
 
@@ -52,6 +56,10 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
      */
     public List<ItemStack> getNetworkedNearbyItems() {
         return this.networkedNearbyItems;
+    }
+
+    public RecipeType<WorkbenchRecipe> getRecipeType() {
+        return this.recipeType;
     }
 
     /**
@@ -72,9 +80,10 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
      * @param outputEnd           index (inclusive) of the last output slot in the container; if negative or container is empty,
      *                            the menu is treated as slotless and slot/data initialization is skipped
      */
-    public AbstractWorkbenchContainerMenu(@Nullable MenuType<?> menuType, int syncId, Container container, ContainerData data, int containerDataSize, Inventory playerInventory, int inputEnd, int outputEnd) {
+    public AbstractWorkbenchContainerMenu(@Nullable MenuType<?> menuType, int syncId, Container container, ContainerData data, int containerDataSize, Inventory playerInventory, int inputEnd, int outputEnd, RecipeType<WorkbenchRecipe> recipeType) {
         super(menuType, syncId);
 
+        this.recipeType = recipeType;
         this.outputEnd = outputEnd;
         this.inputEnd = inputEnd;
 

@@ -118,46 +118,6 @@ public class ArmorersWorkbenchScreen extends AbstractRecipeBookScreen<ArmorersWo
         }).bounds(defaultLeft + 40, defaultTop + 22, 35, 20).build());
     }
 
-    /**
-     * Sends a crafting request for the currently selected recipe in the integrated recipe book.
-     *
-     * Locates the last recipe collection and last selected recipe ID from the recipe book component,
-     * resolves the recipe's result item, and sends a CraftRequestPayload to the server containing that
-     * item and the requested amount.
-     *
-     * @param amount the quantity to craft; use -1 to request crafting of the full available stack ("All")
-     */
-
-    // private void handleCraftRequest(int amount) {
-    //     // 1. Cast the book component to the Accessor to get the selected data
-    //     RecipeBookComponentAccessor accessor = (RecipeBookComponentAccessor) this.mineTaleRecipeBook;
-        
-    //     RecipeCollection collection = accessor.getLastRecipeCollection();
-    //     RecipeDisplayId displayId = accessor.getLastRecipe();
-
-    //     if (collection != null && displayId != null) {
-    //         // 2. Find the visual entry
-    //         for (RecipeDisplayEntry entry : collection.getSelectedRecipes(RecipeCollection.CraftableStatus.ANY)) {
-    //             if (entry.id().equals(displayId)) {
-    //                 // 3. Resolve result for the packet
-    //                 List<ItemStack> results = entry.resultItems(SlotDisplayContext.fromLevel(this.minecraft.level));
-                    
-    //                 if (!results.isEmpty()) {
-    //                     ItemStack resultStack = results.get(0);
-                        
-    //                     // 4. LOG FOR DEBUGGING
-    //                     System.out.println("Sending craft request for: " + resultStack + " amount: " + amount);
-                        
-    //                     ClientPlayNetworking.send(new CraftRequestPayload(resultStack, amount));
-    //                 }
-    //                 break;
-    //             }
-    //         }
-    //     } else {
-    //         System.out.println("Request failed: Collection or DisplayID is null!");
-    //     }
-    // }
-
     private void handleCraftRequest(int amount) {
         // Look at our "Memory" instead of the component
         if (this.lastKnownSelectedId != null) {

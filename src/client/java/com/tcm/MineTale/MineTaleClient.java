@@ -9,6 +9,7 @@ import java.util.List;
 import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
 import com.tcm.MineTale.block.workbenches.screen.ArmorersWorkbenchScreen;
 import com.tcm.MineTale.block.workbenches.screen.CampfireWorkbenchScreen;
+import com.tcm.MineTale.block.workbenches.screen.FarmersWorkbenchScreen;
 import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModMenuTypes;
 
@@ -36,6 +37,7 @@ public class MineTaleClient implements ClientModInitializer {
 		MenuScreens.register(ModMenuTypes.CAMPFIRE_WORKBENCH_MENU, CampfireWorkbenchScreen::new);
 		MenuScreens.register(ModMenuTypes.WORKBENCH_WORKBENCH_MENU, WorkbenchWorkbenchScreen::new);
 		MenuScreens.register(ModMenuTypes.ARMORERS_WORKBENCH_MENU, ArmorersWorkbenchScreen::new);
+		MenuScreens.register(ModMenuTypes.FARMERS_WORKBENCH_MENU, FarmersWorkbenchScreen::new);
 
 		BlockRenderLayerMap.putBlock(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1, ChunkSectionLayer.CUTOUT);
 		BlockRenderLayerMap.putBlock(ModBlocks.FURNACE_WORKBENCH_BLOCK_T2, ChunkSectionLayer.CUTOUT);
