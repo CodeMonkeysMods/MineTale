@@ -13,6 +13,17 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.level.block.Blocks;
 
 public class FarmerRecipes {
+    /**
+     * Registers Farmer workbench recipes and writes them to the provided exporter.
+     *
+     * <p>Emits multiple WorkbenchRecipeBuilder entries (bamboo planter, moss variants, rugs,
+     * vines, soil/grass variants, and other farmer-related recipes) and configures their
+     * ingredient lists, times, book categories, and unlock conditions.</p>
+     *
+     * @param provider source of recipe unlock predicates (used to build "has_farmers_workbench" and similar conditions)
+     * @param exporter destination that receives the generated recipe data
+     * @param lookup   holder/tag resolver used when recipes specify ingredients by tag
+     */
     public static void buildRecipes(RecipeProvider provider, RecipeOutput exporter, HolderLookup.Provider lookup) {
         // new WorkbenchRecipeBuilder(ModRecipes.FARMERS_TYPE, ModRecipes.FARMERS_SERIALIZER)
         //     .input(ItemTags.PLANKS, lookup, 20)

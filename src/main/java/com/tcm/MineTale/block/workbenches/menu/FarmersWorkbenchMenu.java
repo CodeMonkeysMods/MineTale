@@ -74,6 +74,13 @@ public class FarmersWorkbenchMenu extends AbstractWorkbenchContainerMenu {
         return this.blockEntity;
     }
 
+    /**
+     * Populates the provided StackedItemContents with item stacks available for recipe matching.
+     *
+     * This accounts for items from the player's inventory, any items stored in the menu's internal container slots, and nearby item stacks supplied via the menu's networked list (used by clients).
+     *
+     * @param contents accumulator that will receive accounted item stacks for recipe lookup
+     */
     @Override
     public void fillCraftSlotsStackedContents(StackedItemContents contents) {
         // 1. Account for items in the player's pockets
@@ -109,7 +116,7 @@ public class FarmersWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
     
     /**
-     * Create the recipe input used by this menu's crafting UI; this implementation provides an empty input.
+     * Creates an empty WorkbenchRecipeInput for this menu's crafting UI.
      *
      * @return a WorkbenchRecipeInput with both input stacks set to ItemStack.EMPTY
      */

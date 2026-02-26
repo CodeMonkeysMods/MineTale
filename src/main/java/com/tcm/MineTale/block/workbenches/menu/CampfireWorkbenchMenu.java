@@ -37,12 +37,13 @@ public class CampfireWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
 
     /**
-     * Creates a CampfireWorkbenchMenu bound to the given player inventory, container, and container data.
+     * Constructs a CampfireWorkbenchMenu connected to the given player inventory, container, and container data.
      *
-     * @param syncId the synchronization id for this menu (used by the client/server container sync)
+     * @param syncId the synchronization id for this menu used for client/server container sync
      * @param playerInventory the player's inventory
      * @param container the backing container for the workbench slots
      * @param data the container data used for syncing additional numeric state
+     * @param blockEntity the associated workbench block entity, or `null` if not bound to a block
      */
     public CampfireWorkbenchMenu(int syncId, Inventory playerInventory, Container container, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {
         super(ModMenuTypes.CAMPFIRE_WORKBENCH_MENU, syncId, container, data, containerDataSize, playerInventory, Constants.INPUT_START + 1, 6, ModRecipes.CAMPFIRE_TYPE);

@@ -75,6 +75,15 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
         return this.blockEntity;
     }
 
+    /**
+     * Populate the provided StackedItemContents with all item stacks available to the crafting UI.
+     *
+     * <p>Accounts for items in the player's pockets, items stored in this menu's internal container,
+     * and nearby items delivered by the server (network-synced). When running on the client and
+     * networked nearby items are present, a debug message may be printed.
+     *
+     * @param contents the StackedItemContents to populate with available item stacks
+     */
     @Override
     public void fillCraftSlotsStackedContents(StackedItemContents contents) {
         // 1. Account for items in the player's pockets

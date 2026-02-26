@@ -13,6 +13,17 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 
 public class WorkbenchRecipes {
+    /**
+     * Registers workbench crafting recipes and saves them to the provided exporter.
+     *
+     * Builds and configures multiple WorkbenchRecipeBuilder instances (inputs, outputs, craft time,
+     * unlock conditions, and book category) and persists each recipe using the exporter with a
+     * unique identifier.
+     *
+     * @param provider a RecipeProvider used to query existing items/blocks for unlock conditions and tags
+     * @param exporter the RecipeOutput that receives and writes the generated recipe data
+     * @param lookup   a HolderLookup.Provider used to resolve tag holders (e.g., ItemTags) when specifying inputs
+     */
     public static void buildRecipes(RecipeProvider provider, RecipeOutput exporter, HolderLookup.Provider lookup) {
         new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
             .input(Items.COPPER_INGOT, 2)

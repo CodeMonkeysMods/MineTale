@@ -27,10 +27,12 @@ import net.minecraft.world.level.storage.ValueOutput;
 public class FarmersWorkbenchEntity extends AbstractWorkbenchEntity {
     protected final ContainerData data = new ContainerData() {
         /**
-         * Retrieves an internal data value by index for UI synchronization.
+         * Provide the container's UI-synchronized integer value for the specified data index.
          *
-         * @param index There is no cook time or anything for this block as it doesnt use it
-         * @return the value associated with {@code index}, or 0 for any other index
+         * This workbench exposes four data slots (indices 0–3); all slots are currently unused and always return 0.
+         *
+         * @param index the data index to read (expected range: 0–3)
+         * @return 0 for the requested index
          */
         @Override
         public int get(int index) {
@@ -40,10 +42,10 @@ public class FarmersWorkbenchEntity extends AbstractWorkbenchEntity {
         }
 
         /**
-         * No-op for this workbench; data is server-driven and not set client-side.
+         * No-op setter: client-side attempts to change workbench UI data are ignored because the server is authoritative.
          *
-         * `@param` index the data index to set
-         * `@param` value the value to assign (ignored)
+         * @param index the data index (ignored)
+         * @param value the value to assign (ignored)
          */
         @Override
         public void set(int index, int value) {
@@ -62,9 +64,9 @@ public class FarmersWorkbenchEntity extends AbstractWorkbenchEntity {
     };
 
     /**
-     * Creates a FarmersWorkbenchEntity for the specified world position and block state.
+     * Create a FarmersWorkbenchEntity at the given world position and block state.
      *
-     * Sets the entity's scanRadius to 0.0 and tier to 1.
+     * Initializes the workbench tier to 1 and enables pulling from nearby inventories.
      *
      * @param blockPos   the world position of this block entity
      * @param blockState the block state for this block entity
@@ -77,12 +79,10 @@ public class FarmersWorkbenchEntity extends AbstractWorkbenchEntity {
     }
 
     /**
-     * Persist this workbench's state to the given ValueOutput.
+     * Writes this workbench's persistent state to the provided output, including the workbench tier,
+     * scan radius, and full inventory (stored under the keys "WorkbenchTier", "ScanRadius", and "Inventory").
      *
-     * Stores "WorkbenchTier" (int), "ScanRadius" (double), and the full inventory under "Inventory"
-     * using type-safe Codecs.
-     *
-     * @param valueOutput the writer used to serialize this entity's fields
+     * @param valueOutput the output used to serialize this entity's fields
      */
     @Override
     protected void saveAdditional(ValueOutput valueOutput) {
@@ -126,12 +126,12 @@ public class FarmersWorkbenchEntity extends AbstractWorkbenchEntity {
     }
 
     /**
-     * Creates the server-side container menu for this workbench's UI.
+     * Create the server-side menu for a player to interact with this workbench and synchronize nearby data to that player.
      *
      * @param syncId the window id used to synchronize the menu with the client
      * @param playerInventory the opening player's inventory
      * @param player the player who opened the menu
-     * @return a FarmersWorkbenchMenu bound to this workbench's inventory and synced data
+     * @return the FarmersWorkbenchMenu bound to this workbench's inventory and synchronization data
      */
     @Override
     public @Nullable AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {

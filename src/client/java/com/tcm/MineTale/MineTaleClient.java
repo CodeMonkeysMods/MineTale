@@ -24,12 +24,15 @@ import net.minecraft.world.item.ItemStack;
 
 public class MineTaleClient implements ClientModInitializer {
 	/**
-	 * Register client-side screen factories for custom workbench menu types.
+	 * Initializes client-side handlers for the MineTale mod.
 	 *
-	 * Binds ModMenuTypes.FURNACE_WORKBENCH_MENU to FurnaceWorkbenchScreen,
-	 * ModMenuTypes.CAMPFIRE_WORKBENCH_MENU to CampfireWorkbenchScreen, and
-	 * ModMenuTypes.WORKBENCH_WORKBENCH_MENU to WorkbenchWorkbenchScreen so the client
-	 * can create the appropriate GUI when those menus open.
+	 * Registers screen factories for custom workbench menu types, configures block render
+	 * layers for furnace workbenches, and registers a global network receiver that applies
+	 * nearby inventory item lists to an open workbench menu when available.
+	 *
+	 * The network receiver schedules a client task that retries up to 10 frames if the
+	 * player's container menu is not yet an instance of the expected workbench menu and
+	 * logs a failure message if synchronization could not be applied after retries.
 	 */
 	@Override
 	public void onInitializeClient() {

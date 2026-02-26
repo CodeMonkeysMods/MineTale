@@ -52,12 +52,19 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
     }
 
     /**
-     * Gets the list of items found in nearby chests.
+     * Accesses the network-synchronized list of nearby item stacks used to simulate available ingredients.
+     *
+     * @return the live list of {@code ItemStack} instances representing nearby items synchronized from the server; entries may be empty
      */
     public List<ItemStack> getNetworkedNearbyItems() {
         return this.networkedNearbyItems;
     }
 
+    /**
+     * Provide the recipe system used by this workbench menu.
+     *
+     * @return the {@code RecipeType<WorkbenchRecipe>} used to match and retrieve recipes for this workbench
+     */
     public RecipeType<WorkbenchRecipe> getRecipeType() {
         return this.recipeType;
     }

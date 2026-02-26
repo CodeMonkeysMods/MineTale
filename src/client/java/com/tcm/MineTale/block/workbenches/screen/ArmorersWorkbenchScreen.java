@@ -118,6 +118,15 @@ public class ArmorersWorkbenchScreen extends AbstractRecipeBookScreen<ArmorersWo
         }).bounds(defaultLeft + 40, defaultTop + 22, 35, 20).build());
     }
 
+    /**
+     * Sends a craft request for the recipe remembered by this screen's last known selection.
+     *
+     * Resolves the remembered recipe to its resulting item(s) and, if available, sends a network
+     * CraftRequestPayload containing the first result and the requested amount. If no remembered
+     * selection or no results are available, no payload is sent.
+     *
+     * @param amount the quantity to craft; use -1 to request crafting all available units
+     */
     private void handleCraftRequest(int amount) {
         // Look at our "Memory" instead of the component
         if (this.lastKnownSelectedId != null) {

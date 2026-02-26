@@ -24,7 +24,7 @@ public class FurnaceWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     private final AbstractFurnaceWorkbenchEntity blockEntity;
 
     /**
-     * Creates a client-side FurnaceWorkbenchMenu with a new internal container and container data.
+     * Constructs a client-side FurnaceWorkbenchMenu backed by a new empty internal container and default container data.
      *
      * @param syncId          the window synchronization id assigned by the client
      * @param playerInventory the player's inventory to attach to this menu
@@ -33,6 +33,15 @@ public class FurnaceWorkbenchMenu extends AbstractWorkbenchContainerMenu {
         this(syncId, playerInventory, new SimpleContainer(7), new SimpleContainerData(containerDataSize), null);
     }
 
+    /**
+     * Creates a FurnaceWorkbenchMenu bound to the provided player inventory, container, and optional block entity.
+     *
+     * @param syncId        window sync id used by the client-server menu sync
+     * @param playerInventory the player's inventory
+     * @param container     the backing container holding slot items for this menu
+     * @param data          container data used for syncing menu state (e.g., progress fields)
+     * @param blockEntity   the associated AbstractFurnaceWorkbenchEntity instance, or {@code null} for client-side construction
+     */
     public FurnaceWorkbenchMenu(int syncId, Inventory playerInventory, Container container, ContainerData data, @Nullable AbstractFurnaceWorkbenchEntity blockEntity) {
         super(ModMenuTypes.FURNACE_WORKBENCH_MENU, syncId, container, data, containerDataSize, playerInventory, Constants.INPUT_START + 1, 6, ModRecipes.FURNACE_T1_TYPE);
         this.blockEntity = blockEntity;

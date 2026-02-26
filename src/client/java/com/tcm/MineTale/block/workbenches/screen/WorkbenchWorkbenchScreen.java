@@ -121,11 +121,10 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
     }
 
     /**
-     * Sends a crafting request for the currently selected recipe in the integrated recipe book.
+     * Request crafting for the currently selected recipe from the integrated recipe book.
      *
-     * Locates the last recipe collection and last selected recipe ID from the recipe book component,
-     * resolves the recipe's result item, and sends a CraftRequestPayload to the server containing that
-     * item and the requested amount.
+     * If a recipe is selected, sends a CraftRequestPayload to the server for that recipe and the
+     * specified quantity. If no recipe is selected, no request is sent.
      *
      * @param amount the quantity to craft; use -1 to request crafting of the full available stack ("All")
      */
@@ -161,6 +160,14 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
       guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, k, l, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
    }
 
+    /**
+     * Renders the screen, updates the remembered recipe selection, and enables or disables craft buttons based on the player's available ingredients.
+     *
+     * <p>This method draws the background and the superclass UI, captures the current recipe selection (persisting it to
+     * {@code lastKnownSelectedId} when present), resolves the remembered selection against the client's known recipes
+     * (when a level and player are available), updates the activation state of the craft buttons for counts of 1, 2 and 10
+     * depending on whether the player has sufficient materials, and finally renders any tooltips.</p>
+     */
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         renderBackground(graphics, mouseX, mouseY, delta);

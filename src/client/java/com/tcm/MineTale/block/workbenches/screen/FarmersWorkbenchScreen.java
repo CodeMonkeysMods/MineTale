@@ -50,7 +50,7 @@ public class FarmersWorkbenchScreen extends AbstractRecipeBookScreen<FarmersWork
     private Button craftAllBtn;
 
     /**
-     * Initialize a workbench GUI screen using the provided container menu, player inventory, and title.
+     * Creates a FarmersWorkbenchScreen configured with the provided container menu, player inventory, and title.
      *
      * @param menu      the menu supplying slots and synchronized state for this screen
      * @param inventory the player's inventory to display and interact with
@@ -74,10 +74,10 @@ public class FarmersWorkbenchScreen extends AbstractRecipeBookScreen<FarmersWork
     }
 
     /**
-     * Create a MineTaleRecipeBookComponent configured for the workbench screen.
+     * Creates a MineTaleRecipeBookComponent configured for the farmers workbench screen.
      *
      * @param menu the workbench menu used to initialize the recipe book component
-     * @return a MineTaleRecipeBookComponent containing the workbench tab and associated recipe category
+     * @return the recipe book component containing the workbench tab and the FARMERS recipe category
      */
     private static MineTaleRecipeBookComponent createRecipeBookComponent(FarmersWorkbenchMenu menu) {
         ItemStack tabIcon = new ItemStack(ModBlocks.FARMERS_WORKBENCH_BLOCK.asItem());
@@ -90,12 +90,12 @@ public class FarmersWorkbenchScreen extends AbstractRecipeBookScreen<FarmersWork
     }
 
     /**
-         * Configure the screen's GUI dimensions and initialize widgets.
-         *
-         * Sets the layout size (imageWidth = 176, imageHeight = 166), delegates remaining
-         * layout initialization to the superclass, and creates the three craft buttons
-         * ("1", "10", "All") wired to their respective handlers.
-         */
+     * Configure the screen layout size and initialize crafting widgets.
+     *
+     * Sets the GUI dimensions to 176x166 and creates three craft buttons:
+     * "Craft" (requests 1), "x10" (requests 10), and "All" (requests all, represented by -1),
+     * each wired to their respective handler.
+     */
     @Override
     protected void init() {
         // Important: Set your GUI size before super.init()
@@ -121,14 +121,14 @@ public class FarmersWorkbenchScreen extends AbstractRecipeBookScreen<FarmersWork
     }
 
     /**
-     * Sends a crafting request for the currently selected recipe in the integrated recipe book.
-     *
-     * Locates the last recipe collection and last selected recipe ID from the recipe book component,
-     * resolves the recipe's result item, and sends a CraftRequestPayload to the server containing that
-     * item and the requested amount.
-     *
-     * @param amount the quantity to craft; use -1 to request crafting of the full available stack ("All")
-     */
+         * Requests the server to craft the currently selected recipe from the integrated recipe book.
+         *
+         * If a previously selected recipe is remembered and has at least one result item, sends a
+         * CraftRequestPayload containing the recipe's primary result and the requested amount. If no
+         * remembered selection or no result exists, no request is sent.
+         *
+         * @param amount the quantity to craft; use -1 to request crafting the maximum available amount ("All")
+         */
     private void handleCraftRequest(int amount) {
         // Look at our "Memory" instead of the component
         if (this.lastKnownSelectedId != null) {
@@ -161,6 +161,14 @@ public class FarmersWorkbenchScreen extends AbstractRecipeBookScreen<FarmersWork
       guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, k, l, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
    }
 
+    /**
+     * Renders the screen, preserves the last selected recipe, and updates craft button states.
+     *
+     * Remembers the recipe book's current selection (so selection persists when the book is closed),
+     * resolves the corresponding known RecipeDisplayEntry from the player's recipe book when available,
+     * enables or disables the craft buttons based on whether the player can craft 1, more-than-one, or 10
+     * of the selected recipe, and renders the background and tooltips.
+     */
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         renderBackground(graphics, mouseX, mouseY, delta);
@@ -201,11 +209,11 @@ public class FarmersWorkbenchScreen extends AbstractRecipeBookScreen<FarmersWork
     }
 
     /**
-     * Determines whether the player has enough ingredients to craft the given recipe the specified number of times.
+     * Checks whether the given player has the required ingredients to craft the specified recipe the provided number of times.
      *
-     * @param player     the player whose inventory (and networked nearby items) will be checked; may be null
-     * @param entry      the recipe display entry providing crafting requirements; may be null
-     * @param craftCount the multiplier for required ingredient quantities (e.g., 1, 10, or -1 is not specially handled here)
+     * @param player     the player whose inventory and nearby networked items are considered; may be null
+     * @param entry      the recipe entry supplying crafting requirements; may be null
+     * @param craftCount the number of times to craft the recipe (multiplies each requirement)
      * @return `true` if the player has at least the required quantity of each ingredient multiplied by `craftCount`, `false` otherwise (also returns `false` if `player` or `entry` is null or the recipe has no requirements)
      */
     private boolean canCraft(Player player, RecipeDisplayEntry entry, int craftCount) {
@@ -248,6 +256,18 @@ public class FarmersWorkbenchScreen extends AbstractRecipeBookScreen<FarmersWork
         return true;
     }
 
+    /**
+     * Checks whether the given inventory combined with the workbench's networked nearby items
+     * contains at least the requested number of items matching the provided ingredient.
+     *
+     * Counts matching item stacks from the supplied player inventory and, when the screen's menu
+     * is an AbstractWorkbenchContainerMenu, from its networked nearby items list.
+     *
+     * @param inventory     the player's inventory to search
+     * @param ingredient    the ingredient matcher to test item stacks against
+     * @param totalRequired the total number of matching items required
+     * @return `true` if the combined sources contain at least `totalRequired` matching items, `false` otherwise
+     */
     private boolean hasIngredientAmount(Inventory inventory, Ingredient ingredient, int totalRequired) {
         System.out.println("DEBUG: Searching inventory + nearby for " + totalRequired + "...");
         if (totalRequired <= 0) return true;

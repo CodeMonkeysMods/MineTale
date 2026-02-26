@@ -74,6 +74,14 @@ public class ArmorersWorkbenchMenu extends AbstractWorkbenchContainerMenu {
         return this.blockEntity;
     }
 
+    /**
+     * Populates the given StackedItemContents with item stacks relevant to crafting lookups.
+     *
+     * Includes stacks from the player's inventory, this menu's internal container slots, and
+     * nearby item stacks supplied via networked data when available.
+     *
+     * @param contents the StackedItemContents to populate with accounted stacks
+     */
     @Override
     public void fillCraftSlotsStackedContents(StackedItemContents contents) {
         // 1. Account for items in the player's pockets

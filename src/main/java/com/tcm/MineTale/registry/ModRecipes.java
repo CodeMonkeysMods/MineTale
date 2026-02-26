@@ -37,10 +37,10 @@ public class ModRecipes {
         new WorkbenchRecipe.Serializer(FARMERS_TYPE);
 
     /**
-     * Registers the mod's recipe types and their serializers into the game's built-in registries.
+     * Registers the mod's recipe types and their serializers into Minecraft's built-in registries under the mod namespace.
      *
-     * Specifically registers the furnace (FURNACE_T1_TYPE), campfire (CAMPFIRE_TYPE),
-     * and workbench (WORKBENCH_TYPE) recipe types with their corresponding serializers.
+     * Registers the following recipe types and their corresponding serializers: FURNACE_T1_TYPE, CAMPFIRE_TYPE,
+     * WORKBENCH_TYPE, ARMORERS_TYPE, and FARMERS_TYPE.
      */
     public static void initialize() {
         // Register the Furnace-flavored version
