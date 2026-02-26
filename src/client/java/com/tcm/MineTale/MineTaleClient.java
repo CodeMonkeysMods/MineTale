@@ -8,7 +8,9 @@ import java.util.List;
 
 import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
 import com.tcm.MineTale.block.workbenches.screen.ArmorersWorkbenchScreen;
+import com.tcm.MineTale.block.workbenches.screen.BuildersWorkbenchScreen;
 import com.tcm.MineTale.block.workbenches.screen.CampfireWorkbenchScreen;
+import com.tcm.MineTale.block.workbenches.screen.FarmersWorkbenchScreen;
 import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModMenuTypes;
 
@@ -23,12 +25,12 @@ import net.minecraft.world.item.ItemStack;
 
 public class MineTaleClient implements ClientModInitializer {
 	/**
-	 * Register client-side screen factories for custom workbench menu types.
+	 * Initialises client-side GUI screens, render layers and network handling for workbench features.
 	 *
-	 * Binds ModMenuTypes.FURNACE_WORKBENCH_MENU to FurnaceWorkbenchScreen,
-	 * ModMenuTypes.CAMPFIRE_WORKBENCH_MENU to CampfireWorkbenchScreen, and
-	 * ModMenuTypes.WORKBENCH_WORKBENCH_MENU to WorkbenchWorkbenchScreen so the client
-	 * can create the appropriate GUI when those menus open.
+	 * Registers screen factories for each custom workbench menu type so the client can create the appropriate GUI;
+	 * sets the render layer for furnace workbench block variants to CUTOUT; and registers a global network receiver
+	 * for nearby-inventory sync packets that schedules applying the received item stacks to the currently open
+	 * workbench menu, retrying for up to 10 frames if the menu is not yet ready and logging on persistent failure.
 	 */
 	@Override
 	public void onInitializeClient() {
@@ -36,6 +38,8 @@ public class MineTaleClient implements ClientModInitializer {
 		MenuScreens.register(ModMenuTypes.CAMPFIRE_WORKBENCH_MENU, CampfireWorkbenchScreen::new);
 		MenuScreens.register(ModMenuTypes.WORKBENCH_WORKBENCH_MENU, WorkbenchWorkbenchScreen::new);
 		MenuScreens.register(ModMenuTypes.ARMORERS_WORKBENCH_MENU, ArmorersWorkbenchScreen::new);
+		MenuScreens.register(ModMenuTypes.FARMERS_WORKBENCH_MENU, FarmersWorkbenchScreen::new);
+		MenuScreens.register(ModMenuTypes.BUILDERS_WORKBENCH_MENU, BuildersWorkbenchScreen::new);
 
 		BlockRenderLayerMap.putBlock(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1, ChunkSectionLayer.CUTOUT);
 		BlockRenderLayerMap.putBlock(ModBlocks.FURNACE_WORKBENCH_BLOCK_T2, ChunkSectionLayer.CUTOUT);

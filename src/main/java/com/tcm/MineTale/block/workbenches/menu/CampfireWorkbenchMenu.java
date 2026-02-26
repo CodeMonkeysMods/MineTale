@@ -5,6 +5,7 @@ import org.jspecify.annotations.Nullable;
 import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
 import com.tcm.MineTale.recipe.WorkbenchRecipeInput;
 import com.tcm.MineTale.registry.ModMenuTypes;
+import com.tcm.MineTale.registry.ModRecipes;
 import com.tcm.MineTale.util.Constants;
 
 import net.minecraft.world.Container;
@@ -36,15 +37,16 @@ public class CampfireWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
 
     /**
-     * Creates a CampfireWorkbenchMenu bound to the given player inventory, container, and container data.
+     * Create a CampfireWorkbenchMenu bound to the given player inventory, container and container data.
      *
-     * @param syncId the synchronization id for this menu (used by the client/server container sync)
-     * @param playerInventory the player's inventory
-     * @param container the backing container for the workbench slots
-     * @param data the container data used for syncing additional numeric state
+     * @param syncId the synchronisation id used to correlate client and server container state
+     * @param playerInventory the player's inventory shown to the menu
+     * @param container the backing container that provides the workbench slots
+     * @param data the container data used for syncing additional numeric state (size must match containerDataSize)
+     * @param blockEntity the associated workbench block entity, or {@code null} if none
      */
     public CampfireWorkbenchMenu(int syncId, Inventory playerInventory, Container container, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {
-        super(ModMenuTypes.CAMPFIRE_WORKBENCH_MENU, syncId, container, data, containerDataSize, playerInventory, Constants.INPUT_START + 1, 6);
+        super(ModMenuTypes.CAMPFIRE_WORKBENCH_MENU, syncId, container, data, containerDataSize, playerInventory, Constants.INPUT_START + 1, 6, ModRecipes.CAMPFIRE_TYPE);
         this.blockEntity = blockEntity;
     }
 

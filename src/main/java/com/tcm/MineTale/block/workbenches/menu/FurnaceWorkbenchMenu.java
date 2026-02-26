@@ -5,6 +5,7 @@ import org.jspecify.annotations.Nullable;
 import com.tcm.MineTale.block.workbenches.entity.AbstractFurnaceWorkbenchEntity;
 import com.tcm.MineTale.recipe.WorkbenchRecipeInput;
 import com.tcm.MineTale.registry.ModMenuTypes;
+import com.tcm.MineTale.registry.ModRecipes;
 import com.tcm.MineTale.util.Constants;
 
 import net.minecraft.world.Container;
@@ -32,8 +33,17 @@ public class FurnaceWorkbenchMenu extends AbstractWorkbenchContainerMenu {
         this(syncId, playerInventory, new SimpleContainer(7), new SimpleContainerData(containerDataSize), null);
     }
 
+    /**
+     * Create a FurnaceWorkbenchMenu connected to the given container, container data and optional block entity.
+     *
+     * @param syncId        the synchronisation id for this menu
+     * @param playerInventory the player's inventory used to populate player slots
+     * @param container     the backing container that provides the menu's item slots
+     * @param data          the container data array used for synchronising progress/state
+     * @param blockEntity   the associated AbstractFurnaceWorkbenchEntity, or `null` if none
+     */
     public FurnaceWorkbenchMenu(int syncId, Inventory playerInventory, Container container, ContainerData data, @Nullable AbstractFurnaceWorkbenchEntity blockEntity) {
-        super(ModMenuTypes.FURNACE_WORKBENCH_MENU, syncId, container, data, containerDataSize, playerInventory, Constants.INPUT_START + 1, 6);
+        super(ModMenuTypes.FURNACE_WORKBENCH_MENU, syncId, container, data, containerDataSize, playerInventory, Constants.INPUT_START + 1, 6, ModRecipes.FURNACE_T1_TYPE);
         this.blockEntity = blockEntity;
     }
 

@@ -7,7 +7,7 @@ import java.util.Optional;
 
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
-import com.tcm.MineTale.block.workbenches.menu.WorkbenchWorkbenchMenu;
+import com.tcm.MineTale.block.workbenches.menu.FarmersWorkbenchMenu;
 import com.tcm.MineTale.mixin.client.ClientRecipeBookAccessor;
 import com.tcm.MineTale.network.CraftRequestPayload;
 import com.tcm.MineTale.recipe.MineTaleRecipeBookComponent;
@@ -35,7 +35,7 @@ import net.minecraft.world.item.crafting.display.RecipeDisplayId;
 import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.minecraft.network.chat.Component;
 
-public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<WorkbenchWorkbenchMenu> {
+public class FarmersWorkbenchScreen extends AbstractRecipeBookScreen<FarmersWorkbenchMenu> {
     private static final Identifier TEXTURE = 
         Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "textures/gui/container/workbench_workbench.png");
 
@@ -54,46 +54,45 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
      * @param inventory the player's inventory to display and interact with
      * @param title     the title component shown at the top of the screen
      */
-    public WorkbenchWorkbenchScreen(WorkbenchWorkbenchMenu menu, Inventory inventory, Component title) {
+    public FarmersWorkbenchScreen(FarmersWorkbenchMenu menu, Inventory inventory, Component title) {
         this(menu, inventory, title, createRecipeBookComponent(menu));
     }
 
     /**
-     * Creates a WorkbenchWorkbenchScreen bound to the given menu, player inventory, title, and recipe book component.
+     * Initialises a FarmersWorkbenchScreen bound to the provided menu, player inventory, title and recipe book component.
      *
-     * @param menu        the menu backing this screen
-     * @param inventory   the player's inventory shown in the screen
-     * @param title       the screen title component
-     * @param recipeBook  the MineTaleRecipeBookComponent used to display and manage recipes in this screen
+     * @param menu       the FarmersWorkbenchMenu backing this screen
+     * @param inventory  the player's inventory to display within the screen
+     * @param title      the screen title component
+     * @param recipeBook the MineTaleRecipeBookComponent used to display and manage recipes for this workbench
      */
-    private WorkbenchWorkbenchScreen(WorkbenchWorkbenchMenu menu, Inventory inventory, Component title, MineTaleRecipeBookComponent recipeBook) {
+    private FarmersWorkbenchScreen(FarmersWorkbenchMenu menu, Inventory inventory, Component title, MineTaleRecipeBookComponent recipeBook) {
         super(menu, recipeBook, inventory, title);
         this.mineTaleRecipeBook = recipeBook;
     }
 
     /**
-     * Create a MineTaleRecipeBookComponent configured for the workbench screen.
+     * Creates a MineTaleRecipeBookComponent configured for the farmers workbench.
      *
-     * @param menu the workbench menu used to initialize the recipe book component
-     * @return a MineTaleRecipeBookComponent containing the workbench tab and associated recipe category
+     * @param menu the FarmersWorkbenchMenu to bind the recipe book to
+     * @return a MineTaleRecipeBookComponent containing the workbench tab and its recipe category
      */
-    private static MineTaleRecipeBookComponent createRecipeBookComponent(WorkbenchWorkbenchMenu menu) {
-        ItemStack tabIcon = new ItemStack(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem());
+    private static MineTaleRecipeBookComponent createRecipeBookComponent(FarmersWorkbenchMenu menu) {
+        ItemStack tabIcon = new ItemStack(ModBlocks.FARMERS_WORKBENCH_BLOCK.asItem());
         
         List<RecipeBookComponent.TabInfo> tabs = List.of(
-            new RecipeBookComponent.TabInfo(tabIcon.getItem(), ModRecipeDisplay.WORKBENCH_SEARCH)
+            new RecipeBookComponent.TabInfo(tabIcon.getItem(), ModRecipeDisplay.FARMERS_SEARCH)
         );
 
-        return new MineTaleRecipeBookComponent(menu, tabs, ModRecipes.WORKBENCH_TYPE);
+        return new MineTaleRecipeBookComponent(menu, tabs, ModRecipes.FARMERS_TYPE);
     }
 
     /**
-         * Configure the screen's GUI dimensions and initialize widgets.
-         *
-         * Sets the layout size (imageWidth = 176, imageHeight = 166), delegates remaining
-         * layout initialization to the superclass, and creates the three craft buttons
-         * ("1", "10", "All") wired to their respective handlers.
-         */
+     * Initialise the screen's GUI size and widgets.
+     *
+     * Sets the GUI dimensions to 176×166, delegates remaining initialisation to the superclass,
+     * and adds three craft buttons labelled "Craft", "x10" and "All" wired to their respective handlers.
+     */
     @Override
     protected void init() {
         // Important: Set your GUI size before super.init()
@@ -119,9 +118,11 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
     }
 
     /**
-     * Requests crafting of the currently selected recipe cached by the screen.
+     * Sends a crafting request for the currently selected recipe in the integrated recipe book.
      *
-     * If a selection is available, sends a CraftRequestPayload to the server containing the recipe's primary result and the requested quantity; if no selection exists, logs a failure message.
+     * Locates the last recipe collection and last selected recipe ID from the recipe book component,
+     * resolves the recipe's result item, and sends a CraftRequestPayload to the server containing that
+     * item and the requested amount.
      *
      * @param amount the quantity to craft; use -1 to request crafting of the full available stack ("All")
      */
@@ -144,10 +145,10 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
     }
 
     /**
-    * Draws the workbench GUI background texture at the screen's top-left corner.
+    * Draws the workbench background texture at the screen's top-left position.
     *
     * @param guiGraphics the graphics context used to draw GUI elements
-    * @param f           partial tick time for interpolation
+    * @param f           partial tick time used for interpolation
     * @param i           current mouse x coordinate relative to the window
     * @param j           current mouse y coordinate relative to the window
     */
@@ -158,17 +159,17 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
    }
 
     /**
-     * Render the screen, track the last selected recipe and enable or disable craft buttons accordingly.
+     * Renders the screen, updates the last-known recipe selection and enables or disables the craft buttons
+     * according to whether the player has sufficient ingredients for the selected recipe.
      *
-     * Renders the background and standard components, caches the most recent non-null recipe selection
-     * from the recipe book, resolves the corresponding recipe entry (if available) and updates the
-     * enabled state of the craft buttons based on whether the player has sufficient ingredients.
-     * Finally renders any tooltips.
+     * This method draws the background and standard UI, synchronises the remembered recipe selection with
+     * the recipe book, queries the client recipe book for the corresponding entry, updates button active
+     * states for single, multi and ten-item crafting checks, and renders tooltips.
      *
-     * @param graphics the GUI graphics context used for rendering
-     * @param mouseX   current mouse x position
-     * @param mouseY   current mouse y position
-     * @param delta    frame delta time
+     * @param graphics the graphics context used for rendering
+     * @param mouseX the current mouse X position
+     * @param mouseY the current mouse Y position
+     * @param delta frame delta time in ticks (render interpolation)
      */
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
@@ -210,12 +211,12 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
     }
 
     /**
-     * Determines whether the player has enough ingredients to craft the given recipe the specified number of times.
+     * Determines whether the player has sufficient ingredients to craft the specified recipe the given number of times.
      *
-     * @param player     the player whose inventory (and networked nearby items) will be checked; may be null
-     * @param entry      the recipe display entry providing crafting requirements; may be null
-     * @param craftCount the multiplier for required ingredient quantities (e.g., 1, 10, or -1 is not specially handled here)
-     * @return `true` if the player has at least the required quantity of each ingredient multiplied by `craftCount`, `false` otherwise (also returns `false` if `player` or `entry` is null or the recipe has no requirements)
+     * @param player     the player whose inventory and networked nearby items will be checked; if `null` the method returns `false`
+     * @param entry      the recipe display entry that supplies crafting requirements; if `null` or if the recipe has no requirements the method returns `false`
+     * @param craftCount the number of times to craft the recipe; this value is multiplied by each requirement to compute totals (if `craftCount` is less than or equal to zero the method treats required totals as zero)
+     * @return           `true` if the player has at least the required quantity of each ingredient multiplied by `craftCount`, `false` otherwise
      */
     private boolean canCraft(Player player, RecipeDisplayEntry entry, int craftCount) {
         if (player == null || entry == null) return false;
@@ -257,6 +258,14 @@ public class WorkbenchWorkbenchScreen extends AbstractRecipeBookScreen<Workbench
         return true;
     }
 
+    /**
+     * Determines whether the given inventory and the workbench's networked nearby items together contain at least the specified number of items matching the ingredient.
+     *
+     * @param inventory     the inventory to search (typically the player's inventory)
+     * @param ingredient    the ingredient predicate used to test ItemStacks
+     * @param totalRequired the total number of matching items required; values less than or equal to zero are treated as satisfied
+     * @return              `true` if the combined count of matching items is greater than or equal to `totalRequired`, `false` otherwise
+     */
     private boolean hasIngredientAmount(Inventory inventory, Ingredient ingredient, int totalRequired) {
         System.out.println("DEBUG: Searching inventory + nearby for " + totalRequired + "...");
         if (totalRequired <= 0) return true;

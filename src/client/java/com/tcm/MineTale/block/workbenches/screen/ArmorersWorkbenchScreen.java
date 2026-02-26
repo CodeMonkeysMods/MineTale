@@ -88,12 +88,10 @@ public class ArmorersWorkbenchScreen extends AbstractRecipeBookScreen<ArmorersWo
     }
 
     /**
-         * Configure the screen's GUI dimensions and initialize widgets.
-         *
-         * Sets the layout size (imageWidth = 176, imageHeight = 166), delegates remaining
-         * layout initialization to the superclass, and creates the three craft buttons
-         * ("1", "10", "All") wired to their respective handlers.
-         */
+     * Initialise GUI dimensions and widgets for the armourer's workbench screen.
+     *
+     * Adds three craft buttons labelled "Craft", "x10" and "All" bound to handleCraftRequest with amounts 1, 10 and -1 respectively.
+     */
     @Override
     protected void init() {
         // Important: Set your GUI size before super.init()
@@ -119,45 +117,14 @@ public class ArmorersWorkbenchScreen extends AbstractRecipeBookScreen<ArmorersWo
     }
 
     /**
-     * Sends a crafting request for the currently selected recipe in the integrated recipe book.
+     * Sends a craft request for the recipe remembered by this screen's last selection.
      *
-     * Locates the last recipe collection and last selected recipe ID from the recipe book component,
-     * resolves the recipe's result item, and sends a CraftRequestPayload to the server containing that
-     * item and the requested amount.
+     * Looks up the remembered recipe id, resolves its display result for the current level
+     * and sends a network craft request for the first result stack. If no remembered recipe
+     * or result is available, no request is sent.
      *
-     * @param amount the quantity to craft; use -1 to request crafting of the full available stack ("All")
+     * @param amount the requested craft quantity; use -1 to request crafting of all possible outputs
      */
-
-    // private void handleCraftRequest(int amount) {
-    //     // 1. Cast the book component to the Accessor to get the selected data
-    //     RecipeBookComponentAccessor accessor = (RecipeBookComponentAccessor) this.mineTaleRecipeBook;
-        
-    //     RecipeCollection collection = accessor.getLastRecipeCollection();
-    //     RecipeDisplayId displayId = accessor.getLastRecipe();
-
-    //     if (collection != null && displayId != null) {
-    //         // 2. Find the visual entry
-    //         for (RecipeDisplayEntry entry : collection.getSelectedRecipes(RecipeCollection.CraftableStatus.ANY)) {
-    //             if (entry.id().equals(displayId)) {
-    //                 // 3. Resolve result for the packet
-    //                 List<ItemStack> results = entry.resultItems(SlotDisplayContext.fromLevel(this.minecraft.level));
-                    
-    //                 if (!results.isEmpty()) {
-    //                     ItemStack resultStack = results.get(0);
-                        
-    //                     // 4. LOG FOR DEBUGGING
-    //                     System.out.println("Sending craft request for: " + resultStack + " amount: " + amount);
-                        
-    //                     ClientPlayNetworking.send(new CraftRequestPayload(resultStack, amount));
-    //                 }
-    //                 break;
-    //             }
-    //         }
-    //     } else {
-    //         System.out.println("Request failed: Collection or DisplayID is null!");
-    //     }
-    // }
-
     private void handleCraftRequest(int amount) {
         // Look at our "Memory" instead of the component
         if (this.lastKnownSelectedId != null) {
