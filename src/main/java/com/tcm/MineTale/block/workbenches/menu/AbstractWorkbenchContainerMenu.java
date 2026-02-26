@@ -27,6 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
 
 public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu implements StackedContentsCompatible {
     protected final Container container;
@@ -37,44 +38,63 @@ public abstract class AbstractWorkbenchContainerMenu extends RecipeBookMenu impl
 
     protected final Inventory playerInventory;
 
+    @Nullable
+    private final RecipeType<WorkbenchRecipe> recipeType;
+
     private List<ItemStack> networkedNearbyItems = new ArrayList<>();
 
     /**
-     * Updates the list of items available from nearby chests.
-     * Called by the networking system when a sync packet arrives.
+     * Replace the cached list of nearby item stacks supplied by the server for recipe simulation.
+     *
+     * Updates the menu's networked nearby-items list with the provided stacks; this list is used
+     * when the recipe book or placement logic simulates available ingredients from nearby inventories.
+     *
+     * @param items the new list of nearby ItemStack instances received from the server
      */
     public void setNetworkedNearbyItems(List<ItemStack> items) {
         this.networkedNearbyItems = items;
     }
 
     /**
-     * Gets the list of items found in nearby chests.
+     * Accesses the network-synchronized list of nearby item stacks used to simulate available ingredients.
+     *
+     * @return the live list of {@code ItemStack} instances representing nearby items synchronized from the server; entries may be empty
      */
     public List<ItemStack> getNetworkedNearbyItems() {
         return this.networkedNearbyItems;
     }
 
     /**
-     * Constructs a workbench container menu, initializes inventory and sync state, and opens the container for the player.
+     * The recipe type used to match recipes for this workbench.
      *
-     * The constructor conditionally validates container size and attaches container data slots only when the container actually
-     * contains slots (i.e., when `outputEnd >= 0` and the container size is > 0). For slotless workbenches it only verifies the
-     * container is non-null with size 0. If the container has slots, workbench-specific slots are added; the player's inventory
-     * and hotbar are always added. The container is opened for the provided player.
-     *
-     * @param menuType            the menu type or null for an unregistered type
-     * @param syncId              synchronization id for the menu
-     * @param container           the underlying container backing this menu
-     * @param data                container data used to sync progress/state (e.g., burn/cook times)
-     * @param containerDataSize   expected size of `data` when the container provides slots; used for data count validation
-     * @param playerInventory     the player's inventory to attach to this menu
-     * @param inputEnd            index (inclusive) of the last input slot in the container
-     * @param outputEnd           index (inclusive) of the last output slot in the container; if negative or container is empty,
-     *                            the menu is treated as slotless and slot/data initialization is skipped
+     * @return the RecipeType for WorkbenchRecipe instances, or {@code null} if no recipe type was provided
      */
-    public AbstractWorkbenchContainerMenu(@Nullable MenuType<?> menuType, int syncId, Container container, ContainerData data, int containerDataSize, Inventory playerInventory, int inputEnd, int outputEnd) {
+    public RecipeType<WorkbenchRecipe> getRecipeType() {
+        return this.recipeType;
+    }
+
+    /**
+     * Initialise a workbench container menu, attach the player inventory and hotbar, and open the backing container for the player.
+     *
+     * If the backing container provides slots (determined by a non-negative `outputEnd` and a positive container size),
+     * container size and data slot counts are validated and the provided `data` is attached for progress syncing; when the
+     * container is slotless the constructor validates an empty container and skips slot/data attachment.
+     *
+     * @param menuType          the menu type, or {@code null} for an unregistered type
+     * @param syncId            synchronization id for this menu instance
+     * @param container         the backing container for workbench slots (may be empty for slotless workbenches)
+     * @param data              container data used to sync progress/state (e.g. burn/cook times)
+     * @param containerDataSize expected size of {@code data} when the container provides slots; used for validation
+     * @param playerInventory   the player's inventory to attach to the menu and to open the container for
+     * @param inputEnd          inclusive index of the last input slot in {@code container}
+     * @param outputEnd         inclusive index of the last output slot in {@code container}; negative or empty container
+     *                          indicates a slotless workbench
+     * @param recipeType        the recipe type used by this workbench, or {@code null} if none
+     */
+    public AbstractWorkbenchContainerMenu(@Nullable MenuType<?> menuType, int syncId, Container container, ContainerData data, int containerDataSize, Inventory playerInventory, int inputEnd, int outputEnd, RecipeType<WorkbenchRecipe> recipeType) {
         super(menuType, syncId);
 
+        this.recipeType = recipeType;
         this.outputEnd = outputEnd;
         this.inputEnd = inputEnd;
 

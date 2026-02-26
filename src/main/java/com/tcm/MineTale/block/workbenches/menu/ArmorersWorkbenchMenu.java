@@ -7,6 +7,7 @@ import org.jspecify.annotations.Nullable;
 import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
 import com.tcm.MineTale.recipe.WorkbenchRecipeInput;
 import com.tcm.MineTale.registry.ModMenuTypes;
+import com.tcm.MineTale.registry.ModRecipes;
 
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -36,13 +37,13 @@ public class ArmorersWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
 
     /**
-     * Creates a workbench menu associated with the given player inventory and optional block entity.
+     * Creates a workbench menu bound to the given player inventory and optional block entity.
      *
-     * Uses an empty internal container (size 0) and the class's data size for syncing numeric state.
+     * Uses an empty internal container (size 0) and the class's data size to synchronise numeric state.
      *
-     * @param syncId synchronization id for this menu
+     * @param syncId the synchronisation id for this menu
      * @param playerInventory the player's inventory used for slot access and recipe-book integration
-     * @param data container data used to sync numeric state between server and client
+     * @param data container data used to synchronise numeric state between server and client
      * @param blockEntity nullable block entity this menu is bound to, or {@code null} if not bound
      */
     public ArmorersWorkbenchMenu(int syncId, Inventory playerInventory, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {
@@ -56,7 +57,8 @@ public class ArmorersWorkbenchMenu extends AbstractWorkbenchContainerMenu {
             DATA_SIZE, 
             playerInventory, 
             EMPTY_SIZE,
-            EMPTY_SIZE
+            EMPTY_SIZE,
+            ModRecipes.ARMORERS_TYPE
         );
         this.blockEntity = blockEntity;
         this.playerInventory = playerInventory;
@@ -73,27 +75,13 @@ public class ArmorersWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
 
     /**
-     * Populate the given StackedItemContents with the items available through this menu for recipe-book calculations.
+     * Populates the given StackedItemContents with item stacks relevant to crafting lookups.
      *
-     * @param stackedItemContents container to receive consolidated item counts from the menu's inventories
+     * Includes stacks from the player's inventory, this menu's internal container slots, and
+     * nearby item stacks supplied via networked data when available.
+     *
+     * @param contents the StackedItemContents to populate with accounted stacks
      */
-    // @Override
-    // public void fillCraftSlotsStackedContents(StackedItemContents stackedItemContents) {
-    //     // 1. Tell the book the player has items in their pockets
-    //     this.playerInventory.fillStackedContents(stackedItemContents);
-        
-    //     // 2. Tell the book the "Nearby Chests" items also count
-    //     AbstractWorkbenchEntity be = this.getBlockEntity();
-    //     if (be != null && be.isCanPullFromNearby()) {
-    //         // This runs on the CLIENT UI, making the icons turn WHITE
-    //         for (Container nearby : be.getNearbyInventories()) {
-    //             for (int i = 0; i < nearby.getContainerSize(); i++) {
-    //                 stackedItemContents.accountStack(nearby.getItem(i));
-    //             }
-    //         }
-    //     }
-    // }
-
     @Override
     public void fillCraftSlotsStackedContents(StackedItemContents contents) {
         // 1. Account for items in the player's pockets

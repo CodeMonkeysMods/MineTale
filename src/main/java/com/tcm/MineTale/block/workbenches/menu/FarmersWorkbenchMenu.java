@@ -17,7 +17,7 @@ import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 
-public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
+public class FarmersWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     // No internal inventory needed anymore, but we pass an empty container to the super
     private static final int EMPTY_SIZE = 0;
     private static final int DATA_SIZE = 0;
@@ -27,29 +27,30 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     private final Inventory playerInventory;
     
    /**
-     * Creates a client-side menu instance when the workbench UI is opened.
+     * Constructs a client-side FarmersWorkbenchMenu with no bound block entity and empty container data.
      *
-     * @param syncId the synchronization id used to match this menu with the server
-     * @param playerInventory the player's inventory bound to this menu
+     * @param syncId the menu synchronization id used to match this client menu with its server counterpart
+     * @param playerInventory the player's inventory to bind to the menu
      */
-    public WorkbenchWorkbenchMenu(int syncId, Inventory playerInventory) {
+    public FarmersWorkbenchMenu(int syncId, Inventory playerInventory) {
         this(syncId, playerInventory, new SimpleContainerData(EMPTY_SIZE), null);
     }
 
     /**
-     * Initialises a workbench menu bound to a player inventory and an optional block entity.
+     * Initialise a Farmers workbench menu bound to a player's inventory and an optional block entity.
      *
-     * The menu uses an empty internal container (size 0) and the class's data size for numeric state syncing.
+     * Uses an empty internal container and the menu's container data for server–client numeric syncing.
      *
-     * @param syncId           synchronization id for this menu
-     * @param playerInventory  the player's inventory used for slot access and recipe-book integration
-     * @param data             container data used to sync numeric state between server and client
-     * @param blockEntity      nullable block entity this menu is bound to, or {@code null} if not bound
+     * @param syncId synchronization id for this menu
+     * @param playerInventory the player's inventory used for slot access and recipe-book integration
+     * @param data container data used to sync numeric state between server and client
+     * @param blockEntity the block entity this menu is bound to, or {@code null} if not bound
      */
-    public WorkbenchWorkbenchMenu(int syncId, Inventory playerInventory, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {        // Note: The order of arguments depends on your AbstractWorkbenchContainerMenu,
+    public FarmersWorkbenchMenu(int syncId, Inventory playerInventory, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {
+        // Note: The order of arguments depends on your AbstractWorkbenchContainerMenu,
         // but the 'expectedSize' parameter MUST be 0.
         super(
-            ModMenuTypes.WORKBENCH_WORKBENCH_MENU, 
+            ModMenuTypes.FARMERS_WORKBENCH_MENU, 
             syncId, 
             new SimpleContainer(EMPTY_SIZE),
             data, 
@@ -57,7 +58,7 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
             playerInventory, 
             EMPTY_SIZE,
             EMPTY_SIZE,
-            ModRecipes.WORKBENCH_TYPE
+            ModRecipes.FARMERS_TYPE
         );
         this.blockEntity = blockEntity;
         this.playerInventory = playerInventory;
@@ -74,12 +75,11 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
 
     /**
-     * Populate the given StackedItemContents with all item stacks available to the crafting UI.
+     * Populates the provided StackedItemContents with item stacks available for recipe matching.
      *
-     * Accounts for items in the player's inventory, items in this menu's internal container,
-     * and nearby item stacks synchronised from the server so the recipe book can consider them.
+     * This accounts for items from the player's inventory, any items stored in the menu's internal container slots, and nearby item stacks supplied via the menu's networked list (used by clients).
      *
-     * @param contents the StackedItemContents to populate with available item stacks
+     * @param contents accumulator that will receive accounted item stacks for recipe lookup
      */
     @Override
     public void fillCraftSlotsStackedContents(StackedItemContents contents) {
@@ -116,7 +116,7 @@ public class WorkbenchWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
     
     /**
-     * Create the recipe input used by this menu's crafting UI; this implementation provides an empty input.
+     * Creates an empty WorkbenchRecipeInput for this menu's crafting UI.
      *
      * @return a WorkbenchRecipeInput with both input stacks set to ItemStack.EMPTY
      */
