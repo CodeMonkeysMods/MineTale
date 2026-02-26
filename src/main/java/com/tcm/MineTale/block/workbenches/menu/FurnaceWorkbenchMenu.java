@@ -5,6 +5,7 @@ import org.jspecify.annotations.Nullable;
 import com.tcm.MineTale.block.workbenches.entity.AbstractFurnaceWorkbenchEntity;
 import com.tcm.MineTale.recipe.WorkbenchRecipeInput;
 import com.tcm.MineTale.registry.ModMenuTypes;
+import com.tcm.MineTale.registry.ModRecipes;
 import com.tcm.MineTale.util.Constants;
 
 import net.minecraft.world.Container;
@@ -23,7 +24,7 @@ public class FurnaceWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     private final AbstractFurnaceWorkbenchEntity blockEntity;
 
     /**
-     * Creates a client-side FurnaceWorkbenchMenu with a new internal container and container data.
+     * Creates a client-side FurnaceWorkbenchMenu backed by a new internal container and default container data.
      *
      * @param syncId          the window synchronization id assigned by the client
      * @param playerInventory the player's inventory to attach to this menu
@@ -32,8 +33,17 @@ public class FurnaceWorkbenchMenu extends AbstractWorkbenchContainerMenu {
         this(syncId, playerInventory, new SimpleContainer(7), new SimpleContainerData(containerDataSize), null);
     }
 
+    /**
+     * Creates a furnace workbench menu bound to the given player inventory, backing container, container data and optional block entity.
+     *
+     * @param syncId the window sync id used for client–server menu synchronisation
+     * @param playerInventory the player's inventory displayed and managed by this menu
+     * @param container the backing container holding the menu's slot items
+     * @param data container data used to sync menu state (for example progress fields)
+     * @param blockEntity the associated AbstractFurnaceWorkbenchEntity, or {@code null} when constructed client-side
+     */
     public FurnaceWorkbenchMenu(int syncId, Inventory playerInventory, Container container, ContainerData data, @Nullable AbstractFurnaceWorkbenchEntity blockEntity) {
-        super(ModMenuTypes.FURNACE_WORKBENCH_MENU, syncId, container, data, containerDataSize, playerInventory, Constants.INPUT_START + 1, 6);
+        super(ModMenuTypes.FURNACE_WORKBENCH_MENU, syncId, container, data, containerDataSize, playerInventory, Constants.INPUT_START + 1, 6, ModRecipes.FURNACE_T1_TYPE);
         this.blockEntity = blockEntity;
     }
 

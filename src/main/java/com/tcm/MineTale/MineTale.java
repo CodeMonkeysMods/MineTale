@@ -18,8 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
 import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
-import com.tcm.MineTale.block.workbenches.menu.ArmorersWorkbenchMenu;
-import com.tcm.MineTale.block.workbenches.menu.WorkbenchWorkbenchMenu;
 import com.tcm.MineTale.network.ClientboundNearbyInventorySyncPacket;
 import com.tcm.MineTale.network.CraftRequestPayload;
 import com.tcm.MineTale.recipe.WorkbenchRecipe;
@@ -42,10 +40,12 @@ public class MineTale implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	/**
-	 * Initializes and registers the mod's game content and subsystems during Fabric startup.
+	 * Initialises the mod by registering game content, networking codecs and runtime subsystems.
 	 *
-	 * <p>Triggers initialization for blocks, block entities, menu types, entities, items, and entity
-	 * data serializers so they are registered with the game before gameplay begins.</p>
+	 * Performs startup registrations in dependency order (blocks, items, block entities, entities,
+	 * menus and recipes), registers creative-tab and entity data serializers, applies loot-table
+	 * modifiers, synchronises the furnace recipe serializer, and registers client↔server payload codecs
+	 * plus a global server receiver that handles craft requests from workbench-like menus.
 	 */
 	@Override
 	public void onInitialize() {
@@ -81,80 +81,26 @@ public class MineTale implements ModInitializer {
 
 		PayloadTypeRegistry.playS2C().register(ClientboundNearbyInventorySyncPacket.TYPE, ClientboundNearbyInventorySyncPacket.STREAM_CODEC);
 
-		// Register the server-side receiver using .TYPE
-		// ServerPlayNetworking.registerGlobalReceiver(CraftRequestPayload.TYPE, (payload, context) -> {
-		// 	context.server().execute(() -> {
-		// 		ServerPlayer player = context.player();
-
-		// 		// --- SECURITY GUARD ---
-		// 		// Ensure the player actually has the Workbench UI open before processing the craft
-		// 		if (!(player.containerMenu instanceof WorkbenchWorkbenchMenu)) {
-		// 			return; 
-		// 		}
-
-		// 		ItemStack requestedResult = payload.resultItem();
-		// 		int amount = payload.amount();
-				
-		// 		// 1. Get the RecipeManager from the server level
-		// 		RecipeManager recipeManager = player.level().recipeAccess();
-
-		// 		// 2. Find the recipe by matching the output ItemStack
-		// 		Optional<RecipeHolder<WorkbenchRecipe>> recipeOpt = recipeManager.getAllOfType(ModRecipes.WORKBENCH_TYPE).stream()
-		// 			.filter(holder -> {
-		// 				// Guard against recipes with no results before accessing index 0
-		// 				if (holder.value().results().isEmpty()) {
-		// 					return false;
-		// 				}
-						
-		// 				// Compare the first result of the workbench recipe to the requested item
-		// 				ItemStack result = holder.value().results().get(0);
-		// 				return ItemStack.isSameItem(result, requestedResult);
-		// 			})
-		// 			.findFirst();
-
-		// 		if (recipeOpt.isPresent()) {
-		// 			WorkbenchRecipe recipe = recipeOpt.get().value();
-					
-		// 			// 2. Determine craft limit (Handle "All" logic)
-		// 			int limit = (amount == -1) ? 64 : Math.min(Math.max(amount, 0), 64);
-
-		// 			for (int i = 0; i < limit; i++) {
-		// 				if (hasIngredients(player, recipe)) {
-		// 					consumeIngredients(player, recipe);
-		// 					player.getInventory().add(recipe.results().get(0).copy());
-		// 				} else {
-		// 					break; 
-		// 				}
-		// 			}
-					
-		// 			// 3. Sync inventory changes to the client screen
-		// 			player.containerMenu.broadcastChanges();
-		// 		}
-		// 	});
-		// });
-
 		ServerPlayNetworking.registerGlobalReceiver(CraftRequestPayload.TYPE, (payload, context) -> {
 			context.server().execute(() -> {
 				ServerPlayer player = context.player();
 				
 				// --- SELECTIVE SECURITY GUARD ---
 				// Only proceed if the menu is one of the two specific workbenches
-				boolean isWorkbench = player.containerMenu instanceof WorkbenchWorkbenchMenu;
-				boolean isArmorers = player.containerMenu instanceof ArmorersWorkbenchMenu;
+				boolean isWorkbench = player.containerMenu instanceof AbstractWorkbenchContainerMenu;
 
-				if (!isWorkbench && !isArmorers) {
+				if (!isWorkbench) {
 					return; // Reject packets from Campfires, Furnaces, or other menus
 				}
+
+				AbstractWorkbenchContainerMenu instanceContainerMenu = (AbstractWorkbenchContainerMenu) player.containerMenu;
 
 				ItemStack requestedResult = payload.resultItem();
 				int amount = payload.amount();
 				RecipeManager recipeManager = player.level().recipeAccess();
 
-				// 1. Determine which Recipe Type to search based on the open menu
-				var targetType = isWorkbench ? ModRecipes.WORKBENCH_TYPE : ModRecipes.ARMORERS_TYPE;
-
 				// 2. Find the recipe within that specific type
-				Optional<RecipeHolder<WorkbenchRecipe>> recipeOpt = recipeManager.getAllOfType(targetType).stream()
+				Optional<RecipeHolder<WorkbenchRecipe>> recipeOpt = recipeManager.getAllOfType(instanceContainerMenu.getRecipeType()).stream()
 					.filter(holder -> {
 						if (holder.value().results().isEmpty()) return false;
 						
