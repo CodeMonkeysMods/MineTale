@@ -18,6 +18,7 @@ public class ModRecipes {
     public static final RecipeType<WorkbenchRecipe> ARMORERS_TYPE = createType("armorers_recipe_type");
     public static final RecipeType<WorkbenchRecipe> FURNACE_T1_TYPE = createType("furnace_t1_recipe_type");
     public static final RecipeType<WorkbenchRecipe> FARMERS_TYPE = createType("farmers_recipe_type");
+    public static final RecipeType<WorkbenchRecipe> BUILDERS_TYPE = createType("builders_recipe_type");
     
     // 2. Define the Serializers (The "How")
     // We pass the specific Type into the Serializer's constructor
@@ -35,6 +36,9 @@ public class ModRecipes {
 
     public static final RecipeSerializer<WorkbenchRecipe> FARMERS_SERIALIZER =
         new WorkbenchRecipe.Serializer(FARMERS_TYPE);
+
+    public static final RecipeSerializer<WorkbenchRecipe> BUILDERS_SERIALIZER =
+        new WorkbenchRecipe.Serializer(BUILDERS_TYPE);
 
     /**
      * Registers the mod's recipe types and their serializers into the game's built-in registries.
@@ -54,6 +58,8 @@ public class ModRecipes {
         register(ARMORERS_TYPE, ARMORERS_SERIALIZER);
 
         register(FARMERS_TYPE, FARMERS_SERIALIZER);
+
+        register(BUILDERS_TYPE, BUILDERS_SERIALIZER);
     }
 
     /**

@@ -33,7 +33,6 @@ public class WorkbenchRecipes {
             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
             .save(exporter, "workbench_furnace_workbench_t1");
 
-        // TODO: FarmersWorkbench Not Implemented
         new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
             .input(ItemTags.LOGS, lookup, 6)
             .input(ModItems.PLANT_FIBER, 20)
@@ -43,15 +42,14 @@ public class WorkbenchRecipes {
             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
             .save(exporter, "workbench_farmers_workbench");
 
-        // TODO: Builder's Workbench Not Implemented
-        // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-        //     .input(ItemTags.LOGS, lookup, 6)
-        //     .input(ItemTags.STONE_TOOL_MATERIALS, lookup, 3)
-        //     .output(ModBlocks.BUILDERS_WORKBENCH.asItem())
-        //     .time(2)
-        //     .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-        //     .save(exporter, "workbench_builders_workbench");
+        new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+            .input(ItemTags.LOGS, lookup, 6)
+            .input(ItemTags.STONE_TOOL_MATERIALS, lookup, 3)
+            .output(ModBlocks.BUILDERS_WORKBENCH_BLOCK)
+            .time(2)
+            .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK))
+            .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+            .save(exporter, "workbench_builders_workbench");
 
         // TODO: HAY_TARGET Not Implemented
         // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
