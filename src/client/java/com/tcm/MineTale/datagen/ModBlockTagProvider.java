@@ -33,10 +33,13 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         valueLookupBuilder(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1)
                 .add(ModBlocks.FURNACE_WORKBENCH_BLOCK_T2)
-                .add(ModBlocks.ARMORERS_WORKBENCH_BLOCK);
+                .add(ModBlocks.ARMORERS_WORKBENCH_BLOCK)
+                .add(ModBlocks.BUILDERS_WORKBENCH_BLOCK)
+                .add(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK);
         valueLookupBuilder(BlockTags.MINEABLE_WITH_AXE)
                 .add(ModBlocks.CAMPFIRE_WORKBENCH_BLOCK)
-                .add(ModBlocks.WORKBENCH_WORKBENCH_BLOCK);
+                .add(ModBlocks.WORKBENCH_WORKBENCH_BLOCK)
+                .add(ModBlocks.FARMERS_WORKBENCH_BLOCK);
 
         valueLookupBuilder(BlockTags.LOGS)
                 .add(ModBlocks.AMBER_LOG)

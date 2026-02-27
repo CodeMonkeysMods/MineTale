@@ -1,17 +1,11 @@
 package com.tcm.MineTale.block.workbenches.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.jspecify.annotations.Nullable;
-
 import com.mojang.serialization.Codec;
-import com.tcm.MineTale.block.workbenches.menu.ArmorersWorkbenchMenu;
+import com.tcm.MineTale.block.workbenches.menu.BlacksmithsWorkbenchMenu;
 import com.tcm.MineTale.recipe.WorkbenchRecipe;
 import com.tcm.MineTale.registry.ModBlockEntities;
 import com.tcm.MineTale.registry.ModRecipes;
 import com.tcm.MineTale.util.Constants;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
@@ -23,8 +17,12 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import org.jspecify.annotations.Nullable;
 
-public class ArmorersWorkbenchEntity extends AbstractWorkbenchEntity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class BlacksmithsWorkbenchEntity extends AbstractWorkbenchEntity {
     protected final ContainerData data = new ContainerData() {
         /**
          * Retrieves an internal data value by index for UI synchronization.
@@ -69,8 +67,8 @@ public class ArmorersWorkbenchEntity extends AbstractWorkbenchEntity {
      * @param blockPos   the world position of this block entity
      * @param blockState the block state for this block entity
      */
-    public ArmorersWorkbenchEntity(BlockPos blockPos, BlockState blockState) {
-        super(ModBlockEntities.ARMORERS_WORKBENCH_BE, blockPos, blockState);
+    public BlacksmithsWorkbenchEntity(BlockPos blockPos, BlockState blockState) {
+        super(ModBlockEntities.BLACKSMITHS_WORKBENCH_BE, blockPos, blockState);
 
         this.tier = 1;
         this.canPullFromNearby = true;
@@ -141,7 +139,7 @@ public class ArmorersWorkbenchEntity extends AbstractWorkbenchEntity {
         }
 
         // // 2. Return the menu as usual
-        return new ArmorersWorkbenchMenu(syncId, playerInventory, this.data, this);
+        return new BlacksmithsWorkbenchMenu(syncId, playerInventory, this.data, this);
     }
     
     /**
@@ -151,7 +149,7 @@ public class ArmorersWorkbenchEntity extends AbstractWorkbenchEntity {
      */
     @Override
     public RecipeType<WorkbenchRecipe> getWorkbenchRecipeType() {
-        return ModRecipes.ARMORERS_TYPE;
+        return ModRecipes.BLACKSMITHS_TYPE;
     }
 
     /**

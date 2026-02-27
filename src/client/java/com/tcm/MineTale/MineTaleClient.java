@@ -1,16 +1,12 @@
 package com.tcm.MineTale;
 
-import com.tcm.MineTale.block.workbenches.screen.FurnaceWorkbenchScreen;
-import com.tcm.MineTale.block.workbenches.screen.WorkbenchWorkbenchScreen;
+import com.tcm.MineTale.block.workbenches.menu.BlacksmithsWorkbenchMenu;
+import com.tcm.MineTale.block.workbenches.screen.*;
 import com.tcm.MineTale.network.ClientboundNearbyInventorySyncPacket;
 
 import java.util.List;
 
 import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
-import com.tcm.MineTale.block.workbenches.screen.ArmorersWorkbenchScreen;
-import com.tcm.MineTale.block.workbenches.screen.BuildersWorkbenchScreen;
-import com.tcm.MineTale.block.workbenches.screen.CampfireWorkbenchScreen;
-import com.tcm.MineTale.block.workbenches.screen.FarmersWorkbenchScreen;
 import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModMenuTypes;
 
@@ -43,6 +39,7 @@ public class MineTaleClient implements ClientModInitializer {
 		MenuScreens.register(ModMenuTypes.ARMORERS_WORKBENCH_MENU, ArmorersWorkbenchScreen::new);
 		MenuScreens.register(ModMenuTypes.FARMERS_WORKBENCH_MENU, FarmersWorkbenchScreen::new);
 		MenuScreens.register(ModMenuTypes.BUILDERS_WORKBENCH_MENU, BuildersWorkbenchScreen::new);
+		MenuScreens.register(ModMenuTypes.BLACKSMITHS_WORKBENCH_MENU, BlacksmithsWorkbenchScreen::new);
 
 		BlockRenderLayerMap.putBlock(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1, ChunkSectionLayer.CUTOUT);
 		BlockRenderLayerMap.putBlock(ModBlocks.FURNACE_WORKBENCH_BLOCK_T2, ChunkSectionLayer.CUTOUT);

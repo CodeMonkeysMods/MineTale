@@ -1,7 +1,9 @@
 package com.tcm.MineTale.datagen;
 
 import com.tcm.MineTale.MineTale;
+import com.tcm.MineTale.item.ModArmorMaterials;
 import com.tcm.MineTale.registry.ModBlocks;
+import com.tcm.MineTale.registry.ModItems;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.client.data.models.BlockModelGenerators;
@@ -108,6 +110,10 @@ public class ModModelProvider extends FabricModelProvider {
      */
     @Override
     public void generateItemModels(ItemModelGenerators itemModelGenerators) {
-
+        itemModelGenerators.generateShield(ModItems.COPPER_SHIELD);
+        itemModelGenerators.generateTrimmableItem(ModItems.WOOD_HELM, ModArmorMaterials.WOOD_KEY, ItemModelGenerators.TRIM_PREFIX_HELMET, false);
+        itemModelGenerators.generateTrimmableItem(ModItems.WOOD_CUIRASS, ModArmorMaterials.WOOD_KEY, ItemModelGenerators.TRIM_PREFIX_CHESTPLATE, false);
+        //itemModelGenerators.generateTrimmableItem(ModItems.WOOD_GAUNTLETS, ModArmorMaterials.WOOD_KEY, ItemModelGenerators.TRIM_PREFIX_GAUNTLETS, false);
+        itemModelGenerators.generateTrimmableItem(ModItems.WOOD_GREAVES, ModArmorMaterials.WOOD_KEY, ItemModelGenerators.TRIM_PREFIX_LEGGINGS, false);
     }
 }

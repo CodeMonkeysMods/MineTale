@@ -5,12 +5,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import com.tcm.MineTale.MineTale;
-import com.tcm.MineTale.block.workbenches.ArmorersWorkbench;
-import com.tcm.MineTale.block.workbenches.BuildersWorkbench;
-import com.tcm.MineTale.block.workbenches.CampfireWorkbench;
-import com.tcm.MineTale.block.workbenches.FarmersWorkbench;
-import com.tcm.MineTale.block.workbenches.FurnaceWorkbench;
-import com.tcm.MineTale.block.workbenches.WorkbenchWorkbench;
+import com.tcm.MineTale.block.workbenches.*;
 import com.tcm.MineTale.item.ModCreativeTab;
 
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
@@ -89,6 +84,13 @@ public class ModBlocks {
 		BuildersWorkbench::new,
 		BlockBehaviour.Properties.of().sound(SoundType.WOOD),
 		true
+	);
+
+	public static final Block BLACKSMITHS_WORKBENCH_BLOCK = register(
+			"blacksmiths_workbench",
+			BlacksmithsWorkbench::new,
+			BlockBehaviour.Properties.of().sound(SoundType.ANVIL),
+			true
 	);
 
 	//Logs

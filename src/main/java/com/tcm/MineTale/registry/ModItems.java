@@ -2,19 +2,29 @@ package com.tcm.MineTale.registry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.tcm.MineTale.MineTale;
+import com.tcm.MineTale.item.ModArmorMaterials;
 import com.tcm.MineTale.item.ModCreativeTab;
 
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ShieldItem;
+import net.minecraft.world.item.component.BlocksAttacks;
+import net.minecraft.world.item.equipment.ArmorType;
 
 public class ModItems {
 
@@ -103,6 +113,31 @@ public class ModItems {
     public static final Item STORM_PETALS = register("storm_petals", Item::new, new Item.Properties());
     public static final Item BLOOD_PETALS = register("blood_petals", Item::new, new Item.Properties());
     public static final Item CYAN_PETALS = register("cyan_petals", Item::new, new Item.Properties());
+
+    // --- ARMORS & THE LIKE ---
+    public static final Item COPPER_SHIELD = register("copper_shield", ShieldItem::new, new Item.Properties()
+            .durability(999) //Unbreakable in Hytale.
+            .repairable(ItemTags.COPPER_TOOL_MATERIALS)
+            .equippableUnswappable(EquipmentSlot.OFFHAND)
+            .component(
+                    DataComponents.BLOCKS_ATTACKS,
+                    new BlocksAttacks(
+                            0.25F,
+                            1.0F,
+                            List.of(new BlocksAttacks.DamageReduction(100.0F, Optional.empty(), 0.0F, 1.0F)),
+                            new BlocksAttacks.ItemDamageFunction(3.0F, 1.0F, 1.0F),
+                            Optional.of(DamageTypeTags.BYPASSES_SHIELD),
+                            Optional.of(SoundEvents.SHIELD_BLOCK),
+                            Optional.of(SoundEvents.SHIELD_BREAK)
+                    )
+            )
+            .component(DataComponents.BREAK_SOUND, SoundEvents.SHIELD_BREAK)
+    );
+
+    public static final Item WOOD_HELM = register("wood_helm", Item::new, new Item.Properties().humanoidArmor(ModArmorMaterials.WOOD_MATERIAL, ArmorType.HELMET));
+    public static final Item WOOD_CUIRASS = register("wood_cuirass", Item::new, new Item.Properties().humanoidArmor(ModArmorMaterials.WOOD_MATERIAL, ArmorType.CHESTPLATE));
+    //public static final Item WOOD_GAUNTLETS = register("wood_gauntlets", Item::new, new Item.Properties().humanoidArmor(ModArmorMaterials.WOOD_MATERIAL, ArmorType.BOOTS));
+    public static final Item WOOD_GREAVES = register("wood_greaves", Item::new, new Item.Properties().humanoidArmor(ModArmorMaterials.WOOD_MATERIAL, ArmorType.LEGGINGS));
 
     // --- REGISTRATION LOGIC ---
     public static <GenericItem extends Item> GenericItem register(String name, Function<Item.Properties, GenericItem> itemFactory, Item.Properties settings) {

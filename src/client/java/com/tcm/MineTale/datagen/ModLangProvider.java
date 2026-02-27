@@ -22,6 +22,9 @@ public class ModLangProvider extends FabricLanguageProvider {
         translationBuilder.add("block.minetale.furnace_workbench_block_t1", "Furnace Workbench - Tier One");
         translationBuilder.add("block.minetale.furnace_workbench_block_t2", "Furnace Workbench - Tier Two");
         translationBuilder.add("block.minetale.campfire_workbench_block", "Campfire Workbench");
+        translationBuilder.add("block.minetale.farmers_workbench", "Farmer's Workbench");
+        translationBuilder.add("block.minetale.blacksmiths_workbench", "Blacksmith's Workbench");
+        translationBuilder.add("block.minetale.builders_workbench", "Builder's Workbench");
 
         translationBuilder.add("block.minetale.amber_log", "Amber Log");
         translationBuilder.add("block.minetale.bamboo_log", "Bamboo Log");
@@ -170,5 +173,12 @@ public class ModLangProvider extends FabricLanguageProvider {
         translationBuilder.add("item.minetale.storm_petals", "Storm Petals");
         translationBuilder.add("item.minetale.blood_petals", "Blood Petals");
         translationBuilder.add("item.minetale.cyan_petals", "Cyan Petals");
+
+        // --- ARMOR & THE LIKE ---
+        translationBuilder.add("item.minetale.copper_shield", "Copper Shield");
+        translationBuilder.add("item.minetale.wood_helm",  "Wood Helm");
+        translationBuilder.add("item.minetale.wood_cuirass",  "Wood Cuirass");
+        //translationBuilder.add("item.minetale.wood_gauntlets",  "Wood Gauntlets");
+        translationBuilder.add("item.minetale.wood_greaves",  "Wood Greaves");
     }
 }

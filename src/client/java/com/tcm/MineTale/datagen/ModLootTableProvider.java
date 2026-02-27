@@ -49,7 +49,7 @@ public class ModLootTableProvider extends FabricBlockLootTableProvider {
     @Override
     public void generate() {
         ///Block Drops Itself
-        this.add(ModBlocks.ARMORERS_WORKBENCH_BLOCK, 
+        this.add(ModBlocks.ARMORERS_WORKBENCH_BLOCK,
             LootTable.lootTable() // Use the static factory method to start the builder
                 .withPool(LootPool.lootPool()
                     .setRolls(ConstantValue.exactly(1.0F))
@@ -62,6 +62,36 @@ public class ModLootTableProvider extends FabricBlockLootTableProvider {
                     )
                     .when(ExplosionCondition.survivesExplosion())
                 )
+        );
+
+        this.add(ModBlocks.BUILDERS_WORKBENCH_BLOCK,
+                LootTable.lootTable() // Use the static factory method to start the builder
+                        .withPool(LootPool.lootPool()
+                                .setRolls(ConstantValue.exactly(1.0F))
+                                .add(LootItem.lootTableItem(ModBlocks.BUILDERS_WORKBENCH_BLOCK))
+                                .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.BUILDERS_WORKBENCH_BLOCK)
+                                        .setProperties(StatePropertiesPredicate.Builder.properties()
+                                                .hasProperty(AbstractWorkbench.HALF, DoubleBlockHalf.LOWER)
+                                                .hasProperty(AbstractWorkbench.TYPE, ChestType.LEFT)
+                                        )
+                                )
+                                .when(ExplosionCondition.survivesExplosion())
+                        )
+        );
+
+        this.add(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK,
+                LootTable.lootTable() // Use the static factory method to start the builder
+                        .withPool(LootPool.lootPool()
+                                .setRolls(ConstantValue.exactly(1.0F))
+                                .add(LootItem.lootTableItem(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK))
+                                .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK)
+                                        .setProperties(StatePropertiesPredicate.Builder.properties()
+                                                .hasProperty(AbstractWorkbench.HALF, DoubleBlockHalf.LOWER)
+                                                .hasProperty(AbstractWorkbench.TYPE, ChestType.LEFT)
+                                        )
+                                )
+                                .when(ExplosionCondition.survivesExplosion())
+                        )
         );
 
         this.add(ModBlocks.CAMPFIRE_WORKBENCH_BLOCK, 
@@ -92,6 +122,21 @@ public class ModLootTableProvider extends FabricBlockLootTableProvider {
                     )
                     .when(ExplosionCondition.survivesExplosion())
                 )
+        );
+
+        this.add(ModBlocks.FARMERS_WORKBENCH_BLOCK,
+                LootTable.lootTable()
+                        .withPool(LootPool.lootPool()
+                                .setRolls(ConstantValue.exactly(1.0F))
+                                .add(LootItem.lootTableItem(ModBlocks.FARMERS_WORKBENCH_BLOCK))
+                                .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.FARMERS_WORKBENCH_BLOCK)
+                                        .setProperties(StatePropertiesPredicate.Builder.properties()
+                                                .hasProperty(AbstractWorkbench.HALF, DoubleBlockHalf.LOWER)
+                                                .hasProperty(AbstractWorkbench.TYPE, ChestType.LEFT)
+                                        )
+                                )
+                                .when(ExplosionCondition.survivesExplosion())
+                        )
         );
 
         this.add(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1, 
