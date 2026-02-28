@@ -237,7 +237,7 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
 
                 // Tooltip logic
                 if (mouseX >= startX && mouseX < startX + 16 && mouseY >= currentY && mouseY < currentY + 16) {
-                    graphics.renderTooltip(this.font, displayStack, mouseX, mouseY);
+                    graphics.renderItemTooltip(this.font, displayStack, mouseX, mouseY);
                 }
             }
             index++;
@@ -247,9 +247,15 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
     private int getAvailableCount(Ingredient ingredient) {
         int found = 0;
         // Check Player Inventory
-        for (ItemStack stack : this.minecraft.player.getInventory().items) {
-            if (ingredient.test(stack)) found += stack.getCount();
-        }
+        // Use getContainerSize() and getItem(i) for safe access
+        Inventory inv = this.minecraft.player.getInventory();
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack stack = inv.getItem(i);
+            if (ingredient.test(stack)) {
+              found += stack.getCount();
+            }
+         }
+        
         // Check Networked Nearby Items
         if (this.menu instanceof AbstractWorkbenchContainerMenu workbenchMenu) {
             for (ItemStack stack : workbenchMenu.getNetworkedNearbyItems()) {
