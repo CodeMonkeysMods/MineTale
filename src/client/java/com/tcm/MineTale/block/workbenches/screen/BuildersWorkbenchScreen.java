@@ -88,12 +88,11 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
     }
 
     /**
-         * Configure the screen's GUI dimensions and initialize widgets.
-         *
-         * Sets the layout size (imageWidth = 176, imageHeight = 166), delegates remaining
-         * layout initialization to the superclass, and creates the three craft buttons
-         * ("1", "10", "All") wired to their respective handlers.
-         */
+     * Initialise the screen layout and widgets for the Builders Workbench.
+     *
+     * Sets the GUI dimensions, delegates remaining initialisation to the superclass,
+     * and creates three craft buttons that request crafting of 1, 10 or all available items.
+     */
     @Override
     protected void init() {
         // Important: Set your GUI size before super.init()

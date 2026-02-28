@@ -10,6 +10,16 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 
 public class AlchemistRecipes {
+    /**
+     * Registers alchemist workbench recipes and writes them to the provided exporter.
+     *
+     * Uses the provider to determine unlock conditions and the lookup to resolve holders required
+     * during recipe generation.
+     *
+     * @param provider the RecipeProvider used to query registered items/blocks for unlock conditions
+     * @param exporter the RecipeOutput target to which generated recipes will be saved
+     * @param lookup   the HolderLookup.Provider used to resolve registry holders during generation
+     */
     public static void buildRecipes(RecipeProvider provider, RecipeOutput exporter, HolderLookup.Provider lookup) {
          //new WorkbenchRecipeBuilder(ModRecipes.ALCHEMIST_TYPE, ModRecipes.ALCHEMIST_SERIALIZER)
          //    .input(ModItems.EMPTY_POTION_BOTTLE)

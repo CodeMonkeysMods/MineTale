@@ -25,10 +25,10 @@ import java.util.List;
 public class BlacksmithsWorkbenchEntity extends AbstractWorkbenchEntity {
     protected final ContainerData data = new ContainerData() {
         /**
-         * Retrieves an internal data value by index for UI synchronization.
+         * Provide the internal sync data value for the given index; this workbench does not expose any data.
          *
-         * @param index There is no cook time or anything for this block as it doesnt use it
-         * @return the value associated with {@code index}, or 0 for any other index
+         * @param index data index to retrieve; ignored by this implementation
+         * @return 0 for any index
          */
         @Override
         public int get(int index) {
@@ -38,10 +38,10 @@ public class BlacksmithsWorkbenchEntity extends AbstractWorkbenchEntity {
         }
 
         /**
-         * No-op for this workbench; data is server-driven and not set client-side.
+         * No-op setter: workbench data is server-controlled and must not be modified client-side.
          *
-         * `@param` index the data index to set
-         * `@param` value the value to assign (ignored)
+         * @param index the data index (ignored)
+         * @param value the value to assign (ignored)
          */
         @Override
         public void set(int index, int value) {
@@ -60,9 +60,9 @@ public class BlacksmithsWorkbenchEntity extends AbstractWorkbenchEntity {
     };
 
     /**
-     * Creates a ArmorersWorkbenchEntity for the specified world position and block state.
+     * Initialises a BlacksmithsWorkbenchEntity at the given world position and block state.
      *
-     * Sets the entity's scanRadius to 0.0 and tier to 1.
+     * The created entity has its workbench tier set to 1 and is enabled to pull items from nearby inventories.
      *
      * @param blockPos   the world position of this block entity
      * @param blockState the block state for this block entity
@@ -101,12 +101,13 @@ public class BlacksmithsWorkbenchEntity extends AbstractWorkbenchEntity {
     }
 
     /**
-     * Restores workbench-specific state from persistent storage, applying defaults when keys are absent.
+     * Restore the workbench's persisted state from the provided input source.
      *
-     * Delegates to the superclass load logic, then:
-     * - reads "WorkbenchTier" (int) into {@code tier}, defaulting to {@code 1} if missing;
-     * - reads "ScanRadius" (double) into {@code scanRadius}, defaulting to {@code 0.0} if missing;
-     * - reads "Inventory" as a list of {@code ItemStack} and populates the internal inventory up to its capacity.
+     * Reads and applies the following keys if present: "WorkbenchTier" into {@code tier},
+     * "ScanRadius" into {@code scanRadius}, and "Inventory" into the internal inventory
+     * (up to the inventory's capacity). Absent keys leave the corresponding fields at their defaults.
+     *
+     * @param valueInput source used to read persisted values
      */
     @Override
     protected void loadAdditional(ValueInput valueInput) {
@@ -124,12 +125,12 @@ public class BlacksmithsWorkbenchEntity extends AbstractWorkbenchEntity {
     }
 
     /**
-     * Creates the server-side container menu for this workbench's UI.
+     * Create the server-side container menu for this workbench and synchronise nearby state to the opening player.
      *
-     * @param syncId the window id used to synchronize the menu with the client
+     * @param syncId the window id used to identify the menu instance
      * @param playerInventory the opening player's inventory
      * @param player the player who opened the menu
-     * @return a ArmorersWorkbenchMenu bound to this workbench's inventory and synced data
+     * @return the BlacksmithsWorkbenchMenu bound to this workbench and its synced container data
      */
     @Override
     public @Nullable AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {

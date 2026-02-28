@@ -25,10 +25,12 @@ public class BlacksmithsWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     private final Inventory playerInventory;
 
    /**
-     * Creates a client-side menu instance when the workbench UI is opened.
+     * Constructs a client-side BlacksmithsWorkbenchMenu for the player's workbench UI.
      *
-     * @param syncId the synchronization id used to match this menu with the server
-     * @param playerInventory the player's inventory bound to this menu
+     * Convenience constructor used on the client; delegates to the main constructor with empty container data and no bound block entity.
+     *
+     * @param syncId           the synchronisation id used to match this menu with the server
+     * @param playerInventory  the player's inventory to bind for slot access
      */
     public BlacksmithsWorkbenchMenu(int syncId, Inventory playerInventory) {
         this(syncId, playerInventory, new SimpleContainerData(EMPTY_SIZE), null);
@@ -73,12 +75,12 @@ public class BlacksmithsWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
 
     /**
-     * Populates the given StackedItemContents with item stacks relevant to crafting lookups.
+     * Populate the provided StackedItemContents with item stacks available for crafting lookups.
      *
-     * Includes stacks from the player's inventory, this menu's internal container slots, and
-     * nearby item stacks supplied via networked data when available.
+     * Accounts stacks from the bound player inventory, this menu's internal container and any
+     * networked nearby item stacks supplied to the menu.
      *
-     * @param contents the StackedItemContents to populate with accounted stacks
+     * @param contents the StackedItemContents to populate with accounted item stacks
      */
     @Override
     public void fillCraftSlotsStackedContents(StackedItemContents contents) {
@@ -104,10 +106,10 @@ public class BlacksmithsWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
 
     /**
-     * Selects the crafting recipe-book category for this menu.
-     *
-     * @return {@code RecipeBookType.CRAFTING}
-     */
+         * Indicates that the crafting recipe book should be displayed for this menu.
+         *
+         * @return `RecipeBookType.CRAFTING`
+         */
     @Override
     public RecipeBookType getRecipeBookType() {
         // This keeps the Crafting-style recipe book available on the UI
@@ -115,7 +117,9 @@ public class BlacksmithsWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
     
     /**
-     * Create the recipe input used by this menu's crafting UI; this implementation provides an empty input.
+     * Creates an empty recipe input for this menu's crafting UI.
+     *
+     * Both input slots are empty because the menu does not provide internal crafting slots; crafting reads from the player inventory when invoked.
      *
      * @return a WorkbenchRecipeInput with both input stacks set to ItemStack.EMPTY
      */

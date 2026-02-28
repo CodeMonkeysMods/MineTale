@@ -88,11 +88,12 @@ public class ArmorersWorkbenchScreen extends AbstractRecipeBookScreen<ArmorersWo
     }
 
     /**
-     * Initialises the screen size and adds the three crafting buttons.
+     * Initialises the screen size and creates three crafting buttons.
      *
-     * Sets the GUI image dimensions, delegates further initialisation to the superclass,
-     * and creates/registers three buttons wired to craft one, ten or all items
-     * (they invoke handleCraftRequest with 1, 10 and -1 respectively; -1 signifies "All").
+     * Sets the GUI image dimensions, performs superclass initialisation, and adds
+     * three buttons that request crafting of 1, 10 or all items. Each button calls
+     * {@code handleCraftRequest} with arguments 1, 10 and -1 respectively; -1
+     * signifies "craft all".
      */
     @Override
     protected void init() {

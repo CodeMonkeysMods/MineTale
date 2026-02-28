@@ -58,12 +58,12 @@ public class BlacksmithsWorkbenchScreen extends AbstractRecipeBookScreen<Blacksm
     }
 
     /**
-     * Creates a WorkbenchWorkbenchScreen bound to the given menu, player inventory, title, and recipe book component.
+     * Initialise a BlacksmithsWorkbenchScreen bound to the provided menu, player inventory, title and recipe book.
      *
-     * @param menu        the menu backing this screen
-     * @param inventory   the player's inventory shown in the screen
-     * @param title       the screen title component
-     * @param recipeBook  the MineTaleRecipeBookComponent used to display and manage recipes in this screen
+     * @param menu       the workbench menu backing this screen
+     * @param inventory  the player's inventory to display
+     * @param title      the screen title component
+     * @param recipeBook the MineTaleRecipeBookComponent used to display and manage recipes for this screen
      */
     private BlacksmithsWorkbenchScreen(BlacksmithsWorkbenchMenu menu, Inventory inventory, Component title, MineTaleRecipeBookComponent recipeBook) {
         super(menu, recipeBook, inventory, title);
@@ -87,13 +87,12 @@ public class BlacksmithsWorkbenchScreen extends AbstractRecipeBookScreen<Blacksm
     }
 
     /**
-     * Initialises the workbench screen's GUI size and interactive widgets.
+     * Initialises the screen's GUI size and adds the craft control buttons.
      *
-     * Sets the screen image dimensions, delegates remaining setup to the superclass,
-     * computes default button positions and creates three craft buttons:
-     * - "Craft" (requests 1),
-     * - "x10" (requests 10),
-     * - "All" (requests -1 to indicate all).
+     * Sets the screen image dimensions before delegating to the superclass, computes
+     * default positions relative to the current GUI origin and adds three buttons:
+     * "Craft" requests a single item, "x10" requests ten items and "All" requests
+     * the full possible amount (represented by -1).
      */
     @Override
     protected void init() {
@@ -160,11 +159,17 @@ public class BlacksmithsWorkbenchScreen extends AbstractRecipeBookScreen<Blacksm
    }
 
     /**
-     * Render the screen, remember the current recipe selection and update craft-button availability.
+     * Render the screen, preserve the recipe book selection and update craft-button enabled state
+     * according to whether the player has sufficient ingredients for different craft counts.
      *
-     * Remembers the recipe selected in the recipe book, resolves that selection against the client's known recipes when possible,
-     * sets the craft buttons active or inactive according to whether the player has sufficient ingredients for counts of 1, 2 and 10,
-     * renders the background, the superclass UI and any tooltips.
+     * The method draws the screen background and base UI, remembers the currently selected recipe
+     * from the recipe book for later resolution, enables or disables the craft buttons for
+     * counts of 1, 2 and 10 based on ingredient availability, and renders any tooltips.
+     *
+     * @param graphics the graphics context to render with
+     * @param mouseX   the current mouse X coordinate relative to the window
+     * @param mouseY   the current mouse Y coordinate relative to the window
+     * @param delta    the frame delta time (partial tick) for the current render frame
      */
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
@@ -206,13 +211,13 @@ public class BlacksmithsWorkbenchScreen extends AbstractRecipeBookScreen<Blacksm
     }
 
     /**
-     * Determines whether the player has enough ingredients to craft the given recipe the specified number of times.
-     *
-     * @param player     the player whose inventory (and networked nearby items) will be checked; may be null
-     * @param entry      the recipe display entry providing crafting requirements; may be null
-     * @param craftCount the multiplier for required ingredient quantities (e.g., 1, 10, or -1 is not specially handled here)
-     * @return `true` if the player has at least the required quantity of each ingredient multiplied by `craftCount`, `false` otherwise (also returns `false` if `player` or `entry` is null or the recipe has no requirements)
-     */
+         * Determine whether the player has sufficient ingredients to craft the given recipe the specified number of times.
+         *
+         * Returns `false` if `player` or `entry` is null or if the recipe has no crafting requirements.
+         *
+         * @param craftCount the number of times to craft the recipe; ingredient requirements are multiplied by this value
+         * @return `true` if the player has at least the required quantity of each ingredient multiplied by `craftCount`, `false` otherwise
+         */
     private boolean canCraft(Player player, RecipeDisplayEntry entry, int craftCount) {
         if (player == null || entry == null) return false;
 
@@ -253,6 +258,16 @@ public class BlacksmithsWorkbenchScreen extends AbstractRecipeBookScreen<Blacksm
         return true;
     }
 
+    /**
+     * Checks whether the player inventory combined with the workbench's networked nearby items
+     * contains at least the specified total quantity of the given ingredient.
+     *
+     * @param inventory     the inventory to search (player inventory)
+     * @param ingredient    the ingredient matcher used to test ItemStacks
+     * @param totalRequired the total number of matching items required
+     * @return              `true` if the combined count from inventory and nearby networked items
+     *                      is greater than or equal to `totalRequired`, `false` otherwise
+     */
     private boolean hasIngredientAmount(Inventory inventory, Ingredient ingredient, int totalRequired) {
         System.out.println("DEBUG: Searching inventory + nearby for " + totalRequired + "...");
         if (totalRequired <= 0) return true;

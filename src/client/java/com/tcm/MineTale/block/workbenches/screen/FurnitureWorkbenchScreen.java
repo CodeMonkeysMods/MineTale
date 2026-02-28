@@ -48,23 +48,20 @@ public class FurnitureWorkbenchScreen extends AbstractRecipeBookScreen<Furniture
     private Button craftAllBtn;
 
     /**
-     * Initialize a workbench GUI screen using the provided container menu, player inventory, and title.
+     * Initialises the furniture workbench GUI screen with the given container menu, player inventory and title.
      *
-     * @param menu      the menu supplying slots and synchronized state for this screen
+     * @param menu      the menu providing slots and synchronized state for this screen
      * @param inventory the player's inventory to display and interact with
-     * @param title     the title component shown at the top of the screen
+     * @param title     the title component displayed at the top of the screen
      */
     public FurnitureWorkbenchScreen(FurnitureWorkbenchMenu menu, Inventory inventory, Component title) {
         this(menu, inventory, title, createRecipeBookComponent(menu));
     }
 
     /**
-     * Creates a WorkbenchWorkbenchScreen bound to the given menu, player inventory, title, and recipe book component.
+     * Initialise a FurnitureWorkbenchScreen bound to the given menu, player inventory, title and recipe book.
      *
-     * @param menu        the menu backing this screen
-     * @param inventory   the player's inventory shown in the screen
-     * @param title       the screen title component
-     * @param recipeBook  the MineTaleRecipeBookComponent used to display and manage recipes in this screen
+     * @param recipeBook the MineTaleRecipeBookComponent used to display and manage recipes in this screen
      */
     private FurnitureWorkbenchScreen(FurnitureWorkbenchMenu menu, Inventory inventory, Component title, MineTaleRecipeBookComponent recipeBook) {
         super(menu, recipeBook, inventory, title);
@@ -88,13 +85,11 @@ public class FurnitureWorkbenchScreen extends AbstractRecipeBookScreen<Furniture
     }
 
     /**
-     * Initialises the workbench screen's GUI size and interactive widgets.
+     * Initialises the screen's GUI dimensions and adds the three craft buttons.
      *
-     * Sets the screen image dimensions, delegates remaining setup to the superclass,
-     * computes default button positions and creates three craft buttons:
-     * - "Craft" (requests 1),
-     * - "x10" (requests 10),
-     * - "All" (requests -1 to indicate all).
+     * Sets the screen image width and height, invokes superclass initialisation,
+     * computes default button positions and creates the "Craft" (requests 1),
+     * "x10" (requests 10) and "All" (requests all) buttons.
      */
     @Override
     protected void init() {
@@ -161,11 +156,11 @@ public class FurnitureWorkbenchScreen extends AbstractRecipeBookScreen<Furniture
    }
 
     /**
-     * Render the screen, remember the current recipe selection and update craft-button availability.
+     * Render the screen and update craft-button availability based on the current recipe selection.
      *
-     * Remembers the recipe selected in the recipe book, resolves that selection against the client's known recipes when possible,
-     * sets the craft buttons active or inactive according to whether the player has sufficient ingredients for counts of 1, 2 and 10,
-     * renders the background, the superclass UI and any tooltips.
+     * Remembers the recipe selected in the recipe book and resolves it against the client's known recipes;
+     * enables or disables the craft buttons for counts of 1, 2 and 10 according to whether the player has
+     * sufficient ingredients; renders the background, superclass UI and any tooltips.
      */
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
@@ -207,13 +202,13 @@ public class FurnitureWorkbenchScreen extends AbstractRecipeBookScreen<Furniture
     }
 
     /**
-     * Determines whether the player has enough ingredients to craft the given recipe the specified number of times.
-     *
-     * @param player     the player whose inventory (and networked nearby items) will be checked; may be null
-     * @param entry      the recipe display entry providing crafting requirements; may be null
-     * @param craftCount the multiplier for required ingredient quantities (e.g., 1, 10, or -1 is not specially handled here)
-     * @return `true` if the player has at least the required quantity of each ingredient multiplied by `craftCount`, `false` otherwise (also returns `false` if `player` or `entry` is null or the recipe has no requirements)
-     */
+         * Determine whether the player has sufficient ingredients to craft the given recipe the specified number of times.
+         *
+         * @param player     the player whose inventory and any networked nearby items will be checked; may be null
+         * @param entry      the recipe display entry that provides crafting requirements; may be null
+         * @param craftCount the multiplier applied to each ingredient's required quantity
+         * @return `true` if `player` and `entry` are non-null and the player has at least each ingredient's required quantity multiplied by `craftCount`; `false` otherwise (also `false` if the recipe has no requirements)
+         */
     private boolean canCraft(Player player, RecipeDisplayEntry entry, int craftCount) {
         if (player == null || entry == null) return false;
 
@@ -254,6 +249,14 @@ public class FurnitureWorkbenchScreen extends AbstractRecipeBookScreen<Furniture
         return true;
     }
 
+    /**
+     * Checks whether the player's inventory and nearby networked items contain at least the specified quantity of an ingredient.
+     *
+     * @param inventory     the player's inventory to search
+     * @param ingredient    the ingredient to match against item stacks
+     * @param totalRequired the total quantity required
+     * @return `true` if the combined quantity found in the inventory and any networked nearby items is greater than or equal to `totalRequired`, `false` otherwise
+     */
     private boolean hasIngredientAmount(Inventory inventory, Ingredient ingredient, int totalRequired) {
         System.out.println("DEBUG: Searching inventory + nearby for " + totalRequired + "...");
         if (totalRequired <= 0) return true;
