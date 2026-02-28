@@ -146,10 +146,10 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
     }
 
     /**
-    * Draws the workbench GUI background texture at the screen's top-left corner.
+    * Render the workbench background texture at the screen's top-left corner.
     *
     * @param guiGraphics the graphics context used to draw GUI elements
-    * @param f           partial tick time for interpolation
+    * @param f           partial tick time used for animation interpolation
     * @param i           current mouse x coordinate relative to the window
     * @param j           current mouse y coordinate relative to the window
     */
@@ -159,29 +159,41 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
       guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, k, l, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
    }
 
+        /**
+     * Renders the builders workbench screen, updates recipe selection state, updates craft button availability
+     * and, when a recipe is selected, renders its ingredient list and hover tooltips.
+     *
+     * The method:
+     * - draws the background and base screen,
+     * - updates {@code lastKnownSelectedId} from the recipe book component,
+     * - looks up the corresponding {@code RecipeDisplayEntry} from the client's known recipes,
+     * - enables or disables the craft buttons according to available ingredients for 1, 2 and 10 crafts,
+     * - renders the aggregated ingredient list for the selected recipe (including hover tooltips) when present,
+     * - renders the standard screen tooltip layer.
+     *
+     * @param graphics the GUI graphics context used for all rendering operations
+     * @param mouseX   current mouse X coordinate (screen space)
+     * @param mouseY   current mouse Y coordinate (screen space)
+     * @param delta    frame partial tick time used for animated displays
+     */
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         renderBackground(graphics, mouseX, mouseY, delta);
         super.render(graphics, mouseX, mouseY, delta);
 
-        // 1. Get the current selection from the book
         RecipeDisplayId currentId = this.mineTaleRecipeBook.getSelectedRecipeId();
-        
-        // 2. If it's NOT null, remember it!
         if (currentId != null) {
             this.lastKnownSelectedId = currentId;
         }
 
-        // 3. Use the remembered ID to find the entry for button activation
         RecipeDisplayEntry selectedEntry = null;
         if (this.lastKnownSelectedId != null && this.minecraft.level != null) {
             ClientRecipeBook book = this.minecraft.player.getRecipeBook();
             selectedEntry = ((ClientRecipeBookAccessor) book).getKnown().get(this.lastKnownSelectedId);
         }
 
-        // 2. Button Activation Logic
         if (selectedEntry != null) {
-            // We use the entry directly. It contains the 15 ingredients needed!
+            // Existing Button Logic
             boolean canCraftOne = canCraft(this.minecraft.player, selectedEntry, 1);
             boolean canCraftMoreThanOne = canCraft(this.minecraft.player, selectedEntry, 2);
             boolean canCraftTen = canCraft(this.minecraft.player, selectedEntry, 10);
@@ -189,6 +201,9 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
             this.craftOneBtn.active = canCraftOne;
             this.craftTenBtn.active = canCraftTen;
             this.craftAllBtn.active = canCraftMoreThanOne;
+
+            // NEW: Render the Ingredients List
+            renderIngredientList(graphics, selectedEntry, mouseX, mouseY);
         } else {
             this.craftOneBtn.active = false;
             this.craftTenBtn.active = false;
@@ -196,6 +211,94 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
         }
 
         renderTooltip(graphics, mouseX, mouseY);
+    }
+
+    /**
+     * Render the aggregated ingredient list for a recipe, showing icons, availability and tooltips.
+     *
+     * <p>For the given recipe this draws one row per unique ingredient set (duplicates aggregated),
+     * cycles through item variants for the icon, renders an availability string "available/needed"
+     * (red when insufficient, white when sufficient) and shows an item tooltip when the mouse
+     * hovers over the icon.
+     *
+     * @param graphics the GUI graphics context used for rendering
+     * @param entry the recipe entry whose crafting requirements will be displayed
+     * @param mouseX the current mouse X coordinate (used to detect tooltip hover)
+     * @param mouseY the current mouse Y coordinate (used to detect tooltip hover)
+     */
+    private void renderIngredientList(GuiGraphics graphics, RecipeDisplayEntry entry, int mouseX, int mouseY) {
+        Optional<List<Ingredient>> reqs = entry.craftingRequirements();
+        if (reqs.isEmpty()) return;
+
+        // Group requirements to avoid duplicate rows for the same item type
+        Map<List<Holder<Item>>, Integer> aggregated = new HashMap<>();
+        Map<List<Holder<Item>>, Ingredient> holderToIng = new HashMap<>();
+
+        for (Ingredient ing : reqs.get()) {
+            List<Holder<Item>> key = ing.items().toList();
+            aggregated.put(key, aggregated.getOrDefault(key, 0) + 1);
+            holderToIng.putIfAbsent(key, ing);
+        }
+
+        int startX = this.leftPos + 8; // Adjust to fit your texture's empty space
+        int startY = this.topPos + 20;
+        int rowHeight = 20;
+        int index = 0;
+
+        for (Map.Entry<List<Holder<Item>>, Integer> reqEntry : aggregated.entrySet()) {
+            Ingredient ing = holderToIng.get(reqEntry.getKey());
+            int amountNeeded = reqEntry.getValue();
+            int currentY = startY + (index * rowHeight);
+
+            // Calculate total available (Inv + Nearby)
+            int available = getAvailableCount(ing);
+
+            // Draw Item Icon
+            ItemStack[] variants = ing.items().toArray(ItemStack[]::new);
+            if (variants.length > 0) {
+                // Cycle through variants every second
+                ItemStack displayStack = variants[(int) (System.currentTimeMillis() / 1000 % variants.length)];
+                graphics.renderFakeItem(displayStack, startX, currentY);
+
+                // Draw Text (Red if lacking, White if okay)
+                int color = (available < amountNeeded) ? 0xFF5555 : 0xFFFFFF;
+                String progress = available + "/" + amountNeeded;
+                graphics.drawString(this.font, progress, startX + 20, currentY + 4, color, true);
+
+                // Tooltip logic
+                if (mouseX >= startX && mouseX < startX + 16 && mouseY >= currentY && mouseY < currentY + 16) {
+                    graphics.renderItemTooltip(this.font, displayStack, mouseX, mouseY);
+                }
+            }
+            index++;
+        }
+    }
+
+    /**
+     * Count the total quantity of items that satisfy the given ingredient from the player inventory and nearby networked storage.
+     *
+     * @param ingredient the ingredient used to test ItemStacks
+     * @return the sum of counts of all ItemStacks matching `ingredient` from the player inventory and any networked nearby items
+     */
+    private int getAvailableCount(Ingredient ingredient) {
+        int found = 0;
+        // Check Player Inventory
+        // Use getContainerSize() and getItem(i) for safe access
+        Inventory inv = this.minecraft.player.getInventory();
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack stack = inv.getItem(i);
+            if (ingredient.test(stack)) {
+              found += stack.getCount();
+            }
+         }
+        
+        // Check Networked Nearby Items
+        if (this.menu instanceof AbstractWorkbenchContainerMenu workbenchMenu) {
+            for (ItemStack stack : workbenchMenu.getNetworkedNearbyItems()) {
+                if (ingredient.test(stack)) found += stack.getCount();
+            }
+        }
+        return found;
     }
 
     /**
@@ -281,9 +384,9 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
     }
 
     /**
-     * Computes the on-screen position for the recipe book toggle button for this GUI.
+     * Compute the on-screen position for the recipe-book toggle button for this GUI.
      *
-     * @return the screen position placed 5 pixels from the GUI's left edge and 49 pixels above the GUI's vertical center
+     * @return the screen position located 5 pixels from the GUI's left edge and 49 pixels above the GUI's vertical centre
      */
     @Override
     protected ScreenPosition getRecipeBookButtonPosition() {
