@@ -18,6 +18,8 @@ public class ModTags {
 
     public static class Items {
         public static final TagKey<Item> WOOD_REPAIR = createTag("wood_repair");
+        public static final TagKey<Item> MOSS = createTag("moss");
+        public static final TagKey<Item> MILK_BUCKETS = createTag("milk_buckets");
     }
 
     private static TagKey<Item> createTag(String name) {

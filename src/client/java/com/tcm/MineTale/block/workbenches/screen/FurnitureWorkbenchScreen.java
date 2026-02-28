@@ -3,6 +3,7 @@ package com.tcm.MineTale.block.workbenches.screen;
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
 import com.tcm.MineTale.block.workbenches.menu.BlacksmithsWorkbenchMenu;
+import com.tcm.MineTale.block.workbenches.menu.FurnitureWorkbenchMenu;
 import com.tcm.MineTale.mixin.client.ClientRecipeBookAccessor;
 import com.tcm.MineTale.network.CraftRequestPayload;
 import com.tcm.MineTale.recipe.MineTaleRecipeBookComponent;
@@ -34,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class BlacksmithsWorkbenchScreen extends AbstractRecipeBookScreen<BlacksmithsWorkbenchMenu> {
+public class FurnitureWorkbenchScreen extends AbstractRecipeBookScreen<FurnitureWorkbenchMenu> {
     private static final Identifier TEXTURE =
         Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "textures/gui/container/workbench_workbench.png");
 
@@ -53,7 +54,7 @@ public class BlacksmithsWorkbenchScreen extends AbstractRecipeBookScreen<Blacksm
      * @param inventory the player's inventory to display and interact with
      * @param title     the title component shown at the top of the screen
      */
-    public BlacksmithsWorkbenchScreen(BlacksmithsWorkbenchMenu menu, Inventory inventory, Component title) {
+    public FurnitureWorkbenchScreen(FurnitureWorkbenchMenu menu, Inventory inventory, Component title) {
         this(menu, inventory, title, createRecipeBookComponent(menu));
     }
 
@@ -65,7 +66,7 @@ public class BlacksmithsWorkbenchScreen extends AbstractRecipeBookScreen<Blacksm
      * @param title       the screen title component
      * @param recipeBook  the MineTaleRecipeBookComponent used to display and manage recipes in this screen
      */
-    private BlacksmithsWorkbenchScreen(BlacksmithsWorkbenchMenu menu, Inventory inventory, Component title, MineTaleRecipeBookComponent recipeBook) {
+    private FurnitureWorkbenchScreen(FurnitureWorkbenchMenu menu, Inventory inventory, Component title, MineTaleRecipeBookComponent recipeBook) {
         super(menu, recipeBook, inventory, title);
         this.mineTaleRecipeBook = recipeBook;
     }
@@ -76,14 +77,14 @@ public class BlacksmithsWorkbenchScreen extends AbstractRecipeBookScreen<Blacksm
      * @param menu the workbench menu used to initialize the recipe book component
      * @return a MineTaleRecipeBookComponent containing the workbench tab and associated recipe category
      */
-    private static MineTaleRecipeBookComponent createRecipeBookComponent(BlacksmithsWorkbenchMenu menu) {
-        ItemStack tabIcon = new ItemStack(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem());
+    private static MineTaleRecipeBookComponent createRecipeBookComponent(FurnitureWorkbenchMenu menu) {
+        ItemStack tabIcon = new ItemStack(ModBlocks.FURNITURE_WORKBENCH_BLOCK.asItem());
         
         List<RecipeBookComponent.TabInfo> tabs = List.of(
-            new RecipeBookComponent.TabInfo(tabIcon.getItem(), ModRecipeDisplay.BLACKSMITHS_SEARCH)
+            new RecipeBookComponent.TabInfo(tabIcon.getItem(), ModRecipeDisplay.FURNITURE_SEARCH)
         );
 
-        return new MineTaleRecipeBookComponent(menu, tabs, ModRecipes.BLACKSMITHS_TYPE);
+        return new MineTaleRecipeBookComponent(menu, tabs, ModRecipes.FURNITURE_TYPE);
     }
 
     /**

@@ -46,6 +46,11 @@ public class ModMenuTypes {
             "blacksmiths_workbench_menu",
             BlacksmithsWorkbenchMenu::new
     );
+
+    public static final MenuType<FurnitureWorkbenchMenu> FURNITURE_WORKBENCH_MENU = register(
+            "furniture_workbench_menu",
+            FurnitureWorkbenchMenu::new
+    );
     
     /**
      * Triggers static registration of the mod's menu types.

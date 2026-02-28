@@ -48,6 +48,12 @@ public class ModBlockEntities {
             ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK
     );
 
+    public static final BlockEntityType<FurnitureWorkbenchEntity> FURNITURE_WORKBENCH_BE = register(
+            "furniture_workbench_be",
+            FurnitureWorkbenchEntity::new,
+            ModBlocks.FURNITURE_WORKBENCH_BLOCK
+    );
+
     /**
      * Register a BlockEntityType for the given furnace tier and store it in the tier map.
      *

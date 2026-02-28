@@ -168,6 +168,52 @@ public class ModLootTableProvider extends FabricBlockLootTableProvider {
                     .when(ExplosionCondition.survivesExplosion())
                 )
         );
+
+        this.add(ModBlocks.FURNITURE_WORKBENCH_BLOCK,
+                LootTable.lootTable() // Use the static factory method to start the builder
+                        .withPool(LootPool.lootPool()
+                                .setRolls(ConstantValue.exactly(1.0F))
+                                .add(LootItem.lootTableItem(ModBlocks.FURNITURE_WORKBENCH_BLOCK))
+                                .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.FURNITURE_WORKBENCH_BLOCK)
+                                        .setProperties(StatePropertiesPredicate.Builder.properties()
+                                                .hasProperty(AbstractWorkbench.HALF, DoubleBlockHalf.LOWER)
+                                                .hasProperty(AbstractWorkbench.TYPE, ChestType.LEFT)
+                                        )
+                                )
+                                .when(ExplosionCondition.survivesExplosion())
+                        )
+        );
+
+        dropSelf(ModBlocks.WOODCUTTERS_BLOCK);
+        dropSelf(ModBlocks.LARGE_PILE_OF_BOOKS);
+        dropSelf(ModBlocks.SMALL_PILE_OF_BOOKS);
+        dropSelf(ModBlocks.KWEEBEC_PLUSHIE);
+        dropSelf(ModBlocks.OLD_SCROLL);
+        dropSelf(ModBlocks.ANCIENT_CANDLE);
+        dropSelf(ModBlocks.FERAN_CANDLE);
+        dropSelf(ModBlocks.BAMBOO_CANDLE);
+        dropSelf(ModBlocks.KWEEBEC_CANDLE);
+        dropSelf(ModBlocks.TAVERN_CANDLE);
+        dropSelf(ModBlocks.FERAN_TORCH);
+        dropSelf(ModBlocks.CRUDE_TORCH);
+        dropSelf(ModBlocks.SMALL_RED_DOTTED_CHRISTMAS_PACKET);
+        dropSelf(ModBlocks.SMALL_RED_CHRISTMAS_PACKET);
+        dropSelf(ModBlocks.SMALL_GREEN_CHRISTMAS_PACKET);
+        dropSelf(ModBlocks.SMALL_WHITE_CHRISTMAS_PACKET);
+        dropSelf(ModBlocks.SMALL_CHRISTMAS_PACKET);
+        dropSelf(ModBlocks.SMALL_KWEEBEC_CHEST);
+        dropSelf(ModBlocks.WINTER_ROLL);
+        dropSelf(ModBlocks.WINTER_BAUBLE);
+        dropSelf(ModBlocks.WINTER_WREATH);
+        dropSelf(ModBlocks.WINTER_GARLAND);
+        dropSelf(ModBlocks.HAY_TARGET);
+
+        dropSelf(ModBlocks.FERAN_BED);
+        dropSelf(ModBlocks.BAMBOO_BED);
+        dropSelf(ModBlocks.LUMBERJACK_BED);
+        dropSelf(ModBlocks.KWEEBEC_BED);
+        dropSelf(ModBlocks.TAVERN_BED);
+        dropSelf(ModBlocks.CRUDE_BEDROLL);
     }
 
 

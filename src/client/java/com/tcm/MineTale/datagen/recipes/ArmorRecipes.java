@@ -46,13 +46,14 @@ public class ArmorRecipes {
         //     .unlockedBy("has_copper_ingot", provider.has(Items.COPPER_INGOT))
         //     .save(exporter, "copper_gauntlets");
         new WorkbenchRecipeBuilder(ModRecipes.ARMORERS_TYPE, ModRecipes.ARMORERS_SERIALIZER)
-             .input(Items.COPPER_INGOT, 2)
-             .input(ModItems.PLANT_FIBER, 3)
-             .input(ItemTags.LOGS, lookup)
-             .output(ModItems.COPPER_SHIELD)
-             .time(3)
-             .unlockedBy("has_copper_ingot", provider.has(Items.COPPER_INGOT))
-             .save(exporter, "copper_shield");
+                .input(Items.COPPER_INGOT, 2)
+                .input(ModItems.PLANT_FIBER, 3)
+                .input(ItemTags.LOGS, lookup)
+                .output(ModItems.COPPER_SHIELD)
+                .time(3)
+                .unlockedBy("has_copper_ingot", provider.has(Items.COPPER_INGOT))
+                .bookCategory(ModRecipeDisplay.ARMORERS_SEARCH)
+                .save(exporter, "copper_shield");
 
         // Wood Armor
         new WorkbenchRecipeBuilder(ModRecipes.ARMORERS_TYPE, ModRecipes.ARMORERS_SERIALIZER)
@@ -63,6 +64,7 @@ public class ArmorRecipes {
                 .unlockedBy("has_wood", provider.has(ItemTags.LOGS))
                 .unlockedBy("has_planks", provider.has(ItemTags.PLANKS))
                 .unlockedBy("has_sticks", provider.has(Items.STICK))
+                .bookCategory(ModRecipeDisplay.ARMORERS_SEARCH)
                 .save(exporter, "wood_cuirass");
         new WorkbenchRecipeBuilder(ModRecipes.ARMORERS_TYPE, ModRecipes.ARMORERS_SERIALIZER)
                 .input(Items.STICK, 6)
@@ -72,6 +74,7 @@ public class ArmorRecipes {
                 .unlockedBy("has_wood", provider.has(ItemTags.LOGS))
                 .unlockedBy("has_planks", provider.has(ItemTags.PLANKS))
                 .unlockedBy("has_sticks", provider.has(Items.STICK))
+                .bookCategory(ModRecipeDisplay.ARMORERS_SEARCH)
                 .save(exporter, "wood_helm");
         new WorkbenchRecipeBuilder(ModRecipes.ARMORERS_TYPE, ModRecipes.ARMORERS_SERIALIZER)
                 .input(Items.STICK, 8)
@@ -81,6 +84,7 @@ public class ArmorRecipes {
                 .unlockedBy("has_wood", provider.has(ItemTags.LOGS))
                 .unlockedBy("has_planks", provider.has(ItemTags.PLANKS))
                 .unlockedBy("has_sticks", provider.has(Items.STICK))
+                .bookCategory(ModRecipeDisplay.ARMORERS_SEARCH)
                 .save(exporter, "wood_greaves");
         // new WorkbenchRecipeBuilder(ModRecipes.ARMORERS_TYPE, ModRecipes.ARMORERS_SERIALIZER)
         //     .input(Items.STICK, 6)
@@ -90,6 +94,7 @@ public class ArmorRecipes {
         //     .unlockedBy("has_wood", provider.has(ItemTags.LOGS))
         //     .unlockedBy("has_planks", provider.has(ItemTags.PLANKS))
         //     .unlockedBy("has_sticks", provider.has(Items.STICK))
+        //     .bookCategory(ModRecipeDisplay.ARMORERS_SEARCH)
         //     .save(exporter, "wood_gauntlets");
 
 

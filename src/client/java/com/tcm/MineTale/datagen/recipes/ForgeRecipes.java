@@ -5,6 +5,8 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 
 public class ForgeRecipes {
+    /// Forge still in development in Hytale
+
     public static void buildRecipes(RecipeProvider provider, RecipeOutput exporter, HolderLookup.Provider lookup) {
         // new WorkbenchRecipeBuilder(ModRecipes.FORGE_TYPE, ModRecipes.FORGE_SERIALIZER)
         //     .input(Items.COPPER_INGOT, 4)

@@ -105,7 +105,7 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
         int defaultLeft = this.leftPos + 90;
         int defaultTop = this.topPos + 25;
 
-        this.craftOneBtn = addRenderableWidget(Button.builder(Component.literal("Craft"), (button) -> {
+        this.craftOneBtn = addRenderableWidget(Button.builder(Component.translatable("gui.minetale.craftbtn"), (button) -> {
             handleCraftRequest(1);
         }).bounds(defaultLeft, defaultTop, 75, 20).build());
 
@@ -113,7 +113,7 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
             handleCraftRequest(10);
         }).bounds(defaultLeft, defaultTop + 22, 35, 20).build());
 
-        this.craftAllBtn = addRenderableWidget(Button.builder(Component.literal("All"), (button) -> {
+        this.craftAllBtn = addRenderableWidget(Button.builder(Component.translatable("gui.minetale.allbtn"), (button) -> {
             handleCraftRequest(-1); // -1 represents "All" logic
         }).bounds(defaultLeft + 40, defaultTop + 22, 35, 20).build());
     }

@@ -40,6 +40,7 @@ public class MineTaleClient implements ClientModInitializer {
 		MenuScreens.register(ModMenuTypes.FARMERS_WORKBENCH_MENU, FarmersWorkbenchScreen::new);
 		MenuScreens.register(ModMenuTypes.BUILDERS_WORKBENCH_MENU, BuildersWorkbenchScreen::new);
 		MenuScreens.register(ModMenuTypes.BLACKSMITHS_WORKBENCH_MENU, BlacksmithsWorkbenchScreen::new);
+		MenuScreens.register(ModMenuTypes.FURNITURE_WORKBENCH_MENU, FurnitureWorkbenchScreen::new);
 
 		BlockRenderLayerMap.putBlock(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1, ChunkSectionLayer.CUTOUT);
 		BlockRenderLayerMap.putBlock(ModBlocks.FURNACE_WORKBENCH_BLOCK_T2, ChunkSectionLayer.CUTOUT);
