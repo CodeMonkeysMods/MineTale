@@ -159,29 +159,24 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
       guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, k, l, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
    }
 
-    @Override
+        @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         renderBackground(graphics, mouseX, mouseY, delta);
         super.render(graphics, mouseX, mouseY, delta);
 
-        // 1. Get the current selection from the book
         RecipeDisplayId currentId = this.mineTaleRecipeBook.getSelectedRecipeId();
-        
-        // 2. If it's NOT null, remember it!
         if (currentId != null) {
             this.lastKnownSelectedId = currentId;
         }
 
-        // 3. Use the remembered ID to find the entry for button activation
         RecipeDisplayEntry selectedEntry = null;
         if (this.lastKnownSelectedId != null && this.minecraft.level != null) {
             ClientRecipeBook book = this.minecraft.player.getRecipeBook();
             selectedEntry = ((ClientRecipeBookAccessor) book).getKnown().get(this.lastKnownSelectedId);
         }
 
-        // 2. Button Activation Logic
         if (selectedEntry != null) {
-            // We use the entry directly. It contains the 15 ingredients needed!
+            // Existing Button Logic
             boolean canCraftOne = canCraft(this.minecraft.player, selectedEntry, 1);
             boolean canCraftMoreThanOne = canCraft(this.minecraft.player, selectedEntry, 2);
             boolean canCraftTen = canCraft(this.minecraft.player, selectedEntry, 10);
@@ -189,6 +184,9 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
             this.craftOneBtn.active = canCraftOne;
             this.craftTenBtn.active = canCraftTen;
             this.craftAllBtn.active = canCraftMoreThanOne;
+
+            // NEW: Render the Ingredients List
+            renderIngredientList(graphics, selectedEntry, mouseX, mouseY);
         } else {
             this.craftOneBtn.active = false;
             this.craftTenBtn.active = false;
@@ -196,6 +194,69 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
         }
 
         renderTooltip(graphics, mouseX, mouseY);
+    }
+
+    private void renderIngredientList(GuiGraphics graphics, RecipeDisplayEntry entry, int mouseX, int mouseY) {
+        Optional<List<Ingredient>> reqs = entry.craftingRequirements();
+        if (reqs.isEmpty()) return;
+
+        // Group requirements to avoid duplicate rows for the same item type
+        Map<List<Holder<Item>>, Integer> aggregated = new HashMap<>();
+        Map<List<Holder<Item>>, Ingredient> holderToIng = new HashMap<>();
+
+        for (Ingredient ing : reqs.get()) {
+            List<Holder<Item>> key = ing.items().toList();
+            aggregated.put(key, aggregated.getOrDefault(key, 0) + 1);
+            holderToIng.putIfAbsent(key, ing);
+        }
+
+        int startX = this.leftPos + 8; // Adjust to fit your texture's empty space
+        int startY = this.topPos + 20;
+        int rowHeight = 20;
+        int index = 0;
+
+        for (Map.Entry<List<Holder<Item>>, Integer> reqEntry : aggregated.entrySet()) {
+            Ingredient ing = holderToIng.get(reqEntry.getKey());
+            int amountNeeded = reqEntry.getValue();
+            int currentY = startY + (index * rowHeight);
+
+            // Calculate total available (Inv + Nearby)
+            int available = getAvailableCount(ing);
+
+            // Draw Item Icon
+            ItemStack[] variants = ing.items().toArray(ItemStack[]::new);
+            if (variants.length > 0) {
+                // Cycle through variants every second
+                ItemStack displayStack = variants[(int) (System.currentTimeMillis() / 1000 % variants.length)];
+                graphics.renderFakeItem(displayStack, startX, currentY);
+
+                // Draw Text (Red if lacking, White if okay)
+                int color = (available < amountNeeded) ? 0xFF5555 : 0xFFFFFF;
+                String progress = available + "/" + amountNeeded;
+                graphics.drawString(this.font, progress, startX + 20, currentY + 4, color, true);
+
+                // Tooltip logic
+                if (mouseX >= startX && mouseX < startX + 16 && mouseY >= currentY && mouseY < currentY + 16) {
+                    graphics.renderTooltip(this.font, displayStack, mouseX, mouseY);
+                }
+            }
+            index++;
+        }
+    }
+
+    private int getAvailableCount(Ingredient ingredient) {
+        int found = 0;
+        // Check Player Inventory
+        for (ItemStack stack : this.minecraft.player.getInventory().items) {
+            if (ingredient.test(stack)) found += stack.getCount();
+        }
+        // Check Networked Nearby Items
+        if (this.menu instanceof AbstractWorkbenchContainerMenu workbenchMenu) {
+            for (ItemStack stack : workbenchMenu.getNetworkedNearbyItems()) {
+                if (ingredient.test(stack)) found += stack.getCount();
+            }
+        }
+        return found;
     }
 
     /**
