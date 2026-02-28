@@ -26,6 +26,7 @@ public class ModLangProvider extends FabricLanguageProvider {
         translationBuilder.add("block.minetale.blacksmiths_workbench", "Blacksmith's Workbench");
         translationBuilder.add("block.minetale.builders_workbench", "Builder's Workbench");
         translationBuilder.add("block.minetale.furniture_workbench", "Furniture Workbench");
+        translationBuilder.add("block.minetale.alchemists_workbench", "Alchemist's Workbench");
 
         translationBuilder.add("block.minetale.woodcutters_block", "Woodcutter's Block");
 
@@ -261,6 +262,10 @@ public class ModLangProvider extends FabricLanguageProvider {
         translationBuilder.add("item.minetale.essence_of_ice", "Essence of Ice");
         translationBuilder.add("item.minetale.essence_of_the_void", "Essence of the Void");
         translationBuilder.add("item.minetale.void_heart", "Void Heart");
+        translationBuilder.add("item.minetale.empty_potion_bottle", "Empty Potion Bottle");
+        translationBuilder.add("item.minetale.antitode", "Antidote");
+        translationBuilder.add("item.minetale.boom_powder", "Boom Powder");
+        translationBuilder.add("item.minetale.popberry_bomb", "Popberry Bomb");
 
         // --- FLORA COMPONENTS ---
         translationBuilder.add("item.minetale.red_petals", "Red Petals");
@@ -279,6 +284,18 @@ public class ModLangProvider extends FabricLanguageProvider {
         //translationBuilder.add("item.minetale.wood_gauntlets",  "Wood Gauntlets");
         translationBuilder.add("item.minetale.wood_greaves",  "Wood Greaves");
         translationBuilder.add("item.minetale.copper_mace",  "Copper Mace");
+        translationBuilder.add("item.minetale.copper_hatchet",  "Copper Hatchet");
+        translationBuilder.add("item.minetale.copper_battleaxe",  "Copper Battleaxe");
+        translationBuilder.add("item.minetale.copper_daggers",  "Copper Daggers");
+        translationBuilder.add("item.minetale.copper_longsword",  "Copper Longsword");
+        translationBuilder.add("item.minetale.copper_shortbow",  "Copper Shortbow");
+        translationBuilder.add("item.minetale.crude_longsword",  "Crude Longsword");
+        translationBuilder.add("item.minetale.crude_builders_hammer",  "Crude Builders Hammer");
+        translationBuilder.add("item.minetale.crude_hatchet",  "Crude Hatchet");
+        translationBuilder.add("item.minetale.crude_mace",  "Crude Mace");
+        translationBuilder.add("item.minetale.crude_daggers",  "Crude Daggers");
+        translationBuilder.add("item.minetale.crude_shortbow",  "Crude Shortbow");
+        translationBuilder.add("item.minetale.crude_sword",  "Crude Sword");
 
         // --- GUI ---
         translationBuilder.add("gui.minetale.craftbtn", "Craft");

@@ -9,6 +9,7 @@ import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.item.ModArmorMaterials;
 import com.tcm.MineTale.item.ModCreativeTab;
 
+import com.tcm.MineTale.util.ModTags;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
@@ -131,6 +132,10 @@ public class ModItems {
     public static final Item ESSENCE_OF_ICE = register("essence_of_ice", Item::new, new Item.Properties());
     public static final Item ESSENCE_OF_THE_VOID = register("essence_of_the_void", Item::new, new Item.Properties());
     public static final Item VOID_HEART = register("void_heart", Item::new, new Item.Properties());
+    public static final Item EMPTY_POTION_BOTTLE = register("empty_potion_bottle", Item::new, new Item.Properties());
+    public static final Item ANTIDOTE = register("antidote", Item::new, new Item.Properties());
+    public static final Item BOOM_POWDER = register("boom_powder", Item::new, new Item.Properties());
+    public static final Item POPBERRY_BOMB = register("popberry_bomb", Item::new, new Item.Properties());
 
     // --- FLORA COMPONENTS (Non-placeable petals) ---
     public static final Item RED_PETALS = register("red_petals", Item::new, new Item.Properties());
@@ -173,14 +178,40 @@ public class ModItems {
             "copper_mace",
             MaceItem::new,
             new Item.Properties()
-                    .rarity(Rarity.EPIC)
-                    .durability(500)
+                    .rarity(Rarity.UNCOMMON)
+                    .durability(300)
                     .component(DataComponents.TOOL, MaceItem.createToolProperties())
                     .repairable(Items.COPPER_INGOT)
                     .attributes(MaceItem.createAttributes())
-                    .enchantable(15)
+                    .enchantable(10)
                     .component(DataComponents.WEAPON, new Weapon(1))
     );
+
+    public static final Item CRUDE_MACE = register(
+            "crude_mace",
+            MaceItem::new,
+            new Item.Properties()
+                    .rarity(Rarity.COMMON)
+                    .durability(100)
+                    .component(DataComponents.TOOL, MaceItem.createToolProperties())
+                    .repairable(ItemTags.STONE_TOOL_MATERIALS)
+                    .attributes(MaceItem.createAttributes())
+                    .enchantable(7)
+                    .component(DataComponents.WEAPON, new Weapon(1))
+    );
+
+    public static final Item CRUDE_BUILDERS_HAMMER = register("crude_builders_hammer", Item::new, new Item.Properties());
+    public static final Item CRUDE_HATCHET = register("crude_hatchet", Item::new, new Item.Properties());
+    public static final Item CRUDE_BATTLEAXE = register("crude_battleaxe", Item::new, new Item.Properties());
+    public static final Item CRUDE_DAGGERS = register("crude_daggers", Item::new, new Item.Properties());
+    public static final Item CRUDE_SHORTBOW = register("crude_shortbow", BowItem::new, new Item.Properties());
+    public static final Item CRUDE_SWORD = register("crude_sword", Item::new, new Item.Properties());
+    public static final Item CRUDE_LONGSWORD = register("crude_longsword", Item::new, new Item.Properties());
+    public static final Item COPPER_HATCHET = register("copper_hatchet", Item::new, new Item.Properties());
+    public static final Item COPPER_DAGGERS = register("copper_daggers", Item::new, new Item.Properties());
+    public static final Item COPPER_BATTLEAXE = register("copper_battleaxe", Item::new, new Item.Properties());
+    public static final Item COPPER_LONGSWORD = register("copper_longsword", Item::new, new Item.Properties());
+    public static final Item COPPER_SHORTBOW = register("copper_shortbow", BowItem::new, new Item.Properties());
 
     // --- REGISTRATION LOGIC ---
     public static <GenericItem extends Item> GenericItem register(String name, Function<Item.Properties, GenericItem> itemFactory, Item.Properties settings) {
