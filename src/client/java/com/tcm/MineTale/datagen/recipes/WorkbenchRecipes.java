@@ -62,37 +62,34 @@ public class WorkbenchRecipes {
             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
             .save(exporter, "workbench_builders_workbench");
 
-        // TODO: HAY_TARGET Not Implemented
-        // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-        //     .input(ModItems.PLANT_FIBER)
-        //     .output(ModBlocks.HAY_TARGET.asItem())
-        //     .time(1)
-        //     .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-        //     .save(exporter, "workbench_hay_target");
+        new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+             .input(ModItems.PLANT_FIBER)
+             .output(ModBlocks.HAY_TARGET.asItem())
+             .time(1)
+             .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+             .save(exporter, "hay_target");
 
-        // TODO: CRUDE_BEDROLL Not Implemented
-        // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-        //     .input(ModItems.PLANT_FIBER, 3)
-        //     .input(ModItems.LIGHT_HIDE, 2)
-        //     .output(ModBlocks.CRUDE_BEDROLL.asItem())
-        //     .time(1)
-        //     .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK))
-        //     .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-        //     .save(exporter, "CRUDE_BEDROLL");
+        new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+             .input(ModItems.PLANT_FIBER, 3)
+             .input(ModItems.LIGHT_HIDE, 2)
+             .output(ModBlocks.CRUDE_BEDROLL.asItem())
+             .time(1)
+             .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK))
+             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+             .save(exporter, "crude_bedroll");
 
-        // TODO: CRUDE_TORCH Not Implemented
-        // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-        //     .input(ModItems.PLANT_FIBER)
-        //     .input(ModItems.TREE_SAP)
-        //     .input(Items.STICK)
-        //     .time(0.5)
-        //     .output(ModBlocks.CRUDE_TORCH.asItem(), 4)
-        //     .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-        //     .save(exporter, "CRUDE_TORCH");
+        new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+             .input(ModItems.PLANT_FIBER)
+             .input(ModItems.TREE_SAP)
+             .input(Items.STICK)
+             .time(0.5F)
+                //TODO: Need to adjust the output to allow count
+             .output(ModBlocks.CRUDE_TORCH.asItem())
+             .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+             .save(exporter, "crude_torch");
 
-        // TODO: CRUDE_BUILDERS_HAMMER Not Implemented
         // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
         //     .input(ModItems.RUBBLE, 2)
         //     .input(ModItems.PLANT_FIBER, 3)

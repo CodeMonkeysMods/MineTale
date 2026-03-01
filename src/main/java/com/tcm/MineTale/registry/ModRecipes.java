@@ -19,7 +19,9 @@ public class ModRecipes {
     public static final RecipeType<WorkbenchRecipe> FURNACE_T1_TYPE = createType("furnace_t1_recipe_type");
     public static final RecipeType<WorkbenchRecipe> FARMERS_TYPE = createType("farmers_recipe_type");
     public static final RecipeType<WorkbenchRecipe> BUILDERS_TYPE = createType("builders_recipe_type");
-    
+    public static final RecipeType<WorkbenchRecipe> BLACKSMITHS_TYPE = createType("blacksmiths_recipe_type");
+    public static final RecipeType<WorkbenchRecipe> FURNITURE_TYPE = createType("furniture_recipe_type");
+
     // 2. Define the Serializers (The "How")
     // We pass the specific Type into the Serializer's constructor
     public static final RecipeSerializer<WorkbenchRecipe> FURNACE_SERIALIZER = 
@@ -40,11 +42,17 @@ public class ModRecipes {
     public static final RecipeSerializer<WorkbenchRecipe> BUILDERS_SERIALIZER =
         new WorkbenchRecipe.Serializer(BUILDERS_TYPE);
 
+    public static final RecipeSerializer<WorkbenchRecipe> BLACKSMITHS_SERIALIZER =
+            new WorkbenchRecipe.Serializer(BLACKSMITHS_TYPE);
+
+    public static final RecipeSerializer<WorkbenchRecipe> FURNITURE_SERIALIZER =
+            new WorkbenchRecipe.Serializer(FURNITURE_TYPE);
+
     /**
-     * Registers the mod's recipe types and their serializers into Minecraft's built-in registries under the mod namespace.
+     * Registers the mod's recipe types and their serializers into Minecraft's built‑in registries under the mod namespace.
      *
-     * Registers the following recipe types and their corresponding serializers: FURNACE_T1_TYPE, CAMPFIRE_TYPE,
-     * WORKBENCH_TYPE, ARMORERS_TYPE, and FARMERS_TYPE.
+     * This registers the following recipe types with their corresponding serializers: FURNACE_T1_TYPE, CAMPFIRE_TYPE,
+     * WORKBENCH_TYPE, ARMORERS_TYPE, FARMERS_TYPE, BUILDERS_TYPE, BLACKSMITHS_TYPE and FURNITURE_TYPE.
      */
     public static void initialize() {
         // Register the Furnace-flavored version
@@ -60,6 +68,10 @@ public class ModRecipes {
         register(FARMERS_TYPE, FARMERS_SERIALIZER);
 
         register(BUILDERS_TYPE, BUILDERS_SERIALIZER);
+
+        register(BLACKSMITHS_TYPE, BLACKSMITHS_SERIALIZER);
+
+        register(FURNITURE_TYPE, FURNITURE_SERIALIZER);
     }
 
     /**

@@ -1,15 +1,18 @@
 package com.tcm.MineTale.datagen.recipes;
 
+import com.tcm.MineTale.datagen.ModItemTagProvider;
 import com.tcm.MineTale.datagen.builders.WorkbenchRecipeBuilder;
 import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModItems;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
 import com.tcm.MineTale.registry.ModRecipes;
 
+import com.tcm.MineTale.util.ModTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
 public class FarmerRecipes {
@@ -36,40 +39,40 @@ public class FarmerRecipes {
         //     .save(exporter, "CHICKEN_COOP");
 
         // TODO: LOTS Not Implemented
-        // new WorkbenchRecipeBuilder(ModRecipes.FARMERS_TYPE, ModRecipes.FARMERS_SERIALIZER)
-        //     .input(ModItems.GREATER_ESSENCE_OF_LIFE, 100)
-        //     .input(ModItems.WILD_BERRY, 100)
-        //     .input(Items.WHEAT, 100)
-        //     .input(ModItems.LETTUCE, 100)
-        //     .input(Items.CARROT, 100)
-        //     .input(ModItems.CORN, 100)
-        //     .input(ModItems.CAULIFLOWER, 100)
-        //     .input(ModItems.TURNIP, 100)
-        //     .input(ModItems.AUBERGINE, 100)
-        //     .input(Items.PUMPKIN)
-        //     .input(ModItems.TOMATO, 100)
-        //     .input(ModItems.CHILLI, 100)
-        //     .input(ModItems.COTTON, 100)
-        //     .input(ModItems.RICE, 100)
-        //     .input(ModItems.ONION, 100)
-        //     .input(Items.POTATO, 100)
-        //     .input(Items.APPLE, 100)
-        //     .input(Items.EGG, 100)
-        //     .input(ModItems.WOOL_SCRAPS, 100)
-        //     .input(ItemTags.FISHES, lookup, 100)
-        //     .input(ItemTags.MOSS, lookup, 100)
-        //     .input(ItemTags.LOGS, lookup, 100)
-        //     .input(ModItems.POOP, 100)
-        //     .input(Items.FEATHER, 100)
-        //     .input(ModItems.TREE_SAP, 100)
-        //     .input(ModItems.PLANT_FIBER, 100)
-        //     .input(ItemTags.MILK_BUCKET, 8)
-        //     .input(ItemTags.MOSS_HORN_MILK_BUCKET, 8)
-        //     .output(ModBlocks.HARVEST_TROPHY)
-        //     .time(10)
-        //     .unlockedBy("has_farmers_workbench", provider.has(ModBlocks.FARMERS_WORKBENCH_BLOCK))
-        //     .bookCategory(ModRecipeDisplay.FARMERS_SEARCH)
-        //     .save(exporter, "farmers_workbench_harvest_trophy");
+        new WorkbenchRecipeBuilder(ModRecipes.FARMERS_TYPE, ModRecipes.FARMERS_SERIALIZER)
+             .input(ModItems.GREATER_ESSENCE_OF_LIFE, 100)
+             .input(ModItems.WILD_BERRY, 100)
+             .input(Items.WHEAT, 100)
+             .input(ModItems.LETTUCE, 100)
+             .input(Items.CARROT, 100)
+             .input(ModItems.CORN, 100)
+             .input(ModItems.CAULIFLOWER, 100)
+             .input(ModItems.TURNIP, 100)
+             .input(ModItems.AUBERGINE, 100)
+             .input(Items.PUMPKIN, 100)
+             .input(ModItems.TOMATO, 100)
+             .input(ModItems.CHILLI, 100)
+             .input(ModItems.COTTON, 100)
+             .input(ModItems.RICE, 100)
+             .input(ModItems.ONION, 100)
+             .input(Items.POTATO, 100)
+             .input(Items.APPLE, 100)
+             .input(Items.EGG, 100)
+             .input(ModItems.WOOL_SCRAPS, 100)
+             .input(ItemTags.FISHES, lookup, 100)
+             .input(ModTags.Items.MOSS, lookup, 100)
+             .input(ItemTags.LOGS, lookup, 100)
+             .input(ModItems.POOP, 100)
+             .input(Items.FEATHER, 100)
+             .input(ModItems.TREE_SAP, 100)
+             .input(ModItems.PLANT_FIBER, 100)
+             .input(ModTags.Items.MILK_BUCKETS, lookup, 8)
+             .input(ModItems.MOSSHORN_MILK_BUCKET, 8)
+             .output(ModBlocks.HARVEST_TROPHY)
+             .time(10)
+             .unlockedBy("has_farmers_workbench", provider.has(ModBlocks.FARMERS_WORKBENCH_BLOCK))
+             .bookCategory(ModRecipeDisplay.FARMERS_SEARCH)
+             .save(exporter, "farmers_workbench_harvest_trophy");
 
         new WorkbenchRecipeBuilder(ModRecipes.FARMERS_TYPE, ModRecipes.FARMERS_SERIALIZER)
             .input(ModItems.PLANT_FIBER, 20)
@@ -478,15 +481,15 @@ public class FarmerRecipes {
             .bookCategory(ModRecipeDisplay.FARMERS_SEARCH)
             .save(exporter, "dry_mud");
 
-        // new WorkbenchRecipeBuilder(ModRecipes.FARMERS_TYPE, ModRecipes.FARMERS_SERIALIZER)
-        //     .input(ItemTags.LOGS, lookup, 10)
-        //     .input(ModItems.ESSENCE_OF_LIFE, 50)
-        //     .input(ModItems.PLANT_FIBER, 20)
-        //     .input(Items.IRON_INGOT)
-        //     .output(ModBlocks.FISHING_TRAP)
-        //     .time(10)
-        //     .unlockedBy("has_farmers_workbench", provider.has(ModBlocks.FARMERS_WORKBENCH_BLOCK))
-        //     .bookCategory(ModRecipeDisplay.FARMERS_SEARCH)
-        //     .save(exporter, "FISHING_TRAP");
+        new WorkbenchRecipeBuilder(ModRecipes.FARMERS_TYPE, ModRecipes.FARMERS_SERIALIZER)
+             .input(ItemTags.LOGS, lookup, 10)
+             .input(ModItems.ESSENCE_OF_LIFE, 50)
+             .input(ModItems.PLANT_FIBER, 20)
+             .input(Items.IRON_INGOT)
+             .output(ModBlocks.FISHING_TRAP)
+             .time(10)
+             .unlockedBy("has_farmers_workbench", provider.has(ModBlocks.FARMERS_WORKBENCH_BLOCK))
+             .bookCategory(ModRecipeDisplay.FARMERS_SEARCH)
+             .save(exporter, "fishing_trap");
     }
 }

@@ -1,16 +1,20 @@
 package com.tcm.MineTale.datagen;
 
 import com.tcm.MineTale.MineTale;
+import com.tcm.MineTale.item.ModArmorMaterials;
 import com.tcm.MineTale.registry.ModBlocks;
+import com.tcm.MineTale.registry.ModItems;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.data.models.blockstates.PropertyDispatch;
+import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.renderer.block.model.VariantMutator;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
@@ -102,12 +106,34 @@ public class ModModelProvider extends FabricModelProvider {
     }
 
     /**
-     * Registers item models for the mod; currently left empty (no item models are generated).
-     *
-     * @param itemModelGenerators generator used to register item models
-     */
+         * Register item models for mod items that require custom or non-default models.
+         *
+         * <p>Registers models for shields, trimmable armour pieces, a handheld mace template,
+         * and various flat handheld item templates used for food and small items.</p>
+         *
+         * @param itemModelGenerators the generator used to create and register item models
+         */
     @Override
     public void generateItemModels(ItemModelGenerators itemModelGenerators) {
+        itemModelGenerators.generateShield(ModItems.COPPER_SHIELD);
+        itemModelGenerators.generateTrimmableItem(ModItems.WOOD_HELM, ModArmorMaterials.WOOD_KEY, ItemModelGenerators.TRIM_PREFIX_HELMET, false);
+        itemModelGenerators.generateTrimmableItem(ModItems.WOOD_CUIRASS, ModArmorMaterials.WOOD_KEY, ItemModelGenerators.TRIM_PREFIX_CHESTPLATE, false);
+        //itemModelGenerators.generateTrimmableItem(ModItems.WOOD_GAUNTLETS, ModArmorMaterials.WOOD_KEY, ItemModelGenerators.TRIM_PREFIX_GAUNTLETS, false);
+        itemModelGenerators.generateTrimmableItem(ModItems.WOOD_GREAVES, ModArmorMaterials.WOOD_KEY, ItemModelGenerators.TRIM_PREFIX_LEGGINGS, false);
+        itemModelGenerators.generateFlatItem(ModItems.COPPER_MACE, ModelTemplates.FLAT_HANDHELD_MACE_ITEM);
+        itemModelGenerators.generateFlatItem(ModItems.GREATER_ESSENCE_OF_LIFE, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerators.generateFlatItem(ModItems.WILD_BERRY, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerators.generateFlatItem(ModItems.CORN, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerators.generateFlatItem(ModItems.CAULIFLOWER, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerators.generateFlatItem(ModItems.TURNIP, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerators.generateFlatItem(ModItems.AUBERGINE, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerators.generateFlatItem(ModItems.TOMATO, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerators.generateFlatItem(ModItems.CHILLI, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerators.generateFlatItem(ModItems.COTTON, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerators.generateFlatItem(ModItems.RICE, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerators.generateFlatItem(ModItems.ONION, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerators.generateFlatItem(ModItems.WOOL_SCRAPS, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerators.generateFlatItem(ModItems.POOP, ModelTemplates.FLAT_HANDHELD_ITEM);
 
     }
 }

@@ -49,7 +49,7 @@ public class ModLootTableProvider extends FabricBlockLootTableProvider {
     @Override
     public void generate() {
         ///Block Drops Itself
-        this.add(ModBlocks.ARMORERS_WORKBENCH_BLOCK, 
+        this.add(ModBlocks.ARMORERS_WORKBENCH_BLOCK,
             LootTable.lootTable() // Use the static factory method to start the builder
                 .withPool(LootPool.lootPool()
                     .setRolls(ConstantValue.exactly(1.0F))
@@ -62,6 +62,36 @@ public class ModLootTableProvider extends FabricBlockLootTableProvider {
                     )
                     .when(ExplosionCondition.survivesExplosion())
                 )
+        );
+
+        this.add(ModBlocks.BUILDERS_WORKBENCH_BLOCK,
+                LootTable.lootTable() // Use the static factory method to start the builder
+                        .withPool(LootPool.lootPool()
+                                .setRolls(ConstantValue.exactly(1.0F))
+                                .add(LootItem.lootTableItem(ModBlocks.BUILDERS_WORKBENCH_BLOCK))
+                                .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.BUILDERS_WORKBENCH_BLOCK)
+                                        .setProperties(StatePropertiesPredicate.Builder.properties()
+                                                .hasProperty(AbstractWorkbench.HALF, DoubleBlockHalf.LOWER)
+                                                .hasProperty(AbstractWorkbench.TYPE, ChestType.LEFT)
+                                        )
+                                )
+                                .when(ExplosionCondition.survivesExplosion())
+                        )
+        );
+
+        this.add(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK,
+                LootTable.lootTable() // Use the static factory method to start the builder
+                        .withPool(LootPool.lootPool()
+                                .setRolls(ConstantValue.exactly(1.0F))
+                                .add(LootItem.lootTableItem(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK))
+                                .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK)
+                                        .setProperties(StatePropertiesPredicate.Builder.properties()
+                                                .hasProperty(AbstractWorkbench.HALF, DoubleBlockHalf.LOWER)
+                                                .hasProperty(AbstractWorkbench.TYPE, ChestType.LEFT)
+                                        )
+                                )
+                                .when(ExplosionCondition.survivesExplosion())
+                        )
         );
 
         this.add(ModBlocks.CAMPFIRE_WORKBENCH_BLOCK, 
@@ -94,6 +124,21 @@ public class ModLootTableProvider extends FabricBlockLootTableProvider {
                 )
         );
 
+        this.add(ModBlocks.FARMERS_WORKBENCH_BLOCK,
+                LootTable.lootTable()
+                        .withPool(LootPool.lootPool()
+                                .setRolls(ConstantValue.exactly(1.0F))
+                                .add(LootItem.lootTableItem(ModBlocks.FARMERS_WORKBENCH_BLOCK))
+                                .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.FARMERS_WORKBENCH_BLOCK)
+                                        .setProperties(StatePropertiesPredicate.Builder.properties()
+                                                .hasProperty(AbstractWorkbench.HALF, DoubleBlockHalf.LOWER)
+                                                .hasProperty(AbstractWorkbench.TYPE, ChestType.LEFT)
+                                        )
+                                )
+                                .when(ExplosionCondition.survivesExplosion())
+                        )
+        );
+
         this.add(ModBlocks.FURNACE_WORKBENCH_BLOCK_T1, 
             LootTable.lootTable() // Use the static factory method to start the builder
                 .withPool(LootPool.lootPool()
@@ -123,6 +168,52 @@ public class ModLootTableProvider extends FabricBlockLootTableProvider {
                     .when(ExplosionCondition.survivesExplosion())
                 )
         );
+
+        this.add(ModBlocks.FURNITURE_WORKBENCH_BLOCK,
+                LootTable.lootTable() // Use the static factory method to start the builder
+                        .withPool(LootPool.lootPool()
+                                .setRolls(ConstantValue.exactly(1.0F))
+                                .add(LootItem.lootTableItem(ModBlocks.FURNITURE_WORKBENCH_BLOCK))
+                                .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.FURNITURE_WORKBENCH_BLOCK)
+                                        .setProperties(StatePropertiesPredicate.Builder.properties()
+                                                .hasProperty(AbstractWorkbench.HALF, DoubleBlockHalf.LOWER)
+                                                .hasProperty(AbstractWorkbench.TYPE, ChestType.LEFT)
+                                        )
+                                )
+                                .when(ExplosionCondition.survivesExplosion())
+                        )
+        );
+
+        dropSelf(ModBlocks.WOODCUTTERS_BLOCK);
+        dropSelf(ModBlocks.LARGE_PILE_OF_BOOKS);
+        dropSelf(ModBlocks.SMALL_PILE_OF_BOOKS);
+        dropSelf(ModBlocks.KWEEBEC_PLUSHIE);
+        dropSelf(ModBlocks.OLD_SCROLL);
+        dropSelf(ModBlocks.ANCIENT_CANDLE);
+        dropSelf(ModBlocks.FERAN_CANDLE);
+        dropSelf(ModBlocks.BAMBOO_CANDLE);
+        dropSelf(ModBlocks.KWEEBEC_CANDLE);
+        dropSelf(ModBlocks.TAVERN_CANDLE);
+        dropSelf(ModBlocks.FERAN_TORCH);
+        dropSelf(ModBlocks.CRUDE_TORCH);
+        dropSelf(ModBlocks.SMALL_RED_DOTTED_CHRISTMAS_PACKET);
+        dropSelf(ModBlocks.SMALL_RED_CHRISTMAS_PACKET);
+        dropSelf(ModBlocks.SMALL_GREEN_CHRISTMAS_PACKET);
+        dropSelf(ModBlocks.SMALL_WHITE_CHRISTMAS_PACKET);
+        dropSelf(ModBlocks.SMALL_CHRISTMAS_PACKET);
+        dropSelf(ModBlocks.SMALL_KWEEBEC_CHEST);
+        dropSelf(ModBlocks.WINTER_ROLL);
+        dropSelf(ModBlocks.WINTER_BAUBLE);
+        dropSelf(ModBlocks.WINTER_WREATH);
+        dropSelf(ModBlocks.WINTER_GARLAND);
+        dropSelf(ModBlocks.HAY_TARGET);
+
+        dropSelf(ModBlocks.FERAN_BED);
+        dropSelf(ModBlocks.BAMBOO_BED);
+        dropSelf(ModBlocks.LUMBERJACK_BED);
+        dropSelf(ModBlocks.KWEEBEC_BED);
+        dropSelf(ModBlocks.TAVERN_BED);
+        dropSelf(ModBlocks.CRUDE_BEDROLL);
     }
 
 

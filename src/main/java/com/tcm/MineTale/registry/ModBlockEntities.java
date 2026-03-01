@@ -1,12 +1,7 @@
 package com.tcm.MineTale.registry;
 
 import com.tcm.MineTale.MineTale;
-import com.tcm.MineTale.block.workbenches.entity.ArmorersWorkbenchEntity;
-import com.tcm.MineTale.block.workbenches.entity.BuildersWorkbenchEntity;
-import com.tcm.MineTale.block.workbenches.entity.CampfireWorkbenchEntity;
-import com.tcm.MineTale.block.workbenches.entity.FurnaceWorkbenchEntity;
-import com.tcm.MineTale.block.workbenches.entity.WorkbenchWorkbenchEntity;
-import com.tcm.MineTale.block.workbenches.entity.FarmersWorkbenchEntity;
+import com.tcm.MineTale.block.workbenches.entity.*;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.Registry;
@@ -45,6 +40,18 @@ public class ModBlockEntities {
         "builders_workbench_be",
         BuildersWorkbenchEntity::new,
         ModBlocks.BUILDERS_WORKBENCH_BLOCK
+    );
+
+    public static final BlockEntityType<BlacksmithsWorkbenchEntity> BLACKSMITHS_WORKBENCH_BE = register(
+            "blacksmiths_workbench_be",
+            BlacksmithsWorkbenchEntity::new,
+            ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK
+    );
+
+    public static final BlockEntityType<FurnitureWorkbenchEntity> FURNITURE_WORKBENCH_BE = register(
+            "furniture_workbench_be",
+            FurnitureWorkbenchEntity::new,
+            ModBlocks.FURNITURE_WORKBENCH_BLOCK
     );
 
     /**
