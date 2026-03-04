@@ -16,6 +16,7 @@ import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
@@ -109,10 +110,38 @@ public class ChickenCoopBlock extends HorizontalDirectionalBlock {
      * to this specific part of the 3x3x2 grid.
      */
     private boolean isNeighborPartOfCoop(BlockState state, Direction dir) {
-        // For a 3x3x2, we can be lazy: if ANY adjacent block of the same type is removed, 
-        // the whole thing should probably go. 
-        // You can refine this to only check the "Master" block if you want more stability.
-        return true; 
+        CoopPart part = state.getValue(PART);
+        Direction facing = state.getValue(HorizontalDirectionalBlock.FACING);
+
+        // 1. Get the local offset of the neighbor block relative to this part
+        // We convert the world Direction into a local x, y, z change
+        int dx = dir.getStepX();
+        int dy = dir.getStepY();
+        int dz = dir.getStepZ();
+
+        // 2. Adjust for rotation (Facing) 
+        // This ensures that "Front" always matches your Enum's Z-axis logic
+        // Note: This math varies slightly depending on how your placement logic 
+        // maps "Front" to the world. Below is a standard mapping:
+        int localDx, localDz;
+        switch (facing) {
+            case NORTH -> { localDx = dx; localDz = dz; }
+            case SOUTH -> { localDx = -dx; localDz = -dz; }
+            case WEST  -> { localDx = dz; localDz = -dx; }
+            case EAST  -> { localDx = -dz; localDz = dx; }
+            default    -> { localDx = dx; localDz = dz; }
+        }
+
+        // 3. Calculate the neighbor's hypothetical grid position
+        int neighborX = part.getXOffset() + localDx;
+        int neighborZ = part.getZOffset() + localDz;
+        int neighborY = part.getYOffset() + dy;
+
+        // 4. Check if these coordinates are within the 3x2x3 bounds
+        // Width: 0-2 (X), Depth: 0-1 (Z), Height: 0-2 (Y)
+        return neighborX >= 0 && neighborX < 3 &&
+            neighborZ >= 0 && neighborZ < 2 &&
+            neighborY >= 0 && neighborY < 3;
     }
 
     @Override
@@ -121,29 +150,37 @@ public class ChickenCoopBlock extends HorizontalDirectionalBlock {
             Direction facing = state.getValue(FACING);
             CoopPart currentPart = state.getValue(PART);
 
-            // Find the absolute origin (0,0,0) by subtracting the current part's offset
+            // Calculate origin based on the piece being broken
             BlockPos origin = pos.subtract(calculateOffset(BlockPos.ZERO, facing, 
                     currentPart.getXOffset(), currentPart.getZOffset(), currentPart.getYOffset()));
 
-            // Break all 18 blocks in the 3x3x2 grid
+            // Use a flag to prevent re-entry if isNeighborPartOfCoop triggers
             for (int x = 0; x < 3; x++) {
                 for (int z = 0; z < 2; z++) {
                     for (int y = 0; y < 3; y++) {
                         BlockPos targetPos = calculateOffset(origin, facing, x, z, y);
                         BlockState targetState = level.getBlockState(targetPos);
                         
-                        // Only break blocks that belong to this mod's chicken coop
                         if (targetState.is(this)) {
+                            // 1. Handle Drops: This checks the loot table (JSON) and drops items
+                            if (!player.isCreative()) {
+                                BlockEntity blockEntity = targetState.hasBlockEntity() ? level.getBlockEntity(targetPos) : null;
+                                Block.dropResources(targetState, level, targetPos, blockEntity, player, player.getMainHandItem());
+                            }
+                            
+                            // 2. Set to AIR with flag 3 (Update neighbors + Send to clients)
+                            // Using destroyBlock with 'false' for drops since we handled it above 
+                            // for better control, or just setBlock to AIR.
                             level.setBlock(targetPos, Blocks.AIR.defaultBlockState(), 3);
-                            // 2001 is the ID for block break particles + sound
-                            level.levelEvent(2001, targetPos, Block.getId(targetState)); 
+                            
+                            // 3. Play break effects
+                            level.levelEvent(2001, targetPos, Block.getId(targetState));
                         }
                     }
                 }
             }
         }
         
-        // Call super and return the resulting state as required by 1.21.1
         return super.playerWillDestroy(level, pos, state, player);
     }
 

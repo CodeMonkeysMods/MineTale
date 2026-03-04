@@ -52,7 +52,15 @@ public enum CoopPart implements StringRepresentable {
     public int getZOffset() { return zOffset; }
 
     /**
-     * Logic to find the enum based on the position in the 3x3x2 grid.
+     * Retrieves the CoopPart corresponding to the given grid offsets.
+     * The grid is structured as 3x2x3 (width x depth x height), 
+     * corresponding to the x, z, and y axes respectively.
+     *
+     * @param x The width offset
+     * @param z The depth offset
+     * @param y The height offset
+     * @return The matching CoopPart
+     * @throws IllegalArgumentException if no part exists at the specified coordinates
      */
     public static CoopPart getPartFromCoords(int x, int z, int y) {
         for (CoopPart part : values()) {
@@ -60,6 +68,9 @@ public enum CoopPart implements StringRepresentable {
                 return part;
             }
         }
-        return BOTTOM_FRONT_LEFT; 
+        
+        throw new IllegalArgumentException(
+            String.format("No CoopPart found at coordinates: x=%d, z=%d, y=%d", x, z, y)
+        );
     }
 }
