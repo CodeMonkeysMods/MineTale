@@ -21,6 +21,7 @@ public class ModRecipes {
     public static final RecipeType<WorkbenchRecipe> BUILDERS_TYPE = createType("builders_recipe_type");
     public static final RecipeType<WorkbenchRecipe> BLACKSMITHS_TYPE = createType("blacksmiths_recipe_type");
     public static final RecipeType<WorkbenchRecipe> FURNITURE_TYPE = createType("furniture_recipe_type");
+    public static final RecipeType<WorkbenchRecipe> ALCHEMISTS_TYPE = createType("alchemists_recipe_type");
 
     // 2. Define the Serializers (The "How")
     // We pass the specific Type into the Serializer's constructor
@@ -48,11 +49,14 @@ public class ModRecipes {
     public static final RecipeSerializer<WorkbenchRecipe> FURNITURE_SERIALIZER =
             new WorkbenchRecipe.Serializer(FURNITURE_TYPE);
 
+    public static final RecipeSerializer<WorkbenchRecipe> ALCHEMISTS_SERIALIZER =
+            new WorkbenchRecipe.Serializer(ALCHEMISTS_TYPE);
+
     /**
-     * Registers the mod's recipe types and their serializers into Minecraft's built‑in registries under the mod namespace.
+     * Register the mod's custom recipe types and their serializers into Minecraft's built-in registries under the mod namespace.
      *
-     * This registers the following recipe types with their corresponding serializers: FURNACE_T1_TYPE, CAMPFIRE_TYPE,
-     * WORKBENCH_TYPE, ARMORERS_TYPE, FARMERS_TYPE, BUILDERS_TYPE, BLACKSMITHS_TYPE and FURNITURE_TYPE.
+     * Registers the following recipe types with their corresponding serializers: FURNACE_T1_TYPE, CAMPFIRE_TYPE,
+     * WORKBENCH_TYPE, ARMORERS_TYPE, FARMERS_TYPE, BUILDERS_TYPE, BLACKSMITHS_TYPE, FURNITURE_TYPE and ALCHEMISTS_TYPE.
      */
     public static void initialize() {
         // Register the Furnace-flavored version
@@ -72,6 +76,8 @@ public class ModRecipes {
         register(BLACKSMITHS_TYPE, BLACKSMITHS_SERIALIZER);
 
         register(FURNITURE_TYPE, FURNITURE_SERIALIZER);
+
+        register(ALCHEMISTS_TYPE, ALCHEMISTS_SERIALIZER);
     }
 
     /**

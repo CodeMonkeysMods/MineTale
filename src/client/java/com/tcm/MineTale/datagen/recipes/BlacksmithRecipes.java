@@ -13,13 +13,17 @@ import net.minecraft.world.item.Items;
 
 public class BlacksmithRecipes {
     /**
-     * Registers blacksmith workbench crafting recipes into the given exporter.
+     * Register blacksmith workbench crafting recipes into the supplied exporter.
      *
-     * Adds the copper_axe, copper_mace and copper_sword recipes (and leaves additional recipe templates commented).
+     * Adds concrete recipes for copper_axe, copper_battleaxe, copper_daggers, crude_longsword,
+     * copper_longsword, copper_mace, copper_shortbow and copper_sword. Each recipe specifies
+     * ingredient sources (items or tag references resolved via the provided lookup), the output,
+     * crafting time, an unlock condition requiring the blacksmiths workbench, a book category,
+     * and is saved to the exporter under a recipe key.
      *
-     * @param provider recipe provider used to build unlock conditions
-     * @param exporter  target used to save generated recipes
-     * @param lookup    holder lookup provider used to resolve tag-based ingredient references
+     * @param provider recipe provider used to construct unlock conditions
+     * @param exporter target used to save generated recipes
+     * @param lookup holder lookup provider used to resolve tag-based ingredient references
      */
     public static void buildRecipes(RecipeProvider provider, RecipeOutput exporter, HolderLookup.Provider lookup) {
         new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
@@ -32,45 +36,45 @@ public class BlacksmithRecipes {
              .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
              .save(exporter, "copper_axe");
 
-        //new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
-        //     .input(Items.COPPER_INGOT, 6)
-        //     .input(ItemTags.LOGS, lookup, 6)
-        //     .input(ModItems.PLANT_FIBER, 4)
-        //     .output(ModItems.COPPER_BATTLEAXE)
-        //     .time(3)
-        //     .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
-        //     .save(exporter, "copper_battleaxe");
+        new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
+             .input(Items.COPPER_INGOT, 6)
+             .input(ItemTags.LOGS, lookup, 6)
+             .input(ModItems.PLANT_FIBER, 4)
+             .output(ModItems.COPPER_BATTLEAXE)
+             .time(3)
+             .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
+             .save(exporter, "copper_battleaxe");
 
-        // new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
-        //     .input(Items.COPPER_INGOT, 4)
-        //     .input(ItemTags.LOGS, lookup, 3)
-        //     .input(ModItems.PLANT_FIBER, 3)
-        //     .output(ModItems.COPPER_DAGGERS)
-        //     .time(3)
-        //     .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
-        //     .save(exporter, "copper_daggers");
+        new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
+             .input(Items.COPPER_INGOT, 4)
+             .input(ItemTags.LOGS, lookup, 3)
+             .input(ModItems.PLANT_FIBER, 3)
+             .output(ModItems.COPPER_DAGGERS)
+             .time(3)
+             .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
+             .save(exporter, "copper_daggers");
 
-        // new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
-        //     .input(ItemTags.STONE_TOOL_MATERIALS, lookup, 6)
-        //     .input(ItemTags.LOGS, lookup, 2)
-        //     .input(ModItems.PLANT_FIBER, 4)
-        //     .output(ModItems.CRUDE_LONGSWORD)
-        //     .time(3)
-        //     .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
-        //     .save(exporter, "crude_longsword");
+        new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
+             .input(ItemTags.STONE_TOOL_MATERIALS, lookup, 6)
+             .input(ItemTags.LOGS, lookup, 2)
+             .input(ModItems.PLANT_FIBER, 4)
+             .output(ModItems.CRUDE_LONGSWORD)
+             .time(3)
+             .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
+             .save(exporter, "crude_longsword");
 
-        // new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
-        //     .input(Items.COPPER_INGOT, 6)
-        //     .input(ItemTags.LOGS, lookup, 2)
-        //     .input(ModItems.PLANT_FIBER, 4)
-        //     .output(ModItems.COPPER_LONGSWORD)
-        //     .time(3)
-        //     .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
-        //     .save(exporter, "copper_longsword");
+        new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
+             .input(Items.COPPER_INGOT, 6)
+             .input(ItemTags.LOGS, lookup, 2)
+             .input(ModItems.PLANT_FIBER, 4)
+             .output(ModItems.COPPER_LONGSWORD)
+             .time(3)
+             .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
+             .save(exporter, "copper_longsword");
 
         new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
              .input(Items.COPPER_INGOT, 6)
@@ -82,15 +86,15 @@ public class BlacksmithRecipes {
              .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
              .save(exporter, "copper_mace");
 
-        // new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
-        //     .input(Items.COPPER_INGOT, 4)
-        //     .input(ItemTags.LOGS, lookup, 4)
-        //     .input(ModItems.PLANT_FIBER, 6)
-        //     .output(ModItems.COPPER_SHORTBOW)
-        //     .time(3)
-        //     .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
-        //     .save(exporter, "copper_shortbow");
+        new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
+             .input(Items.COPPER_INGOT, 4)
+             .input(ItemTags.LOGS, lookup, 4)
+             .input(ModItems.PLANT_FIBER, 6)
+             .output(ModItems.COPPER_SHORTBOW)
+             .time(3)
+             .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
+             .save(exporter, "copper_shortbow");
 
         new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
              .input(Items.COPPER_INGOT, 4)

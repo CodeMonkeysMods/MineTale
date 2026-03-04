@@ -106,13 +106,13 @@ public class ModModelProvider extends FabricModelProvider {
     }
 
     /**
-         * Register item models for mod items that require custom or non-default models.
-         *
-         * <p>Registers models for shields, trimmable armour pieces, a handheld mace template,
-         * and various flat handheld item templates used for food and small items.</p>
-         *
-         * @param itemModelGenerators the generator used to create and register item models
-         */
+     * Registers item models for mod items that require custom or non-default models.
+     *
+     * <p>Generates models for shields, trimmable armour pieces, a handheld mace template,
+     * and various flat handheld item templates used for food and small items.</p>
+     *
+     * @param itemModelGenerators the generator used to create and register item models
+     */
     @Override
     public void generateItemModels(ItemModelGenerators itemModelGenerators) {
         itemModelGenerators.generateShield(ModItems.COPPER_SHIELD);
@@ -134,6 +134,9 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerators.generateFlatItem(ModItems.ONION, ModelTemplates.FLAT_HANDHELD_ITEM);
         itemModelGenerators.generateFlatItem(ModItems.WOOL_SCRAPS, ModelTemplates.FLAT_HANDHELD_ITEM);
         itemModelGenerators.generateFlatItem(ModItems.POOP, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerators.generateFlatItem(ModItems.EMPTY_POTION_BOTTLE, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerators.generateFlatItem(ModItems.ANTIDOTE, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerators.generateFlatItem(ModItems.POPBERRY_BOMB, ModelTemplates.FLAT_HANDHELD_ITEM);
 
     }
 }
