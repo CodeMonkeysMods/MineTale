@@ -12,6 +12,15 @@ public class ModLangProvider extends FabricLanguageProvider {
         super(dataOutput, registryLookup);
     }
 
+    /**
+     * Provides English translations for MineTale mod content.
+     *
+     * Populates the given TranslationBuilder with translation keys and their English text for blocks,
+     * items and GUI elements used by the mod (e.g. workbenches, ores, natural materials, crops, armour and buttons).
+     *
+     * @param wrapperLookup      registry lookup provider for obtaining registries if needed
+     * @param translationBuilder builder used to register translation key → text pairs
+     */
     @Override
     public void generateTranslations(HolderLookup.Provider wrapperLookup, TranslationBuilder translationBuilder) {
         translationBuilder.add("minetale.creative_tab.title", "MineTale Stuffs");

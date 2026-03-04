@@ -12,10 +12,26 @@ import net.minecraft.world.level.block.Blocks;
 import java.util.concurrent.CompletableFuture;
 
 public class ModItemTagProvider extends FabricTagProvider.ItemTagProvider {
+    /**
+     * Create a ModItemTagProvider used to generate item tag mappings for the mod during data generation.
+     *
+     * @param output           the Fabric data output used to write generated data
+     * @param registriesFuture a future supplying a {@link HolderLookup.Provider} for resolving registries needed while building tags
+     */
     public ModItemTagProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
 
+    /**
+     * Populate item tag mappings used during data generation.
+     *
+     * Adds entries for the mod's item tags, including:
+     * - `ModTags.Items.WOOD_REPAIR` (adds `Items.STICK`)
+     * - `ModTags.Items.MOSS` (adds the moss block item and various moss variant items resolved from `ModBlocks`)
+     * - `ModTags.Items.MILK_BUCKETS` (adds `Items.MILK_BUCKET`)
+     *
+     * @param provider the registry provider used to resolve item lookups when building tags
+     */
     @Override
     protected void addTags(HolderLookup.Provider provider) {
         valueLookupBuilder(ModTags.Items.WOOD_REPAIR)

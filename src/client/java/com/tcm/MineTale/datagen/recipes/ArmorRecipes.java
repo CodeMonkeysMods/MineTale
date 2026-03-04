@@ -12,6 +12,17 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 
 public class ArmorRecipes {
+    /**
+     * Registers armour crafting recipes and writes them to the provided exporter.
+     *
+     * <p>Creates copper and wood armour recipes (chest, helm, leggings/greaves and shields/variants),
+     * configures inputs, unlock conditions and book categories, and saves each recipe under a stable
+     * name for export.</p>
+     *
+     * @param provider supplies recipe unlocking predicates and availability checks used for recipe conditions
+     * @param exporter destination to which the constructed recipes are serialized and saved
+     * @param lookup   provides tag/item lookup context (for example tags such as logs or planks used as inputs)
+     */
     public static void buildRecipes(RecipeProvider provider, RecipeOutput exporter, HolderLookup.Provider lookup) {
         // Copper Armor
         new WorkbenchRecipeBuilder(ModRecipes.ARMORERS_TYPE, ModRecipes.ARMORERS_SERIALIZER)

@@ -13,6 +13,16 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
 public class FurnitureRecipes {
+    /**
+     * Register a set of furniture workbench crafting recipes and save them to the provided exporter.
+     *
+     * Defines multiple recipes using ModRecipes.FURNITURE_TYPE and ModRecipes.FURNITURE_SERIALIZER, each
+     * unlocked by possession of the furniture workbench and categorised under the furniture search display.
+     *
+     * @param provider the recipe provider used to build unlock criteria
+     * @param exporter the destination to which each constructed recipe is saved
+     * @param lookup   a holder lookup used for tag-based or lookup-dependent recipe inputs
+     */
     public static void buildRecipes(RecipeProvider provider, RecipeOutput exporter, HolderLookup.Provider lookup) {
         new WorkbenchRecipeBuilder(ModRecipes.FURNITURE_TYPE, ModRecipes.FURNITURE_SERIALIZER)
              .input(ItemTags.LOGS, lookup)

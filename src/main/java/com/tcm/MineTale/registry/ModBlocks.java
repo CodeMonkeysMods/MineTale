@@ -390,14 +390,15 @@ public class ModBlocks {
     }
 
     /**
-	 * Register a block under the mod's namespace, optionally create and register its corresponding BlockItem,
-	 * and add the block to the internal list of registered blocks.
+	 * Register a block in the mod namespace and optionally register a matching BlockItem.
 	 *
-	 * @param name              the registry name (path) to use for the block and item
-	 * @param blockFactory      factory that creates the Block from provided BlockBehaviour.Properties
-	 * @param settings          the BlockBehaviour.Properties to apply to the block; this method will set the block's registry ID on it
-	 * @param shouldRegisterBlock if `true`, a BlockItem for the block will be created and registered with the same name
-	 * @return                  the registered Block instance
+	 * Registers the block under the mod's namespace, adds it to REGISTERED_BLOCKS and registers it in the block registry. If {@code shouldRegisterBlock} is true, a corresponding {@code BlockItem} with the same registry name is created and registered.
+	 *
+	 * @param name                the registry path to use for both the block and item
+	 * @param blockFactory        factory that creates the Block from the provided BlockBehaviour.Properties
+	 * @param settings            the BlockBehaviour.Properties to apply to the block (its registry id will be set by this method)
+	 * @param shouldRegisterBlock {@code true} to create and register a {@code BlockItem} for the block, {@code false} to skip item registration
+	 * @return                    the registered Block instance
 	 */
 	private static Block register(String name, Function<BlockBehaviour.Properties, Block> blockFactory, BlockBehaviour.Properties settings, boolean shouldRegisterBlock) {
 		// Create a registry key for the block
@@ -421,6 +422,16 @@ public class ModBlocks {
 		return Registry.register(BuiltInRegistries.BLOCK, blockKey, block);
 	}
 
+	/**
+	 * Creates a bed-like block from the given factory, applies standard wood-based properties and registers it; optionally registers a corresponding BlockItem.
+	 *
+	 * @param name               the registry name for the block (mod namespace is applied)
+	 * @param blockFactory       factory that builds the block from provided properties
+	 * @param settings           base properties to be applied before the method's standardisations
+	 * @param mapColor           the map colour to apply to the block's properties
+	 * @param shouldRegisterBlock if `true`, a BlockItem for the block is created and registered under the same name
+	 * @return                   the block after registration in the block registry
+	 */
 	private static Block registerBed(String name, Function<BlockBehaviour.Properties, Block> blockFactory, BlockBehaviour.Properties settings, MapColor mapColor, boolean shouldRegisterBlock) {
 		ResourceKey<Block> blockKey = keyOfBlock(name);
 		Block block = blockFactory.apply(settings

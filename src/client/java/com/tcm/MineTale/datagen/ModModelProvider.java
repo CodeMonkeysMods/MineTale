@@ -106,10 +106,13 @@ public class ModModelProvider extends FabricModelProvider {
     }
 
     /**
-     * Registers item models for the mod; currently left empty (no item models are generated).
-     *
-     * @param itemModelGenerators generator used to register item models
-     */
+         * Register item models for mod items that require custom or non-default models.
+         *
+         * <p>Registers models for shields, trimmable armour pieces, a handheld mace template,
+         * and various flat handheld item templates used for food and small items.</p>
+         *
+         * @param itemModelGenerators the generator used to create and register item models
+         */
     @Override
     public void generateItemModels(ItemModelGenerators itemModelGenerators) {
         itemModelGenerators.generateShield(ModItems.COPPER_SHIELD);

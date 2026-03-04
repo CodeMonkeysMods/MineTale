@@ -35,14 +35,14 @@ public class FurnitureWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
 
     /**
-     * Creates a workbench menu bound to the given player inventory and optional block entity.
+     * Constructs a furniture workbench menu bound to the given player inventory and an optional block entity.
      *
-     * Uses an empty internal container (size 0) and the class's data size to synchronise numeric state.
+     * Uses an empty internal container (size 0) and the class's data size to synchronise numeric state between server and client.
      *
-     * @param syncId the synchronisation id for this menu
+     * @param syncId the menu synchronisation id
      * @param playerInventory the player's inventory used for slot access and recipe-book integration
-     * @param data container data used to synchronise numeric state between server and client
-     * @param blockEntity nullable block entity this menu is bound to, or {@code null} if not bound
+     * @param data container data used to synchronise numeric state
+     * @param blockEntity the block entity this menu is bound to, or {@code null} if not bound
      */
     public FurnitureWorkbenchMenu(int syncId, Inventory playerInventory, ContainerData data, @Nullable AbstractWorkbenchEntity blockEntity) {
         // Note: The order of arguments depends on your AbstractWorkbenchContainerMenu,
@@ -104,9 +104,9 @@ public class FurnitureWorkbenchMenu extends AbstractWorkbenchContainerMenu {
     }
 
     /**
-     * Selects the crafting recipe-book category for this menu.
+     * Indicates this menu uses the crafting recipe book.
      *
-     * @return {@code RecipeBookType.CRAFTING}
+     * @return {@code RecipeBookType.CRAFTING} indicating the crafting recipe book should be used
      */
     @Override
     public RecipeBookType getRecipeBookType() {

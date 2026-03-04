@@ -88,12 +88,12 @@ public class FarmersWorkbenchScreen extends AbstractRecipeBookScreen<FarmersWork
     }
 
     /**
-     * Initialises the screen layout and registers the crafting controls.
+     * Initialises the screen size and adds three craft buttons to the GUI.
      *
-     * Sets the GUI dimensions to 176×166 and adds three buttons wired to craft requests:
-     * - "Craft" requests 1,
-     * - "x10" requests 10,
-     * - "All" requests all (represented by -1).
+     * Configures the GUI dimensions to 176×166 and creates three buttons wired to craft requests:
+     * - the first button requests 1 item;
+     * - the second button requests 10 items;
+     * - the third button requests all items (represented by -1).
      */
     @Override
     protected void init() {

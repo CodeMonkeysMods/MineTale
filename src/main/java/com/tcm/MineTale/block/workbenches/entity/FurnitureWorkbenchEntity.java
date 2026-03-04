@@ -25,10 +25,12 @@ import java.util.List;
 public class FurnitureWorkbenchEntity extends AbstractWorkbenchEntity {
     protected final ContainerData data = new ContainerData() {
         /**
-         * Retrieves an internal data value by index for UI synchronization.
+         * Get the internal UI data value for the specified index.
          *
-         * @param index There is no cook time or anything for this block as it doesnt use it
-         * @return the value associated with {@code index}, or 0 for any other index
+         * <p>This workbench exposes no dynamic data fields; all indices are unused.</p>
+         *
+         * @param index the data index to read (unused by this workbench)
+         * @return 0 for any index
          */
         @Override
         public int get(int index) {
@@ -38,10 +40,10 @@ public class FurnitureWorkbenchEntity extends AbstractWorkbenchEntity {
         }
 
         /**
-         * No-op for this workbench; data is server-driven and not set client-side.
+         * No-op setter; the workbench's data is controlled server-side and is not modified here.
          *
-         * `@param` index the data index to set
-         * `@param` value the value to assign (ignored)
+         * @param index the data index that would be set (ignored)
+         * @param value the value that would be assigned (ignored)
          */
         @Override
         public void set(int index, int value) {
@@ -60,9 +62,9 @@ public class FurnitureWorkbenchEntity extends AbstractWorkbenchEntity {
     };
 
     /**
-     * Creates a ArmorersWorkbenchEntity for the specified world position and block state.
+     * Create a FurnitureWorkbenchEntity at the given world position with the specified block state.
      *
-     * Sets the entity's scanRadius to 0.0 and tier to 1.
+     * The new entity is initialised with tier 1 and configured to allow pulling from nearby blocks.
      *
      * @param blockPos   the world position of this block entity
      * @param blockState the block state for this block entity
@@ -75,12 +77,9 @@ public class FurnitureWorkbenchEntity extends AbstractWorkbenchEntity {
     }
 
     /**
-     * Persist this workbench's state to the given ValueOutput.
+     * Writes the workbench's persistent state—tier, scan radius and inventory—to the provided ValueOutput.
      *
-     * Stores "WorkbenchTier" (int), "ScanRadius" (double), and the full inventory under "Inventory"
-     * using type-safe Codecs.
-     *
-     * @param valueOutput the writer used to serialize this entity's fields
+     * @param valueOutput the writer used to serialize this entity's persistent fields
      */
     @Override
     protected void saveAdditional(ValueOutput valueOutput) {
@@ -124,12 +123,12 @@ public class FurnitureWorkbenchEntity extends AbstractWorkbenchEntity {
     }
 
     /**
-     * Creates the server-side container menu for this workbench's UI.
+     * Create the server-side container menu for this workbench's UI.
      *
      * @param syncId the window id used to synchronize the menu with the client
      * @param playerInventory the opening player's inventory
      * @param player the player who opened the menu
-     * @return a ArmorersWorkbenchMenu bound to this workbench's inventory and synced data
+     * @return the FurnitureWorkbenchMenu bound to this workbench's inventory and synchronized data
      */
     @Override
     public @Nullable AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
@@ -153,11 +152,9 @@ public class FurnitureWorkbenchEntity extends AbstractWorkbenchEntity {
     }
 
     /**
-     * Determines whether the workbench currently has fuel available.
+     * Determine whether the workbench has a fuel item in its configured fuel slot.
      *
-     * Checks that the entity is in a loaded level and that the configured fuel slot contains an item.
-     *
-     * @return `true` if the entity is in a loaded level and the fuel slot contains an item, `false` otherwise.
+     * @return `true` if the world level is present and the configured fuel slot contains an item, `false` otherwise.
      */
     @Override
     protected boolean hasFuel() {

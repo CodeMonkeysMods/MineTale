@@ -27,7 +27,7 @@ public class FurnitureWorkbench extends AbstractWorkbench<FurnitureWorkbenchEnti
     public static final MapCodec<FurnitureWorkbench> CODEC = simpleCodec(FurnitureWorkbench::new);
 
     /**
-     * Constructs a ArmorersWorkbench that uses the mod's ARMORERS_WORKBENCH block entity type.
+     * Create a FurnitureWorkbench that uses the mod's furniture workbench block entity type.
      *
      * @param properties block properties for this workbench
      */
@@ -37,20 +37,20 @@ public class FurnitureWorkbench extends AbstractWorkbench<FurnitureWorkbenchEnti
     }
 
     /**
-     * Constructs a ArmorersWorkbench using the provided block properties and block-entity type supplier.
+     * Create a FurnitureWorkbench using the given block properties and block-entity type supplier.
      *
      * @param properties block properties to apply to this workbench
-     * @param supplier   supplier that provides the BlockEntityType for the ArmorersWorkbenchEntity
+     * @param supplier   supplier that provides the BlockEntityType used for the workbench's FurnitureWorkbenchEntity
      */
     public FurnitureWorkbench(Properties properties, Supplier<BlockEntityType<? extends FurnitureWorkbenchEntity>> supplier) {
         super(properties, supplier, IS_WIDE, IS_TALL, 1);
     }
 
     /**
-     * Provides a ticker for workbench block entities when the supplied block entity type matches this block's entity type.
+     * Provide a ticker for matching furniture workbench block entities.
      *
-     * @param type the block entity type to match against this block's workbench entity type
-     * @return a BlockEntityTicker that updates matching workbench block entities, or {@code null} if the types do not match
+     * @param  type the block entity type to compare with this block's furniture workbench entity type
+     * @return      a `BlockEntityTicker` that updates matching furniture workbench entities, or `null` if the provided type does not match
      */
     @Nullable
     @Override
@@ -60,9 +60,9 @@ public class FurnitureWorkbench extends AbstractWorkbench<FurnitureWorkbenchEnti
     }
 
     /**
-     * Provides the MapCodec used to serialize and deserialize this workbench.
+     * Provides the MapCodec used to serialise and deserialise this FurnitureWorkbench.
      *
-     * @return the MapCodec for this ArmorersWorkbench
+     * @return the MapCodec that serialises and deserialises instances of this workbench
      */
     @Override
     protected MapCodec<? extends FurnitureWorkbench> codec() {

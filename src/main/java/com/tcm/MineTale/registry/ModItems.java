@@ -214,6 +214,15 @@ public class ModItems {
     public static final Item COPPER_SHORTBOW = register("copper_shortbow", BowItem::new, new Item.Properties());
 
     // --- REGISTRATION LOGIC ---
+    /**
+     * Register an item under the MineTale namespace and enqueue it for addition to the mod creative tab.
+     *
+     * @param name        the path portion of the item's identifier (will be combined with the mod ID to form the resource key)
+     * @param itemFactory a function that creates the item from the provided Item.Properties
+     * @param settings    the Item.Properties to apply to the created item; the method will set the item's resource key on these properties
+     * @param <GenericItem> the specific Item subtype created and returned
+     * @return the created and registered item instance
+     */
     public static <GenericItem extends Item> GenericItem register(String name, Function<Item.Properties, GenericItem> itemFactory, Item.Properties settings) {
         ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MineTale.MOD_ID, name));
         GenericItem item = itemFactory.apply(settings.setId(itemKey));

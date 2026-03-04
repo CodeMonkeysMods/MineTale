@@ -12,6 +12,15 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 
 public class BlacksmithRecipes {
+    /**
+     * Registers blacksmith workbench crafting recipes into the given exporter.
+     *
+     * Adds the copper_axe, copper_mace and copper_sword recipes (and leaves additional recipe templates commented).
+     *
+     * @param provider recipe provider used to build unlock conditions
+     * @param exporter  target used to save generated recipes
+     * @param lookup    holder lookup provider used to resolve tag-based ingredient references
+     */
     public static void buildRecipes(RecipeProvider provider, RecipeOutput exporter, HolderLookup.Provider lookup) {
         new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
              .input(Items.COPPER_INGOT, 4)
