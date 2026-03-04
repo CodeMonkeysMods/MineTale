@@ -32,45 +32,45 @@ public class BlacksmithRecipes {
              .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
              .save(exporter, "copper_axe");
 
-        //new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
-        //     .input(Items.COPPER_INGOT, 6)
-        //     .input(ItemTags.LOGS, lookup, 6)
-        //     .input(ModItems.PLANT_FIBER, 4)
-        //     .output(ModItems.COPPER_BATTLEAXE)
-        //     .time(3)
-        //     .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
-        //     .save(exporter, "copper_battleaxe");
+        new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
+             .input(Items.COPPER_INGOT, 6)
+             .input(ItemTags.LOGS, lookup, 6)
+             .input(ModItems.PLANT_FIBER, 4)
+             .output(ModItems.COPPER_BATTLEAXE)
+             .time(3)
+             .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
+             .save(exporter, "copper_battleaxe");
 
-        // new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
-        //     .input(Items.COPPER_INGOT, 4)
-        //     .input(ItemTags.LOGS, lookup, 3)
-        //     .input(ModItems.PLANT_FIBER, 3)
-        //     .output(ModItems.COPPER_DAGGERS)
-        //     .time(3)
-        //     .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
-        //     .save(exporter, "copper_daggers");
+        new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
+             .input(Items.COPPER_INGOT, 4)
+             .input(ItemTags.LOGS, lookup, 3)
+             .input(ModItems.PLANT_FIBER, 3)
+             .output(ModItems.COPPER_DAGGERS)
+             .time(3)
+             .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
+             .save(exporter, "copper_daggers");
 
-        // new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
-        //     .input(ItemTags.STONE_TOOL_MATERIALS, lookup, 6)
-        //     .input(ItemTags.LOGS, lookup, 2)
-        //     .input(ModItems.PLANT_FIBER, 4)
-        //     .output(ModItems.CRUDE_LONGSWORD)
-        //     .time(3)
-        //     .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
-        //     .save(exporter, "crude_longsword");
+        new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
+             .input(ItemTags.STONE_TOOL_MATERIALS, lookup, 6)
+             .input(ItemTags.LOGS, lookup, 2)
+             .input(ModItems.PLANT_FIBER, 4)
+             .output(ModItems.CRUDE_LONGSWORD)
+             .time(3)
+             .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
+             .save(exporter, "crude_longsword");
 
-        // new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
-        //     .input(Items.COPPER_INGOT, 6)
-        //     .input(ItemTags.LOGS, lookup, 2)
-        //     .input(ModItems.PLANT_FIBER, 4)
-        //     .output(ModItems.COPPER_LONGSWORD)
-        //     .time(3)
-        //     .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
-        //     .save(exporter, "copper_longsword");
+        new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
+             .input(Items.COPPER_INGOT, 6)
+             .input(ItemTags.LOGS, lookup, 2)
+             .input(ModItems.PLANT_FIBER, 4)
+             .output(ModItems.COPPER_LONGSWORD)
+             .time(3)
+             .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
+             .save(exporter, "copper_longsword");
 
         new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
              .input(Items.COPPER_INGOT, 6)
@@ -82,15 +82,15 @@ public class BlacksmithRecipes {
              .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
              .save(exporter, "copper_mace");
 
-        // new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
-        //     .input(Items.COPPER_INGOT, 4)
-        //     .input(ItemTags.LOGS, lookup, 4)
-        //     .input(ModItems.PLANT_FIBER, 6)
-        //     .output(ModItems.COPPER_SHORTBOW)
-        //     .time(3)
-        //     .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
-        //     .save(exporter, "copper_shortbow");
+        new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
+             .input(Items.COPPER_INGOT, 4)
+             .input(ItemTags.LOGS, lookup, 4)
+             .input(ModItems.PLANT_FIBER, 6)
+             .output(ModItems.COPPER_SHORTBOW)
+             .time(3)
+             .unlockedBy("has_blacksmiths_workbench", provider.has(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.BLACKSMITHS_SEARCH)
+             .save(exporter, "copper_shortbow");
 
         new WorkbenchRecipeBuilder(ModRecipes.BLACKSMITHS_TYPE, ModRecipes.BLACKSMITHS_SERIALIZER)
              .input(Items.COPPER_INGOT, 4)

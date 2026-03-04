@@ -38,7 +38,8 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 .add(ModBlocks.FURNACE_WORKBENCH_BLOCK_T2)
                 .add(ModBlocks.ARMORERS_WORKBENCH_BLOCK)
                 .add(ModBlocks.BUILDERS_WORKBENCH_BLOCK)
-                .add(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK);
+                .add(ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK)
+                .add(ModBlocks.ALCHEMISTS_WORKBENCH_BLOCK);
 
         valueLookupBuilder(BlockTags.MINEABLE_WITH_AXE)
                 .add(ModBlocks.CAMPFIRE_WORKBENCH_BLOCK)
