@@ -272,7 +272,7 @@ public class ModLangProvider extends FabricLanguageProvider {
         translationBuilder.add("item.minetale.essence_of_the_void", "Essence of the Void");
         translationBuilder.add("item.minetale.void_heart", "Void Heart");
         translationBuilder.add("item.minetale.empty_potion_bottle", "Empty Potion Bottle");
-        translationBuilder.add("item.minetale.antitode", "Antidote");
+        translationBuilder.add("item.minetale.antidote", "Antidote");
         translationBuilder.add("item.minetale.boom_powder", "Boom Powder");
         translationBuilder.add("item.minetale.popberry_bomb", "Popberry Bomb");
 

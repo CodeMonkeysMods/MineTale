@@ -25,22 +25,11 @@ public class AlchemistsWorkbench extends AbstractWorkbench<AlchemistsWorkbenchEn
 
     public static final MapCodec<AlchemistsWorkbench> CODEC = simpleCodec(AlchemistsWorkbench::new);
 
-    /**
-     * Constructs a ArmorersWorkbench that uses the mod's ARMORERS_WORKBENCH block entity type.
-     *
-     * @param properties block properties for this workbench
-     */
     public AlchemistsWorkbench(Properties properties) {
         // Hardcode the supplier and sounds here if they never change
         super(properties, () -> ModBlockEntities.ALCHEMISTS_WORKBENCH_BE, IS_WIDE, IS_TALL, 1);
     }
 
-    /**
-     * Constructs a ArmorersWorkbench using the provided block properties and block-entity type supplier.
-     *
-     * @param properties block properties to apply to this workbench
-     * @param supplier   supplier that provides the BlockEntityType for the ArmorersWorkbenchEntity
-     */
     public AlchemistsWorkbench(Properties properties, Supplier<BlockEntityType<? extends AlchemistsWorkbenchEntity>> supplier) {
         super(properties, supplier, IS_WIDE, IS_TALL, 1);
     }
@@ -58,11 +47,6 @@ public class AlchemistsWorkbench extends AbstractWorkbench<AlchemistsWorkbenchEn
         return createTickerHelper(type, ModBlockEntities.ALCHEMISTS_WORKBENCH_BE, AbstractWorkbenchEntity::tick);
     }
 
-    /**
-     * Provides the MapCodec used to serialize and deserialize this workbench.
-     *
-     * @return the MapCodec for this ArmorersWorkbench
-     */
     @Override
     protected MapCodec<? extends AlchemistsWorkbench> codec() {
         return CODEC;
