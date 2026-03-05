@@ -5,6 +5,7 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 
 public class ForgeRecipes {
+    /// FORGE STILL IN DEVELOPMENT IN HYTALE
     /**
      * Register Forge recipes for data generation.
      *
@@ -15,7 +16,6 @@ public class ForgeRecipes {
      * @param exporter the destination to save generated recipes into
      * @param lookup   a holder lookup for resolving tag or registry references used by recipes
      */
-
     public static void buildRecipes(RecipeProvider provider, RecipeOutput exporter, HolderLookup.Provider lookup) {
         // new WorkbenchRecipeBuilder(ModRecipes.FORGE_TYPE, ModRecipes.FORGE_SERIALIZER)
         //     .input(Items.COPPER_INGOT, 4)

@@ -90,113 +90,103 @@ public class WorkbenchRecipes {
              .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
              .save(exporter, "crude_torch");
 
-        // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-        //     .input(ModItems.RUBBLE, 2)
-        //     .input(ModItems.PLANT_FIBER, 3)
-        //     .input(Items.STICK, 3)
-        //     .time(3)
-        //     .output(ModItems.CRUDE_BUILDERS_HAMMER)
-        //     .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-        //     .save(exporter, "CRUDE_BUILDERS_HAMMER");
+        new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+             .input(ModItems.RUBBLE, 2)
+             .input(ModItems.PLANT_FIBER, 3)
+             .input(Items.STICK, 3)
+             .time(3)
+             .output(ModItems.CRUDE_BUILDERS_HAMMER)
+             .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+             .save(exporter, "crude_builders_hammer");
 
-        // TODO: COPPER_PICKAXE Not Implemented
-        // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-        //     .input(ModItems.PLANT_FIBER)
-        //     .input(ItemTags.LOGS, lookup, 6)
-        //     .input(Items.COPPER_INGOT, 3)
-        //     .time(3)
-        //     .output(ModItems.COPPER_PICKAXE)
-        //     .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-        //     .save(exporter, "COPPER_PICKAXE");
+        new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+             .input(ModItems.PLANT_FIBER)
+             .input(ItemTags.LOGS, lookup, 6)
+             .input(Items.COPPER_INGOT, 3)
+             .time(3)
+             .output(Items.COPPER_PICKAXE)
+             .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+             .save(exporter, "copper_pickaxe");
 
-        // TODO: CRUDE_PICKAXE Not Implemented
-        // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-        //     .input(ModItems.RUBBLE, 2)
-        //     .input(ModItems.PLANT_FIBER, 2)
-        //     .input(Items.STICK, 2)
-        //     .time(3)
-        //     .output(ModItems.CRUDE_PICKAXE)
-        //     .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-        //     .save(exporter, "CRUDE_PICKAXE");
+        new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+             .input(ModItems.RUBBLE, 2)
+             .input(ModItems.PLANT_FIBER, 2)
+             .input(Items.STICK, 2)
+             .time(3)
+             .output(Items.STONE_PICKAXE)
+             .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+             .save(exporter, "stone_pickaxe");
 
-        // TODO: CRUDE_HATCHET Not Implemented
-        // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-        //     .input(ModItems.RUBBLE, 2)
-        //     .input(ModItems.PLANT_FIBER, 2)
-        //     .input(Items.STICK, 2)
-        //     .time(3)
-        //     .output(ModItems.CRUDE_HATCHET)
-        //     .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-        //     .save(exporter, "CRUDE_HATCHET");
+        new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+             .input(ModItems.RUBBLE, 2)
+             .input(ModItems.PLANT_FIBER, 2)
+             .input(Items.STICK, 2)
+             .time(3)
+             .output(ModItems.CRUDE_HATCHET)
+             .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+             .save(exporter, "crude_hatchet");
 
-        // TODO: COPPER_HATCHET Not Implemented
-        // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-        //     .input(ModItems.PLANT_FIBER, 3)
-        //     .input(ItemTags.LOGS, lookup, 6)
-        //     .input(Items.COPPER_INGOT, 3)
-        //     .time(3)
-        //     .output(ModItems.COPPER_HATCHET)
-        //     .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-        //     .save(exporter, "COPPER_HATCHET");
+        new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+             .input(ModItems.PLANT_FIBER, 3)
+             .input(ItemTags.LOGS, lookup, 6)
+             .input(Items.COPPER_INGOT, 3)
+             .time(3)
+             .output(ModItems.COPPER_HATCHET)
+             .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+             .save(exporter, "copper_hatchet");
 
-        // TODO: CRUDE_BATTLEAXE Not Implemented
-        // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-        //     .input(ItemTags.LOGS, lookup, 3)
-        //     .input(ModItems.PLANT_FIBER, 4)
-        //     .input(ItemTags.STONE_TOOL_MATERIALS, lookup, 6)
-        //     .time(3)
-        //     .output(ModItems.CRUDE_BATTLEAXE)
-        //     .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-        //     .save(exporter, "CRUDE_BATTLEAXE");
+        new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+             .input(ItemTags.LOGS, lookup, 3)
+             .input(ModItems.PLANT_FIBER, 4)
+             .input(ItemTags.STONE_TOOL_MATERIALS, lookup, 6)
+             .time(3)
+             .output(ModItems.CRUDE_BATTLEAXE)
+             .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+             .save(exporter, "crude_battleaxe");
 
-        // TODO: CRUDE_MACE Not Implemented
-        // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-        //     .input(ItemTags.LOGS, lookup, 3)
-        //     .input(ModItems.PLANT_FIBER, 4)
-        //     .input(ItemTags.STONE_TOOL_MATERIALS, lookup, 6)
-        //     .time(3)
-        //     .output(ModItems.CRUDE_MACE)
-        //     .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-        //     .save(exporter, "CRUDE_MACE");
+        new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+             .input(ItemTags.LOGS, lookup, 3)
+             .input(ModItems.PLANT_FIBER, 4)
+             .input(ItemTags.STONE_TOOL_MATERIALS, lookup, 6)
+             .time(3)
+             .output(ModItems.CRUDE_MACE)
+             .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+             .save(exporter, "crude_mace");
 
-        // TODO: CRUDE_DAGGERS Not Implemented
-        // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-        //     .input(ModItems.RUBBLE, 3)
-        //     .input(ModItems.PLANT_FIBER, 2)
-        //     .input(Items.STICK, 2)
-        //     .time(3)
-        //     .output(ModItems.CRUDE_DAGGERS)
-        //     .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-        //     .save(exporter, "CRUDE_DAGGERS");
+        new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+             .input(ModItems.RUBBLE, 3)
+             .input(ModItems.PLANT_FIBER, 2)
+             .input(Items.STICK, 2)
+             .time(3)
+             .output(ModItems.CRUDE_DAGGERS)
+             .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+             .save(exporter, "crude_daggers");
 
-        // TODO: CRUDE_SHORTBOW Not Implemented
-        // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-        //     .input(ModItems.PLANT_FIBER, 6)
-        //     .input(Items.STICK, 4)
-        //     .time(3)
-        //     .output(ModItems.CRUDE_SHORTBOW)
-        //     .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-        //     .save(exporter, "CRUDE_SHORTBOW");
+        new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+             .input(ModItems.PLANT_FIBER, 6)
+             .input(Items.STICK, 4)
+             .time(3)
+             .output(ModItems.CRUDE_SHORTBOW)
+             .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+             .save(exporter, "crude_shortbow");
 
-        // TODO: CRUDE_SWORD Not Implemented
-        // new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
-        //     .input(ModItems.RUBBLE, 2)
-        //     .input(ModItems.PLANT_FIBER, 2)
-        //     .input(Items.STICK, 2)
-        //     .time(3)
-        //     .output(ModItems.CRUDE_SWORD)
-        //     .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
-        //     .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
-        //     .save(exporter, "CRUDE_SWORD");
-
+        new WorkbenchRecipeBuilder(ModRecipes.WORKBENCH_TYPE, ModRecipes.WORKBENCH_SERIALIZER)
+             .input(ModItems.RUBBLE, 2)
+             .input(ModItems.PLANT_FIBER, 2)
+             .input(Items.STICK, 2)
+             .time(3)
+             .output(ModItems.CRUDE_SWORD)
+             .unlockedBy("has_workbench", provider.has(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem()))
+             .bookCategory(ModRecipeDisplay.WORKBENCH_SEARCH)
+             .save(exporter, "crude_sword");
     }
 }

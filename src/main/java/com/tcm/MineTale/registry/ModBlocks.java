@@ -102,6 +102,13 @@ public class ModBlocks {
 			true
 	);
 
+	public static final Block ALCHEMISTS_WORKBENCH_BLOCK = register(
+			"alchemists_workbench",
+			AlchemistsWorkbench::new,
+			BlockBehaviour.Properties.of().sound(SoundType.STONE),
+			true
+	);
+
 	//Is not usable in Hytale. Can make into workbench later
 	public static final Block WOODCUTTERS_BLOCK = register(
 			"woodcutters_block",
@@ -233,7 +240,7 @@ public class ModBlocks {
 	public static final Block HAY_TARGET = register("hay_target", Block::new, BlockBehaviour.Properties.of().sound(SoundType.CHERRY_LEAVES), true);
 
 	// Bed
-	//TODO: Fix these little shits
+	//TODO: These are just deco right now and not functional
 	public static final Block FERAN_BED = registerBed("feran_bed", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOD), MapColor.COLOR_ORANGE, true);
 	public static final Block BAMBOO_BED = registerBed("bamboo_bed", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOD), MapColor.COLOR_CYAN, true);
 	public static final Block LUMBERJACK_BED = registerBed("lumberjack_bed", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOD), MapColor.COLOR_BROWN, true);
