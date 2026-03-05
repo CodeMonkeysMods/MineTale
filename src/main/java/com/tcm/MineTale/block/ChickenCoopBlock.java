@@ -228,8 +228,39 @@ public class ChickenCoopBlock extends HorizontalDirectionalBlock implements Enti
                     .above(y);
     }
 
-   @Override
+    @Override
     protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
         return CODEC;
     }
+
+    @Override
+    protected ItemInteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        if (level.isClientSide()) return ItemInteractionResult.SUCCESS;
+
+            Direction facing = state.getValue(FACING);
+            CoopPart part = state.getValue(PART);
+
+    // 1. Find the Brain (Bottom Front Center)
+    // We reverse the offset from the clicked part to find the origin (0,0,0)
+    // Then we add the specific offset for the Bottom Front Center (1,0,0)
+    BlockPos origin = pos.subtract(calculateOffset(BlockPos.ZERO, facing, part.getXOffset(), part.getZOffset(), part.getYOffset()));
+    BlockPos brainPos = calculateOffset(origin, facing, 1, 0, 0);
+
+    if (level.getBlockEntity(brainPos) instanceof ChickenCoopBlockEntity be) {
+        if (be.takeEgg() > 0) {
+            // Give player the egg
+            ItemStack eggStack = new ItemStack(Items.EGG);
+            if (!player.getInventory().add(eggStack)) {
+                player.drop(eggStack, false);
+            }
+            
+            // Visual/Sound feedback
+            level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2f, (level.random.nextFloat() - level.random.nextFloat()) * 0.7f + 1.2f);
+            return ItemInteractionResult.CONSUME;
+        }
+    }
+
+    return ItemInteractionResult.PASS;
+}
+    
 }
