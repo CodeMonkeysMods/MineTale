@@ -34,6 +34,8 @@ import com.tcm.MineTale.registry.ModBlockEntities;
 public class ChickenCoopEntity extends BlockEntity {
     private final List<CompoundTag> storedChickensNbt = new ArrayList<>();
     private boolean isNightMode = false;
+    private int eggCount = 0;
+    private static final int MAX_EGGS = 16; // Limit storage so it's not infinite
 
     public ChickenCoopEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CHICKEN_COOP_BE, pos, state);
@@ -55,6 +57,28 @@ public class ChickenCoopEntity extends BlockEntity {
             be.isNightMode = false;
             be.setChanged();
         }
+
+        // If it's night and we have chickens inside, try to lay eggs
+        if (be.isNightMode && !be.storedChickensNbt.isEmpty() && be.eggCount < MAX_EGGS) {
+            // Minecraft chickens lay eggs every 6000-12000 ticks.
+            // With up to 6 chickens, a 1 in 1000 chance per tick is roughly realistic.
+            if (level.random.nextInt(1000) < be.storedChickensNbt.size()) {
+                be.eggCount++;
+                be.setChanged();
+                // Optional: Play a muffled chicken sound from inside the coop
+                level.playSound(null, pos, SoundEvents.CHICKEN_EGG, SoundSource.BLOCKS, 0.5f, 1.0f);
+            }
+        }
+    }
+
+    // Helper for the player to interact
+    public int takeEgg() {
+        if (eggCount > 0) {
+            eggCount--;
+            setChanged();
+            return 1;
+        }
+        return 0;
     }
 
     private void collectChickens(ServerLevel level, BlockPos pos) {
