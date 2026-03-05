@@ -2,11 +2,11 @@ package com.tcm.MineTale.registry;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.*;
+import com.tcm.MineTale.block.ChickenCoopBlock;
 import com.tcm.MineTale.item.ModCreativeTab;
 
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
@@ -18,13 +18,11 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.properties.BedPart;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -372,6 +370,22 @@ public class ModBlocks {
 	// public static final Block THORIUM_ORE_SHALE = registerOreBlock("thorium_ore_shale", Block::new, BlockBehaviour.Properties.of().strength(2).requiresCorrectToolForDrops(), Blocks.BASALT, Items.COPPER_ORE, 1);
 	// public static final Block THORIUM_ORE_STONE = registerOreBlock("thorium_ore_stone", Block::new, BlockBehaviour.Properties.of().strength(2).requiresCorrectToolForDrops(), Blocks.STONE, Items.COPPER_ORE, 1);
 	// public static final Block THORIUM_ORE_SANDSTONE = registerOreBlock("thorium_ore_sandstone", Block::new, BlockBehaviour.Properties.of().strength(2).requiresCorrectToolForDrops(), Blocks.SANDSTONE, Items.COPPER_ORE, 1);
+
+	public static final Block CHICKEN_COOP = register(
+		"chicken_coop", 
+		ChickenCoopBlock::new, 
+		BlockBehaviour.Properties.of()
+			.mapColor(MapColor.WOOD)
+			.instrument(NoteBlockInstrument.BASS)
+			.strength(2.0f, 3.0f)
+			.sound(SoundType.WOOD)
+			// This is important for multi-blocks:
+			.noOcclusion() 
+			// 1.21.1 requires manual ignition/burning logic if you want it flammable, 
+			// but standard wood properties are a good start.
+			.ignitedByLava(),
+		true // We want a BlockItem so we can place it!
+	);
 
     /**
      * Adds all mod-registered blocks to the MineTale creative tab and logs the action.
