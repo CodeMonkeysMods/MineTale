@@ -21,6 +21,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class AlchemistsWorkbenchEntity extends AbstractWorkbenchEntity {
     protected final ContainerData data = new ContainerData() {
@@ -85,18 +86,14 @@ public class AlchemistsWorkbenchEntity extends AbstractWorkbenchEntity {
     @Override
     protected void saveAdditional(ValueOutput valueOutput) {
         super.saveAdditional(valueOutput);
-        // store() uses Codecs for type safety
         valueOutput.store("WorkbenchTier", Codec.INT, this.tier);
         valueOutput.store("ScanRadius", Codec.DOUBLE, this.scanRadius);
 
-        // Convert the SimpleContainer to a List of ItemStacks for the Codec
-        // Or use the built-in NBT helper if your framework supports it
-        List<ItemStack> stacks = new ArrayList<>();
-        for (int i = 0; i < inventory.getContainerSize(); i++) {
-            stacks.add(inventory.getItem(i));
-        }
+        // Optimized: Stream the inventory slots directly into a list
+        List<ItemStack> stacks = IntStream.range(0, inventory.getContainerSize())
+                                        .mapToObj(inventory::getItem)
+                                        .toList();
 
-        // CHANGE: Use OPTIONAL_CODEC instead of CODEC
         valueOutput.store("Inventory", ItemStack.OPTIONAL_CODEC.listOf(), stacks);
     }
 
@@ -117,6 +114,9 @@ public class AlchemistsWorkbenchEntity extends AbstractWorkbenchEntity {
 
         // Read the inventory list back
         valueInput.read("Inventory", ItemStack.OPTIONAL_CODEC.listOf()).ifPresent(stacks -> {
+            // Fix: Clear existing items to prevent stale data if the saved list is smaller
+            inventory.clearContent(); 
+            
             for (int i = 0; i < stacks.size() && i < inventory.getContainerSize(); i++) {
                 inventory.setItem(i, stacks.get(i));
             }
@@ -161,14 +161,6 @@ public class AlchemistsWorkbenchEntity extends AbstractWorkbenchEntity {
      */
     @Override
     protected boolean hasFuel() {
-        if (this.level == null) return false;
-        
-        // Check if block is lit
-        // BlockState state = this.level.getBlockState(this.worldPosition);
-        // boolean isLit = state.hasProperty(BlockStateProperties.LIT) && state.getValue(BlockStateProperties.LIT);
-        
-        boolean hasFuelItem = !this.getItem(Constants.FUEL_SLOT).isEmpty();
-        
-        return hasFuelItem;
+        return true;
     }
 }
