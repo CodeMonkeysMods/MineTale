@@ -64,6 +64,21 @@ public class ModLootTableProvider extends FabricBlockLootTableProvider {
                 )
         );
 
+        this.add(ModBlocks.ALCHEMISTS_WORKBENCH_BLOCK,
+                LootTable.lootTable() // Use the static factory method to start the builder
+                        .withPool(LootPool.lootPool()
+                                .setRolls(ConstantValue.exactly(1.0F))
+                                .add(LootItem.lootTableItem(ModBlocks.ALCHEMISTS_WORKBENCH_BLOCK))
+                                .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.ALCHEMISTS_WORKBENCH_BLOCK)
+                                        .setProperties(StatePropertiesPredicate.Builder.properties()
+                                                .hasProperty(AbstractWorkbench.HALF, DoubleBlockHalf.LOWER)
+                                                .hasProperty(AbstractWorkbench.TYPE, ChestType.LEFT)
+                                        )
+                                )
+                                .when(ExplosionCondition.survivesExplosion())
+                        )
+        );
+
         this.add(ModBlocks.BUILDERS_WORKBENCH_BLOCK,
                 LootTable.lootTable() // Use the static factory method to start the builder
                         .withPool(LootPool.lootPool()

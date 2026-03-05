@@ -42,6 +42,10 @@ public class ModRecipeDisplay {
     public static final RecipeDisplay.Type<WorkbenchRecipeDisplay> FURNITURE_TYPE =
             new RecipeDisplay.Type<>(WorkbenchRecipeDisplay.CODEC, STREAM_CODEC);
 
+    public static final RecipeDisplay.Type<WorkbenchRecipeDisplay> ALCHEMISTS_TYPE =
+            new RecipeDisplay.Type<>(WorkbenchRecipeDisplay.CODEC, STREAM_CODEC);
+
+
     // 1. Declare the fields but don't assign them yet
     public static final RecipeBookCategory CAMPFIRE_SEARCH = registerCategory("campfire_recipe_book_category");
     public static final RecipeBookCategory WORKBENCH_SEARCH = registerCategory("workbench_recipe_book_category");
@@ -51,6 +55,7 @@ public class ModRecipeDisplay {
     public static final RecipeBookCategory BUILDERS_SEARCH = registerCategory("builders_recipe_book_category");
     public static final RecipeBookCategory BLACKSMITHS_SEARCH = registerCategory("blacksmiths_recipe_book_category");
     public static final RecipeBookCategory FURNITURE_SEARCH = registerCategory("furniture_recipe_book_category");
+    public static final RecipeBookCategory ALCHEMISTS_SEARCH = registerCategory("alchemists_recipe_book_category");
 
     /**
      * Registers the workbench recipe display type into the built-in recipe display registry.
