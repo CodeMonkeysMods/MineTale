@@ -25,20 +25,31 @@ public class AlchemistsWorkbench extends AbstractWorkbench<AlchemistsWorkbenchEn
 
     public static final MapCodec<AlchemistsWorkbench> CODEC = simpleCodec(AlchemistsWorkbench::new);
 
+    /**
+     * Constructs a new AlchemistsWorkbench configured to use the mod's Alchemists Workbench block-entity type.
+     *
+     * @param properties block properties for this workbench
+     */
     public AlchemistsWorkbench(Properties properties) {
         // Hardcode the supplier and sounds here if they never change
         super(properties, () -> ModBlockEntities.ALCHEMISTS_WORKBENCH_BE, IS_WIDE, IS_TALL, 1);
     }
 
+    /**
+     * Constructs an AlchemistsWorkbench configured with the provided block properties and block-entity type supplier.
+     *
+     * @param properties the block properties to apply to this workbench
+     * @param supplier   supplier that provides the BlockEntityType for the AlchemistsWorkbenchEntity
+     */
     public AlchemistsWorkbench(Properties properties, Supplier<BlockEntityType<? extends AlchemistsWorkbenchEntity>> supplier) {
         super(properties, supplier, IS_WIDE, IS_TALL, 1);
     }
 
     /**
-     * Provides a ticker for workbench block entities when the supplied block entity type matches this block's entity type.
+     * Supplies the ticker used to update this workbench's block entity instances when appropriate.
      *
-     * @param type the block entity type to match against this block's workbench entity type
-     * @return a BlockEntityTicker that updates matching workbench block entities, or {@code null} if the types do not match
+     * @param type the block entity type to check for compatibility with this workbench
+     * @return the BlockEntityTicker that updates matching workbench block entities, or {@code null} if the provided type is not compatible
      */
     @Nullable
     @Override
@@ -47,6 +58,11 @@ public class AlchemistsWorkbench extends AbstractWorkbench<AlchemistsWorkbenchEn
         return createTickerHelper(type, ModBlockEntities.ALCHEMISTS_WORKBENCH_BE, AbstractWorkbenchEntity::tick);
     }
 
+    /**
+     * Provides the MapCodec used to serialise and deserialise this workbench.
+     *
+     * @return the MapCodec for this AlchemistsWorkbench
+     */
     @Override
     protected MapCodec<? extends AlchemistsWorkbench> codec() {
         return CODEC;
