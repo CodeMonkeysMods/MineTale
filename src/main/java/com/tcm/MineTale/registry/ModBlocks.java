@@ -364,8 +364,8 @@ public class ModBlocks {
 	// public static final Block THORIUM_ORE_STONE = registerOreBlock("thorium_ore_stone", Block::new, BlockBehaviour.Properties.of().strength(2).requiresCorrectToolForDrops(), Blocks.STONE, Items.COPPER_ORE, 1);
 	// public static final Block THORIUM_ORE_SANDSTONE = registerOreBlock("thorium_ore_sandstone", Block::new, BlockBehaviour.Properties.of().strength(2).requiresCorrectToolForDrops(), Blocks.SANDSTONE, Items.COPPER_ORE, 1);
 
-	public static final Block CHICKEN_COOP = register(
-		"chicken_coop", 
+	public static final Block CHICKEN_COOP_BLOCK = register(
+		"chicken_coop_block", 
 		ChickenCoopBlock::new, 
 		BlockBehaviour.Properties.of()
 			.mapColor(MapColor.WOOD)

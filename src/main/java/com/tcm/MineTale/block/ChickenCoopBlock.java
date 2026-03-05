@@ -1,6 +1,8 @@
 package com.tcm.MineTale.block;
 
 import com.mojang.serialization.MapCodec;
+import com.tcm.MineTale.block.entity.ChickenCoopEntity;
+import com.tcm.MineTale.registry.ModBlockEntities;
 import com.tcm.MineTale.util.CoopPart;
 
 import net.minecraft.core.BlockPos;
@@ -15,14 +17,17 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import org.jetbrains.annotations.Nullable;
 
-public class ChickenCoopBlock extends HorizontalDirectionalBlock {
+public class ChickenCoopBlock extends HorizontalDirectionalBlock implements EntityBlock {
     public static final EnumProperty<CoopPart> PART = EnumProperty.create("part", CoopPart.class);
 
     public static final MapCodec<ChickenCoopBlock> CODEC = simpleCodec(ChickenCoopBlock::new);
@@ -33,6 +38,31 @@ public class ChickenCoopBlock extends HorizontalDirectionalBlock {
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(PART, CoopPart.BOTTOM_FRONT_LEFT));
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        // 1. Only tick on server side
+        if (level.isClientSide()) return null;
+
+        // 2. Only tick if this is the correct part of the coop
+        if (state.getValue(PART) != CoopPart.BOTTOM_FRONT_CENTER) return null;
+
+        // 3. Link to the static tick method in your Entity class
+        return type == ModBlockEntities.CHICKEN_COOP_BE 
+            ? (lvl, pos, st, be) -> ChickenCoopEntity.tick(lvl, pos, st, (ChickenCoopEntity) be) 
+            : null;
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        // Only the center-front part gets the "brain"
+        if (state.getValue(PART) == CoopPart.BOTTOM_FRONT_CENTER) {
+            return new ChickenCoopEntity(pos, state);
+        }
+        return null;
     }
 
     @Override
