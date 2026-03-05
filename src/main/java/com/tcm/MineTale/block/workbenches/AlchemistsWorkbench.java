@@ -26,7 +26,7 @@ public class AlchemistsWorkbench extends AbstractWorkbench<AlchemistsWorkbenchEn
     public static final MapCodec<AlchemistsWorkbench> CODEC = simpleCodec(AlchemistsWorkbench::new);
 
     /**
-     * Create a new AlchemistsWorkbench that is configured to use the mod's Alchemists Workbench block entity type.
+     * Constructs a new AlchemistsWorkbench configured to use the mod's Alchemists Workbench block-entity type.
      *
      * @param properties block properties for this workbench
      */
@@ -36,9 +36,9 @@ public class AlchemistsWorkbench extends AbstractWorkbench<AlchemistsWorkbenchEn
     }
 
     /**
-     * Create an AlchemistsWorkbench with the given block properties and a supplier for its block-entity type.
+     * Constructs an AlchemistsWorkbench configured with the provided block properties and block-entity type supplier.
      *
-     * @param properties block properties applied to this workbench
+     * @param properties the block properties to apply to this workbench
      * @param supplier   supplier that provides the BlockEntityType for the AlchemistsWorkbenchEntity
      */
     public AlchemistsWorkbench(Properties properties, Supplier<BlockEntityType<? extends AlchemistsWorkbenchEntity>> supplier) {
@@ -46,10 +46,10 @@ public class AlchemistsWorkbench extends AbstractWorkbench<AlchemistsWorkbenchEn
     }
 
     /**
-     * Provides a ticker for workbench block entities when the supplied block entity type matches this block's entity type.
+     * Supplies the ticker used to update this workbench's block entity instances when appropriate.
      *
-     * @param type the block entity type to match against this block's workbench entity type
-     * @return a BlockEntityTicker that updates matching workbench block entities, or {@code null} if the types do not match
+     * @param type the block entity type to check for compatibility with this workbench
+     * @return the BlockEntityTicker that updates matching workbench block entities, or {@code null} if the provided type is not compatible
      */
     @Nullable
     @Override
@@ -59,7 +59,7 @@ public class AlchemistsWorkbench extends AbstractWorkbench<AlchemistsWorkbenchEn
     }
 
     /**
-     * Provide the MapCodec used for serialisation and deserialisation of this workbench.
+     * Provides the MapCodec used to serialise and deserialise this workbench.
      *
      * @return the MapCodec for this AlchemistsWorkbench
      */

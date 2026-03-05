@@ -278,10 +278,10 @@ public ItemStack getItem(int slot) { return this.inventory.getItem(slot); }
     }
 
     /**
-     * Indicates whether this workbench currently has fuel available to perform crafting.
-     *
-     * @return `true` if the workbench has fuel available, `false` otherwise.
-     */
+ * Indicates whether this workbench currently has fuel available to perform crafting.
+ *
+ * @return {@code true} if the workbench has fuel available, {@code false} otherwise.
+ */
     protected abstract boolean hasFuel();
 
     /**

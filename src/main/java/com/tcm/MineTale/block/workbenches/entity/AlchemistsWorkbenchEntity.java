@@ -153,11 +153,9 @@ public class AlchemistsWorkbenchEntity extends AbstractWorkbenchEntity {
     }
 
     /**
-     * Determines whether the workbench currently has fuel available.
+     * Report that the workbench has fuel available.
      *
-     * Checks that the entity is in a loaded level and that the configured fuel slot contains an item.
-     *
-     * @return `true` if the entity is in a loaded level and the fuel slot contains an item, `false` otherwise.
+     * @return `true` always.
      */
     @Override
     protected boolean hasFuel() {
