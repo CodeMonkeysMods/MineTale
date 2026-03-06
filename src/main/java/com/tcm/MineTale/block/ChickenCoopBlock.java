@@ -38,6 +38,13 @@ public class ChickenCoopBlock extends HorizontalDirectionalBlock implements Enti
 
     public static final MapCodec<ChickenCoopBlock> CODEC = simpleCodec(ChickenCoopBlock::new);
 
+    /**
+     * Create a ChickenCoopBlock configured with the provided block properties and a default state.
+     *
+     * The default state sets FACING to NORTH and PART to CoopPart.BOTTOM_FRONT_LEFT.
+     *
+     * @param properties block properties used to configure this block's behaviour and characteristics
+     */
     public ChickenCoopBlock(Properties properties) {
         super(properties);
         // Default to the origin part (Bottom Front Left) facing North
@@ -46,6 +53,18 @@ public class ChickenCoopBlock extends HorizontalDirectionalBlock implements Enti
                 .setValue(PART, CoopPart.BOTTOM_FRONT_LEFT));
     }
 
+    /**
+     * Provides a BlockEntityTicker for the coop's centre-front part on the server.
+     *
+     * Returns a ticker that delegates to ChickenCoopEntity.tick when the call is on the logical server,
+     * the block state's PART is BOTTOM_FRONT_CENTER and the requested BlockEntityType equals ModBlockEntities.CHICKEN_COOP_BE.
+     *
+     * @param <T>   the block entity type
+     * @param level the level containing the block
+     * @param state the block state for which a ticker is requested
+     * @param type  the requested block entity type
+     * @return      a ticker delegating to ChickenCoopEntity.tick when applicable, `null` otherwise
+     */
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
@@ -61,6 +80,13 @@ public class ChickenCoopBlock extends HorizontalDirectionalBlock implements Enti
             : null;
     }
 
+    /**
+     * Creates the block entity for the coop when this block represents the centre-front (brain) part.
+     *
+     * @param pos   the block position
+     * @param state the current block state
+     * @return {@code ChickenCoopEntity} for the centre-front part, {@code null} otherwise
+     */
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -71,6 +97,13 @@ public class ChickenCoopBlock extends HorizontalDirectionalBlock implements Enti
         return null;
     }
 
+    /**
+     * Registers this block's state properties.
+     *
+     * Adds the horizontal facing and coop part properties so block states can represent orientation and segment.
+     *
+     * @param builder the state definition builder to register properties with
+     */
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, PART);
@@ -221,7 +254,14 @@ public class ChickenCoopBlock extends HorizontalDirectionalBlock implements Enti
     }
 
     /**
-     * Rotates the 3x3x2 grid logic based on which way the player is facing.
+     * Compute the world block position for a local coordinate inside the coop's 3×2×3 grid, taking block facing into account.
+     *
+     * @param origin the reference origin position (the block considered as the grid origin)
+     * @param facing the horizontal direction the coop is facing; used to convert local depth into world direction
+     * @param x      local x index in the 3-wide grid (0 = left, 1 = centre, 2 = right)
+     * @param z      local depth index along the facing direction (0..2); larger values are further away from the player
+     * @param y      local vertical index (0..2) measured as blocks above the origin
+     * @return       the computed BlockPos in world coordinates for the given local grid coordinate
      */
     private BlockPos calculateOffset(BlockPos origin, Direction facing, int x, int z, int y) {
         // x-1 centers the 3-wide structure (0=left, 1=center, 2=right)
@@ -234,12 +274,31 @@ public class ChickenCoopBlock extends HorizontalDirectionalBlock implements Enti
                     .above(y);
     }
 
+    /**
+     * Provide the block's MapCodec used by the game's codec system for (de)serialisation.
+     *
+     * @return the MapCodec instance for this block's state
+     */
     @Override
     protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
         return CODEC;
     }
 
-    @Override
+    /**
+ * Handle interaction with the coop when used without an item, dispensing any collected eggs to the player.
+ *
+ * On the client this returns `InteractionResult.SUCCESS`. On the server this locates the coop's brain
+ * block entity (the bottom-front-center part); if that entity has eggs they are transferred to the player
+ * (or dropped at the player's feet if their inventory is full) and a chicken-egg sound is played.
+ *
+ * @param state     the current block state
+ * @param level     the level where the block is located
+ * @param pos       the position of the interacted block
+ * @param player    the player performing the interaction
+ * @param hitResult hit information for the interaction
+ * @return `InteractionResult.SUCCESS` if eggs were given or on the client, `InteractionResult.PASS` otherwise.
+ */
+@Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (level.isClientSide()) return InteractionResult.SUCCESS;
 
