@@ -2,13 +2,19 @@ package com.tcm.MineTale.block.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.particles.ItemParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.chicken.Chicken;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,6 +41,7 @@ public class ChickenCoopEntity extends BlockEntity {
     private final List<CompoundTag> storedChickensNbt = new ArrayList<>();
     private boolean isNightMode = false;
     private int eggCount = 0;
+    private int eggsLaidThisNight = 0;
     private static final int MAX_EGGS = 16; // Limit storage so it's not infinite
 
     public ChickenCoopEntity(BlockPos pos, BlockState state) {
@@ -45,38 +52,98 @@ public class ChickenCoopEntity extends BlockEntity {
         if (level.isClientSide()) return;
 
         long time = level.getDayTime() % 24000;
-        boolean isLate = time >= 13000 && time < 23000; // Monster spawn window
+        boolean isLate = time >= 13000 && time < 23000; 
 
+        // Transition to Night
         if (isLate && !be.isNightMode) {
-            System.out.println("Chicken Coop: Attempting to collect chickens!");
             be.collectChickens((ServerLevel) level, pos);
             be.isNightMode = true;
+            be.eggsLaidThisNight = 0; // Reset the counter for the new night
             be.setChanged();
-        } else if (!isLate && be.isNightMode) {
+        } 
+        // Transition to Day
+        else if (!isLate && be.isNightMode) {
             be.releaseChickens((ServerLevel) level, pos);
             be.isNightMode = false;
             be.setChanged();
         }
 
-        // If it's night and we have chickens inside, try to lay eggs
-        if (be.isNightMode && !be.storedChickensNbt.isEmpty() && be.eggCount < MAX_EGGS) {
-            // Minecraft chickens lay eggs every 6000-12000 ticks.
-            // With up to 6 chickens, a 1 in 1000 chance per tick is roughly realistic.
-            if (level.random.nextInt(1000) < be.storedChickensNbt.size()) {
-                be.eggCount++;
-                be.setChanged();
-                // Optional: Play a muffled chicken sound from inside the coop
-                level.playSound(null, pos, SoundEvents.CHICKEN_EGG, SoundSource.BLOCKS, 0.5f, 1.0f);
+        // Egg Laying Logic
+        if (be.isNightMode && !be.storedChickensNbt.isEmpty()) {
+            int chickensInside = be.storedChickensNbt.size();
+
+            // Condition 1: Total coop storage isn't full (MAX_EGGS = 16)
+            // Condition 2: This specific night hasn't exceeded the chicken count
+            if (be.eggCount < MAX_EGGS && be.eggsLaidThisNight < chickensInside) {
+                
+                // 1 in 1000 chance per tick is balanced for a full night
+                if (level.random.nextInt(1000) == 0) {
+                    be.eggCount++;
+                    be.eggsLaidThisNight++; // This ensures this specific chicken is "done" for the night
+                    be.setChanged();
+                    
+                    level.playSound(null, pos, SoundEvents.CHICKEN_EGG, SoundSource.BLOCKS, 0.5f, 1.2f);
+                }
             }
         }
     }
 
-    // Helper for the player to interact
-    public int takeEgg() {
-        if (eggCount > 0) {
-            eggCount--;
-            setChanged();
-            return 1;
+    private void spawnFeatherParticles(ServerLevel level, BlockPos pos, int count) {
+        // Define the particle type using the Feather item texture
+        ItemParticleOption particleData = 
+            new ItemParticleOption(
+                ParticleTypes.ITEM, 
+                new ItemStack(Items.FEATHER)
+            );
+
+        // Spawn the particles
+        // Parameters: particle, pos.x, pos.y, pos.z, count, speedX, speedY, speedZ, velocityScale
+        level.sendParticles(particleData, 
+            pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 
+            count,   // amount of feathers
+            0.3, 0.3, 0.3, // spread (delta)
+            0.15     // speed/velocity
+        );
+    }
+
+    @Override
+    protected void saveAdditional(ValueOutput valueOutput) {
+        super.saveAdditional(valueOutput);
+        
+        // Save the simple primitives
+        valueOutput.putInt("EggCount", this.eggCount);
+        valueOutput.putBoolean("IsNightMode", this.isNightMode);
+        
+        // Save the list of chickens using your TypedOutputList logic
+        // We use the CompoundTag.CODEC to store the raw NBT of each chicken
+        ValueOutput.TypedOutputList<CompoundTag> chickenList = valueOutput.list("StoredChickens", CompoundTag.CODEC);
+        for (CompoundTag chickenNbt : storedChickensNbt) {
+            chickenList.add(chickenNbt);
+        }
+    }
+
+    @Override
+    protected void loadAdditional(ValueInput valueInput) {
+        super.loadAdditional(valueInput);
+        
+        this.eggCount = valueInput.getIntOr("EggCount", 0);
+        this.isNightMode = valueInput.getBooleanOr("IsNightMode", false);
+        
+        // Clear current chickens
+        this.storedChickensNbt.clear();
+        
+        // Use map to transform the Optional<TypedInputList> into a Stream of NBT
+        valueInput.list("StoredChickens", CompoundTag.CODEC)
+            .map(ValueInput.TypedInputList::stream) 
+            .ifPresent(stream -> stream.forEach(this.storedChickensNbt::add));
+    }
+
+    public int takeAllEggs() {
+        int total = this.eggCount;
+        if (total > 0) {
+            this.eggCount = 0;
+            this.setChanged();
+            return total;
         }
         return 0;
     }
@@ -91,10 +158,11 @@ public class ChickenCoopEntity extends BlockEntity {
             
             // Wrap our CompoundTag in the ValueOutput implementation
             ValueOutput output = new ChickenValueOutput(chickenData, level.registryAccess());
+
+            spawnFeatherParticles(level, chicken.blockPosition(), 15);
             
             // Satisfies the method signature perfectly!
             chicken.saveWithoutId(output);
-            
             // Store the result
             storedChickensNbt.add(chickenData);
             chicken.discard();
@@ -127,6 +195,8 @@ public class ChickenCoopEntity extends BlockEntity {
             );
             
             level.addFreshEntity(chicken);
+
+            spawnFeatherParticles(level, chicken.blockPosition(), 15);
         }
         
         storedChickensNbt.clear();
@@ -336,8 +406,31 @@ public class ChickenCoopEntity extends BlockEntity {
 
         @Override public HolderLookup.Provider lookup() { return registries; }
 
-        // Minimal implementation for Lists (can be expanded if chickens store list data)
-        @Override public <T> Optional<TypedInputList<T>> list(String key, Codec<T> codec) { return Optional.empty(); }
+        @Override 
+        public <T> Optional<TypedInputList<T>> list(String key, Codec<T> codec) { 
+            // Check if the key exists and is a List
+            if (!tag.contains(key)) return Optional.empty();
+
+            // In modern mappings, getList only takes the Key. 
+            // It returns the list if found, or an empty one if not.
+            Optional<ListTag> listTag = tag.getList(key); 
+            
+            // Map the NBT tags to objects using the codec
+            List<T> items = listTag.stream()
+                .map(nbt -> codec.parse(registries.createSerializationContext(NbtOps.INSTANCE), nbt)
+                                .resultOrPartial(System.err::println))
+                .flatMap(Optional::stream) // Flattens Optional<T> into the stream
+                .toList();
+            
+            return Optional.of(new ChickenTypedInputList<>(items));
+        }
+
+        // Ensure the helper record implements stream()
+        private record ChickenTypedInputList<T>(List<T> items) implements TypedInputList<T> {
+            @Override public boolean isEmpty() { return items.isEmpty(); }
+            @Override public Stream<T> stream() { return items.stream(); }
+            @Override public java.util.Iterator<T> iterator() { return items.iterator(); }
+        }
         @Override public <T> TypedInputList<T> listOrEmpty(String key, Codec<T> codec) { 
             return new TypedInputList<T>() {
                 @Override public boolean isEmpty() { return true; }

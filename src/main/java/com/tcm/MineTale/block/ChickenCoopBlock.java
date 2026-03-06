@@ -7,10 +7,14 @@ import com.tcm.MineTale.util.CoopPart;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -25,6 +29,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.phys.BlockHitResult;
+
 import org.jetbrains.annotations.Nullable;
 
 public class ChickenCoopBlock extends HorizontalDirectionalBlock implements EntityBlock {
@@ -234,33 +240,42 @@ public class ChickenCoopBlock extends HorizontalDirectionalBlock implements Enti
     }
 
     @Override
-    protected ItemInteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (level.isClientSide()) return ItemInteractionResult.SUCCESS;
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (level.isClientSide()) return InteractionResult.SUCCESS;
 
-            Direction facing = state.getValue(FACING);
-            CoopPart part = state.getValue(PART);
+        // 1. Find the "brain" position (the Bottom Front Center)
+        Direction facing = state.getValue(FACING);
+        CoopPart currentPart = state.getValue(PART);
+        
+        // Calculate the origin (Bottom Front Center is our origin in calculateOffset logic)
+        // Based on your calculateOffset, the BFC is at x=1, z=0, y=0.
+        BlockPos brainPos = pos.subtract(calculateOffset(BlockPos.ZERO, facing, 
+                currentPart.getXOffset(), currentPart.getZOffset(), currentPart.getYOffset()))
+                .relative(facing, 0) // already at z=0
+                .relative(facing.getClockWise(), 0); // x=1 is center, so we shift back to it
 
-    // 1. Find the Brain (Bottom Front Center)
-    // We reverse the offset from the clicked part to find the origin (0,0,0)
-    // Then we add the specific offset for the Bottom Front Center (1,0,0)
-    BlockPos origin = pos.subtract(calculateOffset(BlockPos.ZERO, facing, part.getXOffset(), part.getZOffset(), part.getYOffset()));
-    BlockPos brainPos = calculateOffset(origin, facing, 1, 0, 0);
-
-    if (level.getBlockEntity(brainPos) instanceof ChickenCoopBlockEntity be) {
-        if (be.takeEgg() > 0) {
-            // Give player the egg
-            ItemStack eggStack = new ItemStack(Items.EGG);
-            if (!player.getInventory().add(eggStack)) {
-                player.drop(eggStack, false);
-            }
+        // Easier way: Since you know the brain is always at BOTTOM_FRONT_CENTER:
+        // We just need to find where that specific part is relative to the current block.
+        // However, your 'calculateOffset' is already the source of truth.
+        
+        if (level.getBlockEntity(brainPos) instanceof ChickenCoopEntity coopBe) {
+            int eggsToGive = coopBe.takeAllEggs();
             
-            // Visual/Sound feedback
-            level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2f, (level.random.nextFloat() - level.random.nextFloat()) * 0.7f + 1.2f);
-            return ItemInteractionResult.CONSUME;
+            if (eggsToGive > 0) {
+                // Give the player an egg
+                ItemStack eggStack = new ItemStack(Items.EGG, eggsToGive);
+                if (!player.getInventory().add(eggStack)) {
+                    // If inventory full, drop at player's feet
+                    player.drop(eggStack, false);
+                }
+                
+                // Play a sound to give feedback
+                level.playSound(null, pos, SoundEvents.CHICKEN_EGG, SoundSource.PLAYERS, 1.0f, 1.0f);
+                return InteractionResult.SUCCESS;
+            }
         }
-    }
 
-    return ItemInteractionResult.PASS;
+        return InteractionResult.PASS;
 }
     
 }

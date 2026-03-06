@@ -9,7 +9,6 @@ import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.item.ModArmorMaterials;
 import com.tcm.MineTale.item.ModCreativeTab;
 
-import com.tcm.MineTale.util.ModTags;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
