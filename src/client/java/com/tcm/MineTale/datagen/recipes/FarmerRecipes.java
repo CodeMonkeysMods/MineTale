@@ -1,6 +1,5 @@
 package com.tcm.MineTale.datagen.recipes;
 
-import com.tcm.MineTale.datagen.ModItemTagProvider;
 import com.tcm.MineTale.datagen.builders.WorkbenchRecipeBuilder;
 import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModItems;

@@ -1,6 +1,7 @@
 package com.tcm.MineTale.registry;
 
 import com.tcm.MineTale.MineTale;
+import com.tcm.MineTale.block.entity.ChickenCoopEntity;
 import com.tcm.MineTale.block.workbenches.entity.*;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
@@ -43,21 +44,27 @@ public class ModBlockEntities {
     );
 
     public static final BlockEntityType<BlacksmithsWorkbenchEntity> BLACKSMITHS_WORKBENCH_BE = register(
-            "blacksmiths_workbench_be",
-            BlacksmithsWorkbenchEntity::new,
-            ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK
+        "blacksmiths_workbench_be",
+        BlacksmithsWorkbenchEntity::new,
+        ModBlocks.BLACKSMITHS_WORKBENCH_BLOCK
     );
 
     public static final BlockEntityType<FurnitureWorkbenchEntity> FURNITURE_WORKBENCH_BE = register(
-            "furniture_workbench_be",
-            FurnitureWorkbenchEntity::new,
-            ModBlocks.FURNITURE_WORKBENCH_BLOCK
+        "furniture_workbench_be",
+        FurnitureWorkbenchEntity::new,
+        ModBlocks.FURNITURE_WORKBENCH_BLOCK
     );
 
+    public static final BlockEntityType<ChickenCoopEntity> CHICKEN_COOP_BE = register(
+        "chicken_coop_be", 
+        ChickenCoopEntity::new,
+        ModBlocks.CHICKEN_COOP_BLOCK
+    );  
+      
     public static final BlockEntityType<AlchemistsWorkbenchEntity> ALCHEMISTS_WORKBENCH_BE = register(
-            "alchemists_workbench_be",
-            AlchemistsWorkbenchEntity::new,
-            ModBlocks.ALCHEMISTS_WORKBENCH_BLOCK
+        "alchemists_workbench_be",
+        AlchemistsWorkbenchEntity::new,
+        ModBlocks.ALCHEMISTS_WORKBENCH_BLOCK
     );
 
     /**

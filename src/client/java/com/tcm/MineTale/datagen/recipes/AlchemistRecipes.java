@@ -5,6 +5,7 @@ import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModItems;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
 import com.tcm.MineTale.registry.ModRecipes;
+
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;

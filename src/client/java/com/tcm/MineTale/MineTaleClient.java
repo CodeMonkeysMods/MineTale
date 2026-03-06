@@ -1,6 +1,5 @@
 package com.tcm.MineTale;
 
-import com.tcm.MineTale.block.workbenches.menu.BlacksmithsWorkbenchMenu;
 import com.tcm.MineTale.block.workbenches.screen.*;
 import com.tcm.MineTale.network.ClientboundNearbyInventorySyncPacket;
 

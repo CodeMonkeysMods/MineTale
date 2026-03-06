@@ -2,7 +2,6 @@ package com.tcm.MineTale.block.workbenches;
 
 import com.mojang.serialization.MapCodec;
 import com.tcm.MineTale.block.workbenches.entity.AbstractWorkbenchEntity;
-import com.tcm.MineTale.block.workbenches.entity.BlacksmithsWorkbenchEntity;
 import com.tcm.MineTale.block.workbenches.entity.FurnitureWorkbenchEntity;
 import com.tcm.MineTale.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;

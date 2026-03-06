@@ -5,7 +5,6 @@ import com.tcm.MineTale.block.workbenches.menu.AlchemistsWorkbenchMenu;
 import com.tcm.MineTale.recipe.WorkbenchRecipe;
 import com.tcm.MineTale.registry.ModBlockEntities;
 import com.tcm.MineTale.registry.ModRecipes;
-import com.tcm.MineTale.util.Constants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
@@ -19,7 +18,6 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 

@@ -1,32 +1,50 @@
 package com.tcm.MineTale.block;
 
 import com.mojang.serialization.MapCodec;
+import com.tcm.MineTale.block.entity.ChickenCoopEntity;
+import com.tcm.MineTale.registry.ModBlockEntities;
 import com.tcm.MineTale.util.CoopPart;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.phys.BlockHitResult;
+
 import org.jetbrains.annotations.Nullable;
 
-public class ChickenCoopBlock extends HorizontalDirectionalBlock {
+public class ChickenCoopBlock extends HorizontalDirectionalBlock implements EntityBlock {
     public static final EnumProperty<CoopPart> PART = EnumProperty.create("part", CoopPart.class);
 
     public static final MapCodec<ChickenCoopBlock> CODEC = simpleCodec(ChickenCoopBlock::new);
 
+    /**
+     * Create a ChickenCoopBlock configured with the provided block properties and a default state.
+     *
+     * The default state sets FACING to NORTH and PART to CoopPart.BOTTOM_FRONT_LEFT.
+     *
+     * @param properties block properties used to configure this block's behaviour and characteristics
+     */
     public ChickenCoopBlock(Properties properties) {
         super(properties);
         // Default to the origin part (Bottom Front Left) facing North
@@ -35,6 +53,57 @@ public class ChickenCoopBlock extends HorizontalDirectionalBlock {
                 .setValue(PART, CoopPart.BOTTOM_FRONT_LEFT));
     }
 
+    /**
+     * Provides a BlockEntityTicker for the coop's centre-front part on the server.
+     *
+     * Returns a ticker that delegates to ChickenCoopEntity.tick when the call is on the logical server,
+     * the block state's PART is BOTTOM_FRONT_CENTER and the requested BlockEntityType equals ModBlockEntities.CHICKEN_COOP_BE.
+     *
+     * @param <T>   the block entity type
+     * @param level the level containing the block
+     * @param state the block state for which a ticker is requested
+     * @param type  the requested block entity type
+     * @return      a ticker delegating to ChickenCoopEntity.tick when applicable, `null` otherwise
+     */
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        // 1. Only tick on server side
+        if (level.isClientSide()) return null;
+
+        // 2. Only tick if this is the correct part of the coop
+        if (state.getValue(PART) != CoopPart.BOTTOM_FRONT_CENTER) return null;
+
+        // 3. Link to the static tick method in your Entity class
+        return type == ModBlockEntities.CHICKEN_COOP_BE 
+            ? (lvl, pos, st, be) -> ChickenCoopEntity.tick(lvl, pos, st, (ChickenCoopEntity) be) 
+            : null;
+    }
+
+    /**
+     * Creates the block entity for the coop when this block represents the centre-front (brain) part.
+     *
+     * @param pos   the block position
+     * @param state the current block state
+     * @return {@code ChickenCoopEntity} for the centre-front part, {@code null} otherwise
+     */
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        // Only the center-front part gets the "brain"
+        if (state.getValue(PART) == CoopPart.BOTTOM_FRONT_CENTER) {
+            return new ChickenCoopEntity(pos, state);
+        }
+        return null;
+    }
+
+    /**
+     * Registers this block's state properties.
+     *
+     * Adds the horizontal facing and coop part properties so block states can represent orientation and segment.
+     *
+     * @param builder the state definition builder to register properties with
+     */
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, PART);
@@ -185,7 +254,14 @@ public class ChickenCoopBlock extends HorizontalDirectionalBlock {
     }
 
     /**
-     * Rotates the 3x3x2 grid logic based on which way the player is facing.
+     * Compute the world block position for a local coordinate inside the coop's 3×2×3 grid, taking block facing into account.
+     *
+     * @param origin the reference origin position (the block considered as the grid origin)
+     * @param facing the horizontal direction the coop is facing; used to convert local depth into world direction
+     * @param x      local x index in the 3-wide grid (0 = left, 1 = centre, 2 = right)
+     * @param z      local depth index along the facing direction (0..2); larger values are further away from the player
+     * @param y      local vertical index (0..2) measured as blocks above the origin
+     * @return       the computed BlockPos in world coordinates for the given local grid coordinate
      */
     private BlockPos calculateOffset(BlockPos origin, Direction facing, int x, int z, int y) {
         // x-1 centers the 3-wide structure (0=left, 1=center, 2=right)
@@ -198,8 +274,67 @@ public class ChickenCoopBlock extends HorizontalDirectionalBlock {
                     .above(y);
     }
 
-   @Override
+    /**
+     * Provide the block's MapCodec used by the game's codec system for (de)serialisation.
+     *
+     * @return the MapCodec instance for this block's state
+     */
+    @Override
     protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
         return CODEC;
     }
+
+    /**
+ * Handle interaction with the coop when used without an item, dispensing any collected eggs to the player.
+ *
+ * On the client this returns `InteractionResult.SUCCESS`. On the server this locates the coop's brain
+ * block entity (the bottom-front-center part); if that entity has eggs they are transferred to the player
+ * (or dropped at the player's feet if their inventory is full) and a chicken-egg sound is played.
+ *
+ * @param state     the current block state
+ * @param level     the level where the block is located
+ * @param pos       the position of the interacted block
+ * @param player    the player performing the interaction
+ * @param hitResult hit information for the interaction
+ * @return `InteractionResult.SUCCESS` if eggs were given or on the client, `InteractionResult.PASS` otherwise.
+ */
+@Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (level.isClientSide()) return InteractionResult.SUCCESS;
+
+        // 1. Find the "brain" position (the Bottom Front Center)
+        Direction facing = state.getValue(FACING);
+        CoopPart currentPart = state.getValue(PART);
+        
+        // Calculate the origin (Bottom Front Center is our origin in calculateOffset logic)
+        // Based on your calculateOffset, the BFC is at x=1, z=0, y=0.
+        BlockPos brainPos = pos.subtract(calculateOffset(BlockPos.ZERO, facing, 
+                currentPart.getXOffset(), currentPart.getZOffset(), currentPart.getYOffset()))
+                .relative(facing, 0) // already at z=0
+                .relative(facing.getClockWise(), 0); // x=1 is center, so we shift back to it
+
+        // Easier way: Since you know the brain is always at BOTTOM_FRONT_CENTER:
+        // We just need to find where that specific part is relative to the current block.
+        // However, your 'calculateOffset' is already the source of truth.
+        
+        if (level.getBlockEntity(brainPos) instanceof ChickenCoopEntity coopBe) {
+            int eggsToGive = coopBe.takeAllEggs();
+            
+            if (eggsToGive > 0) {
+                // Give the player an egg
+                ItemStack eggStack = new ItemStack(Items.EGG, eggsToGive);
+                if (!player.getInventory().add(eggStack)) {
+                    // If inventory full, drop at player's feet
+                    player.drop(eggStack, false);
+                }
+                
+                // Play a sound to give feedback
+                level.playSound(null, pos, SoundEvents.CHICKEN_EGG, SoundSource.PLAYERS, 1.0f, 1.0f);
+                return InteractionResult.SUCCESS;
+            }
+        }
+
+        return InteractionResult.PASS;
+}
+    
 }

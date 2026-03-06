@@ -2,7 +2,6 @@ package com.tcm.MineTale.block.workbenches.screen;
 
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
-import com.tcm.MineTale.block.workbenches.menu.BlacksmithsWorkbenchMenu;
 import com.tcm.MineTale.block.workbenches.menu.FurnitureWorkbenchMenu;
 import com.tcm.MineTale.mixin.client.ClientRecipeBookAccessor;
 import com.tcm.MineTale.network.CraftRequestPayload;
