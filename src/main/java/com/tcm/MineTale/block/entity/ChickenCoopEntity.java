@@ -109,13 +109,10 @@ public class ChickenCoopEntity extends BlockEntity {
     @Override
     protected void saveAdditional(ValueOutput valueOutput) {
         super.saveAdditional(valueOutput);
-        
-        // Save the simple primitives
         valueOutput.putInt("EggCount", this.eggCount);
+        valueOutput.putInt("EggsLaidThisNight", this.eggsLaidThisNight); // Added
         valueOutput.putBoolean("IsNightMode", this.isNightMode);
         
-        // Save the list of chickens using your TypedOutputList logic
-        // We use the CompoundTag.CODEC to store the raw NBT of each chicken
         ValueOutput.TypedOutputList<CompoundTag> chickenList = valueOutput.list("StoredChickens", CompoundTag.CODEC);
         for (CompoundTag chickenNbt : storedChickensNbt) {
             chickenList.add(chickenNbt);
@@ -125,16 +122,13 @@ public class ChickenCoopEntity extends BlockEntity {
     @Override
     protected void loadAdditional(ValueInput valueInput) {
         super.loadAdditional(valueInput);
-        
         this.eggCount = valueInput.getIntOr("EggCount", 0);
+        this.eggsLaidThisNight = valueInput.getIntOr("EggsLaidThisNight", 0); // Added
         this.isNightMode = valueInput.getBooleanOr("IsNightMode", false);
         
-        // Clear current chickens
         this.storedChickensNbt.clear();
-        
-        // Use map to transform the Optional<TypedInputList> into a Stream of NBT
         valueInput.list("StoredChickens", CompoundTag.CODEC)
-            .map(ValueInput.TypedInputList::stream) 
+            .map(ValueInput.TypedInputList::stream)
             .ifPresent(stream -> stream.forEach(this.storedChickensNbt::add));
     }
 
@@ -406,46 +400,58 @@ public class ChickenCoopEntity extends BlockEntity {
 
         @Override public HolderLookup.Provider lookup() { return registries; }
 
-        @Override 
-        public <T> Optional<TypedInputList<T>> list(String key, Codec<T> codec) { 
-            // Check if the key exists and is a List
-            if (!tag.contains(key)) return Optional.empty();
-
-            // In modern mappings, getList only takes the Key. 
-            // It returns the list if found, or an empty one if not.
-            Optional<ListTag> listTag = tag.getList(key); 
-            
-            // Map the NBT tags to objects using the codec
-            List<T> items = listTag.stream()
-                .map(nbt -> codec.parse(registries.createSerializationContext(NbtOps.INSTANCE), nbt)
-                                .resultOrPartial(System.err::println))
-                .flatMap(Optional::stream) // Flattens Optional<T> into the stream
-                .toList();
-            
-            return Optional.of(new ChickenTypedInputList<>(items));
-        }
-
         // Ensure the helper record implements stream()
         private record ChickenTypedInputList<T>(List<T> items) implements TypedInputList<T> {
             @Override public boolean isEmpty() { return items.isEmpty(); }
             @Override public Stream<T> stream() { return items.stream(); }
             @Override public java.util.Iterator<T> iterator() { return items.iterator(); }
         }
-        @Override public <T> TypedInputList<T> listOrEmpty(String key, Codec<T> codec) { 
-            return new TypedInputList<T>() {
-                @Override public boolean isEmpty() { return true; }
-                @Override public Stream<T> stream() { return Stream.empty(); }
-                @Override public java.util.Iterator<T> iterator() { return Stream.<T>empty().iterator(); }
-            };
+
+        @Override 
+        public <T> Optional<TypedInputList<T>> list(String key, Codec<T> codec) { 
+            if (!tag.contains(key)) return Optional.empty();
+            
+            Optional<ListTag> listTag = tag.getList(key);
+            List<T> items = listTag.stream()
+                .map(nbt -> codec.parse(registries.createSerializationContext(NbtOps.INSTANCE), nbt)
+                                .resultOrPartial(System.err::println))
+                .flatMap(Optional::stream)
+                .toList();
+            
+            return Optional.of(new ChickenTypedInputList<>(items));
         }
 
-        @Override public Optional<ValueInputList> childrenList(String string) { return Optional.empty(); }
-        @Override public ValueInputList childrenListOrEmpty(String string) { 
-            return new ValueInputList() {
-                @Override public boolean isEmpty() { return true; }
-                @Override public Stream<ValueInput> stream() { return Stream.empty(); }
-                @Override public java.util.Iterator<ValueInput> iterator() { return Stream.<ValueInput>empty().iterator(); }
-            };
+        @Override 
+        public <T> TypedInputList<T> listOrEmpty(String key, Codec<T> codec) { 
+            return list(key, codec).orElse(new ChickenTypedInputList<>(List.of()));
+        }
+
+        @Override 
+        public Optional<ValueInputList> childrenList(String key) { 
+            // Check if the tag exists and is a List
+            if (!(tag.get(key) instanceof ListTag listTag)) {
+                return Optional.empty();
+            }
+
+            // Map each element inside the ListTag (which should be CompoundTags) to ValueInputs
+            List<ValueInput> children = listTag.stream()
+                .filter(t -> t instanceof CompoundTag) // Ensure the entry is a CompoundTag
+                .map(t -> (ValueInput) new ChickenValueInput((CompoundTag) t, registries))
+                .toList();
+                
+            return Optional.of(new ChickenValueInputListImpl(children));
+        }
+
+        @Override 
+        public ValueInputList childrenListOrEmpty(String key) { 
+            return childrenList(key).orElse(new ChickenValueInputListImpl(List.of()));
+        }
+
+        // Support record for ValueInputList
+        private record ChickenValueInputListImpl(List<ValueInput> children) implements ValueInputList {
+            @Override public boolean isEmpty() { return children.isEmpty(); }
+            @Override public Stream<ValueInput> stream() { return children.stream(); }
+            @Override public java.util.Iterator<ValueInput> iterator() { return children.iterator(); }
         }
     }
 }
