@@ -492,6 +492,32 @@ public class ChickenCoopEntity extends BlockEntity {
         }
     }
 
+    private record ChickenTypedOutputList<T>(ListTag list, Codec<T> codec, HolderLookup.Provider registries) implements TypedOutputList<T> {
+        /**
+         * Encodes a value with the list's codec and appends the resulting NBT element to the backing list.
+         *
+         * @param value the item to encode and add
+         * If encoding fails the error is logged and the value is not added.
+         */
+        @Override
+        public void add(T value) {
+            // serialize the object into NBT and add it to the list if successful
+            codec.encodeStart(registries.createSerializationContext(NbtOps.INSTANCE), value)
+                .resultOrPartial(System.err::println)
+                .ifPresent(list::add);
+        }
+
+        /**
+         * Checks whether the output list contains no elements.
+         *
+         * @return `true` if the list contains no elements, `false` otherwise.
+         */
+        @Override
+        public boolean isEmpty() {
+            return list.isEmpty();
+        }
+    }
+
     private record ChickenValueOutputList(ListTag list, HolderLookup.Provider registries) implements ValueOutputList {
         /**
          * Create a new child output element and append it to the list.
@@ -516,31 +542,6 @@ public class ChickenCoopEntity extends BlockEntity {
             if (!list.isEmpty()) {
                 list.remove(list.size() - 1);
             }
-        }
-
-        /**
-         * Checks whether the output list contains no elements.
-         *
-         * @return `true` if the list contains no elements, `false` otherwise.
-         */
-        @Override
-        public boolean isEmpty() {
-            return list.isEmpty();
-        }
-    }
-
-    private record ChickenTypedOutputList<T>(ListTag list, Codec<T> codec, HolderLookup.Provider registries) implements TypedOutputList<T> {
-        /**
-         * Encodes a value with the list's codec and appends the resulting NBT element to the backing list.
-         *
-         * @param value the item to encode and add
-         * If encoding fails the error is logged and the value is not added.
-        @Override
-        public void add(T value) {
-            // serialize the object into NBT and add it to the list if successful
-            codec.encodeStart(registries.createSerializationContext(NbtOps.INSTANCE), value)
-                .resultOrPartial(System.err::println)
-                .ifPresent(list::add);
         }
 
         /**
