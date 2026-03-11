@@ -12,6 +12,15 @@ public class ModLangProvider extends FabricLanguageProvider {
         super(dataOutput, registryLookup);
     }
 
+    /**
+     * Provides English translations for MineTale mod content.
+     *
+     * Populates the given TranslationBuilder with translation keys and their English text for blocks,
+     * items and GUI elements used by the mod (e.g. workbenches, ores, natural materials, crops, armour and buttons).
+     *
+     * @param wrapperLookup      registry lookup provider for obtaining registries if needed
+     * @param translationBuilder builder used to register translation key → text pairs
+     */
     @Override
     public void generateTranslations(HolderLookup.Provider wrapperLookup, TranslationBuilder translationBuilder) {
         translationBuilder.add("minetale.creative_tab.title", "MineTale Stuffs");
@@ -22,6 +31,13 @@ public class ModLangProvider extends FabricLanguageProvider {
         translationBuilder.add("block.minetale.furnace_workbench_block_t1", "Furnace Workbench - Tier One");
         translationBuilder.add("block.minetale.furnace_workbench_block_t2", "Furnace Workbench - Tier Two");
         translationBuilder.add("block.minetale.campfire_workbench_block", "Campfire Workbench");
+        translationBuilder.add("block.minetale.farmers_workbench", "Farmer's Workbench");
+        translationBuilder.add("block.minetale.blacksmiths_workbench", "Blacksmith's Workbench");
+        translationBuilder.add("block.minetale.builders_workbench", "Builder's Workbench");
+        translationBuilder.add("block.minetale.furniture_workbench", "Furniture Workbench");
+        translationBuilder.add("block.minetale.alchemists_workbench", "Alchemist's Workbench");
+
+        translationBuilder.add("block.minetale.woodcutters_block", "Woodcutter's Block");
 
         translationBuilder.add("block.minetale.amber_log", "Amber Log");
         translationBuilder.add("block.minetale.bamboo_log", "Bamboo Log");
@@ -96,16 +112,97 @@ public class ModLangProvider extends FabricLanguageProvider {
         translationBuilder.add("block.minetale.silver_ore_sandstone", "Sandstone Silver Ore");
         translationBuilder.add("block.minetale.silver_ore_slate", "Slate Silver Ore");
 
+        translationBuilder.add("block.minetale.green_moss_block", "Green Moss Block");
+        translationBuilder.add("block.minetale.green_moss_rug", "Green Moss Rug");
+        translationBuilder.add("block.minetale.green_hanging_moss", "Green Hanging Moss");
+        translationBuilder.add("block.minetale.short_moss", "Short Moss");
+        translationBuilder.add("block.minetale.blue_moss_block", "Blue Moss Block");
+        translationBuilder.add("block.minetale.blue_moss_rug", "Blue Moss Rug");
+        translationBuilder.add("block.minetale.blue_hanging_moss", "Blue Hanging Moss");
+        translationBuilder.add("block.minetale.short_blue_moss", "Short Blue Moss");
+        translationBuilder.add("block.minetale.red_moss_block", "Red Moss Block");
+        translationBuilder.add("block.minetale.red_moss_rug", "Red Moss Rug");
+        translationBuilder.add("block.minetale.red_hanging_moss", "Red Hanging Moss");
+        translationBuilder.add("block.minetale.short_red_moss", "Short Red Moss");
+        translationBuilder.add("block.minetale.yellow_moss_block", "Yellow Moss Block");
+        translationBuilder.add("block.minetale.yellow_moss_rug", "Yellow Moss Rug");
+        translationBuilder.add("block.minetale.yellow_hanging_moss", "Yellow Hanging Moss");
+        translationBuilder.add("block.minetale.short_yellow_moss", "Short Yellow Moss");
+        translationBuilder.add("block.minetale.dark_green_moss_block", "Dark Green Moss Block");
+        translationBuilder.add("block.minetale.dark_green_moss_rug", "Dark Green Moss Rug");
+        translationBuilder.add("block.minetale.dark_green_hanging_moss", "Dark Green Hanging Moss");
+        translationBuilder.add("block.minetale.short_dark_green_moss", "Short Dark Green Moss");
+        translationBuilder.add("block.minetale.sorrel_rug", "Sorrel Rug");
+        translationBuilder.add("block.minetale.vine", "Vine");
+        translationBuilder.add("block.minetale.dry_vine", "Dry Vine");
+        translationBuilder.add("block.minetale.vine_rug", "Vine Rug");
+        translationBuilder.add("block.minetale.liana", "Liana");
+        translationBuilder.add("block.minetale.ivy", "Ivy");
+        translationBuilder.add("block.minetale.poisoned_ivy", "Poisoned Ivy");
+        translationBuilder.add("block.minetale.wall_ivy", "Wall Ivy");
+
+        translationBuilder.add("block.minetale.dry_mud", "Dry Mud");
+        translationBuilder.add("block.minetale.leafy_soil", "Leafy Soil");
+        translationBuilder.add("block.minetale.soil_pathway", "Soil Pathway");
+        translationBuilder.add("block.minetale.needled_soil", "Needled Soil");
+        translationBuilder.add("block.minetale.full_grass", "Full Grass");
+        translationBuilder.add("block.minetale.cold_dirt", "Cold Dirt");
+        translationBuilder.add("block.minetale.summer_grass", "Summer Grass");
+        translationBuilder.add("block.minetale.wet_grass", "Wet Grass");
+        translationBuilder.add("block.minetale.dry_grass", "Dry Grass");
+        translationBuilder.add("block.minetale.cold_grass", "Cold Grass");
+        translationBuilder.add("block.minetale.burnt_grass", "Burnt Grass");
+        translationBuilder.add("block.minetale.dry_dirt", "Dry Dirt");
+        translationBuilder.add("block.minetale.deep_grass", "Deep Grass");
+        translationBuilder.add("block.minetale.poisoned_dirt", "Poisoned Dirt");
+
+        translationBuilder.add("block.minetale.bamboo_planter", "Bamboo Planter");
+        translationBuilder.add("block.minetale.small_kweebec_chest", "Small Kweebec Chest");
+
+        translationBuilder.add("block.minetale.rope", "Rope");
+        translationBuilder.add("block.minetale.rope_diagonal", "Rope Diagonal");
+        translationBuilder.add("block.minetale.harvest_trophy", "Harvest Trophy");
+        translationBuilder.add("block.minetale.fishing_trap", "Fishing Trap");
+        translationBuilder.add("block.minetale.large_pile_of_books", "Large Pile of Books");
+        translationBuilder.add("block.minetale.small_pile_of_books", "Small Pile of Books");
+        translationBuilder.add("block.minetale.kweebec_plushie", "Kweebec Plushie");
+        translationBuilder.add("block.minetale.old_scroll", "Old Scroll");
+        translationBuilder.add("block.minetale.ancient_candle", "Ancient Candle");
+        translationBuilder.add("block.minetale.feran_candle", "Feran Candle");
+        translationBuilder.add("block.minetale.bamboo_candle", "Bamboo Candle");
+        translationBuilder.add("block.minetale.kweebec_candle", "Kweebec Candle");
+        translationBuilder.add("block.minetale.tavern_candle", "Tavern Candle");
+        translationBuilder.add("block.minetale.feran_torch", "Feran Torch");
+        translationBuilder.add("block.minetale.crude_torch", "Crude Torch");
+        translationBuilder.add("block.minetale.small_red_dotted_christmas_packet", "Small Red Dotted Christmas Packet");
+        translationBuilder.add("block.minetale.small_red_christmas_packet", "Small Red Christmas Packet");
+        translationBuilder.add("block.minetale.small_green_christmas_packet", "Small Green Christmas Packet");
+        translationBuilder.add("block.minetale.small_white_christmas_packet", "Small White Christmas Packet");
+        translationBuilder.add("block.minetale.small_christmas_packet", "Small Christmas Packet");
+        translationBuilder.add("block.minetale.winter_roll", "Winter Roll");
+        translationBuilder.add("block.minetale.winter_bauble", "Winter Bauble");
+        translationBuilder.add("block.minetale.winter_wreath", "Winter Wreath");
+        translationBuilder.add("block.minetale.winter_garland", "Winter Garland");
+        translationBuilder.add("block.minetale.hay_target", "Hay Target");
+
+        translationBuilder.add("block.minetale.feran_bed", "Feran Bed");
+        translationBuilder.add("block.minetale.bamboo_bed", "Bamboo Bed");
+        translationBuilder.add("block.minetale.lumberjack_bed", "Lumberjack Bed");
+        translationBuilder.add("block.minetale.kweebec_bed", "Kweebec Bed");
+        translationBuilder.add("block.minetale.tavern_bed", "Tavern Bed");
+        translationBuilder.add("block.minetale.crude_bedroll", "Crude Bedroll");
+
         // --- NATURAL MATERIALS & GATHERABLES ---
         translationBuilder.add("item.minetale.plant_fiber", "Plant Fiber");
         translationBuilder.add("item.minetale.tree_sap", "Tree Sap");
         translationBuilder.add("item.minetale.sap_glob", "Sap Glob");
         translationBuilder.add("item.minetale.rubble", "Rubble");
+        translationBuilder.add("item.minetale.pinecone", "Pinecone");
         translationBuilder.add("item.minetale.tree_bark", "Tree Bark");
-        translationBuilder.add("item.minetale.moss", "Moss");
         translationBuilder.add("item.minetale.blue_crystal_shards", "Blue Crystal Shards");
         translationBuilder.add("item.minetale.green_crystal_shards", "Green Crystal Shards");
         translationBuilder.add("item.minetale.yellow_crystal_shards", "Yellow Crystal Shards");
+        translationBuilder.add("item.minetale.red_crystal_shards", "Red Crystal Shards");
 
         // --- MINERALS & REFINED METALS ---
         translationBuilder.add("item.minetale.thorium_ingot", "Thorium Ingot");
@@ -135,6 +232,8 @@ public class ModLangProvider extends FabricLanguageProvider {
         translationBuilder.add("item.minetale.sturdy_chitin", "Sturdy Chitin");
         translationBuilder.add("item.minetale.venom_sac", "Venom Sac");
         translationBuilder.add("item.minetale.bone_fragment", "Bone Fragment");
+        translationBuilder.add("item.minetale.poop", "Poop");
+        translationBuilder.add("item.minetale.mosshorn_milk_bucket", "Mosshorn Milk Bucket");
 
         // --- FABRICS & TEXTILES ---
         translationBuilder.add("item.minetale.linen_scraps", "Linen Scraps");
@@ -143,23 +242,39 @@ public class ModLangProvider extends FabricLanguageProvider {
         translationBuilder.add("item.minetale.cindercloth_scraps", "Cindercloth Scraps");
         translationBuilder.add("item.minetale.bolt_of_wool", "Bolt of Wool");
         translationBuilder.add("item.minetale.yellow_cloth", "Yellow Cloth");
+        translationBuilder.add("item.minetale.wool_scraps", "Wool Scraps");
 
         // --- SEEDS & FARMING ---
         translationBuilder.add("item.minetale.lettuce", "Lettuce");
+        translationBuilder.add("item.minetale.wild_berry", "Wild Berry");
+        translationBuilder.add("item.minetale.cauliflower", "Cauliflower");
+        translationBuilder.add("item.minetale.turnip", "Turnip");
+        translationBuilder.add("item.minetale.aubergine", "Aubergine");
+        translationBuilder.add("item.minetale.tomato", "Tomato");
         translationBuilder.add("item.minetale.chilli_seed_bag", "Chilli Seed Bag");
         translationBuilder.add("item.minetale.chilli_seed_bag_eternal", "Eternal Chilli Seed Bag");
+        translationBuilder.add("item.minetale.chilli", "Chilli");
         translationBuilder.add("item.minetale.sunflower_seed_bag", "Sunflower Seed Bag");
         translationBuilder.add("item.minetale.corn_seed_bag", "Corn Seed Bag");
+        translationBuilder.add("item.minetale.corn", "Corn");
         translationBuilder.add("item.minetale.cotton_seed_bag", "Cotton Seed Bag");
+        translationBuilder.add("item.minetale.cotton", "Cotton");
         translationBuilder.add("item.minetale.rice_seed_bag", "Rice Seed Bag");
+        translationBuilder.add("item.minetale.rice", "Rice");
+        translationBuilder.add("item.minetale.onion", "Onion");
         translationBuilder.add("item.minetale.onion_bulb", "Onion Bulb");
 
         // --- MAGICAL & ALCHEMICAL ---
+        translationBuilder.add("item.minetale.greater_essence_of_life", "Greater Essence of Life");
         translationBuilder.add("item.minetale.essence_of_life", "Essence of Life");
         translationBuilder.add("item.minetale.essence_of_fire", "Essence of Fire");
         translationBuilder.add("item.minetale.essence_of_ice", "Essence of Ice");
         translationBuilder.add("item.minetale.essence_of_the_void", "Essence of the Void");
         translationBuilder.add("item.minetale.void_heart", "Void Heart");
+        translationBuilder.add("item.minetale.empty_potion_bottle", "Empty Potion Bottle");
+        translationBuilder.add("item.minetale.antidote", "Antidote");
+        translationBuilder.add("item.minetale.boom_powder", "Boom Powder");
+        translationBuilder.add("item.minetale.popberry_bomb", "Popberry Bomb");
 
         // --- FLORA COMPONENTS ---
         translationBuilder.add("item.minetale.red_petals", "Red Petals");
@@ -170,5 +285,29 @@ public class ModLangProvider extends FabricLanguageProvider {
         translationBuilder.add("item.minetale.storm_petals", "Storm Petals");
         translationBuilder.add("item.minetale.blood_petals", "Blood Petals");
         translationBuilder.add("item.minetale.cyan_petals", "Cyan Petals");
+
+        // --- ARMOR & THE LIKE ---
+        translationBuilder.add("item.minetale.copper_shield", "Copper Shield");
+        translationBuilder.add("item.minetale.wood_helm",  "Wood Helm");
+        translationBuilder.add("item.minetale.wood_cuirass",  "Wood Cuirass");
+        //translationBuilder.add("item.minetale.wood_gauntlets",  "Wood Gauntlets");
+        translationBuilder.add("item.minetale.wood_greaves",  "Wood Greaves");
+        translationBuilder.add("item.minetale.copper_mace",  "Copper Mace");
+        translationBuilder.add("item.minetale.copper_hatchet",  "Copper Hatchet");
+        translationBuilder.add("item.minetale.copper_battleaxe",  "Copper Battleaxe");
+        translationBuilder.add("item.minetale.copper_daggers",  "Copper Daggers");
+        translationBuilder.add("item.minetale.copper_longsword",  "Copper Longsword");
+        translationBuilder.add("item.minetale.copper_shortbow",  "Copper Shortbow");
+        translationBuilder.add("item.minetale.crude_longsword",  "Crude Longsword");
+        translationBuilder.add("item.minetale.crude_builders_hammer",  "Crude Builders Hammer");
+        translationBuilder.add("item.minetale.crude_hatchet",  "Crude Hatchet");
+        translationBuilder.add("item.minetale.crude_mace",  "Crude Mace");
+        translationBuilder.add("item.minetale.crude_daggers",  "Crude Daggers");
+        translationBuilder.add("item.minetale.crude_shortbow",  "Crude Shortbow");
+        translationBuilder.add("item.minetale.crude_sword",  "Crude Sword");
+
+        // --- GUI ---
+        translationBuilder.add("gui.minetale.craftbtn", "Craft");
+        translationBuilder.add("gui.minetale.allbtn", "All");
     }
 }

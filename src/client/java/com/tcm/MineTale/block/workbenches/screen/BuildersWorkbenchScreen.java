@@ -88,12 +88,11 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
     }
 
     /**
-         * Configure the screen's GUI dimensions and initialize widgets.
-         *
-         * Sets the layout size (imageWidth = 176, imageHeight = 166), delegates remaining
-         * layout initialization to the superclass, and creates the three craft buttons
-         * ("1", "10", "All") wired to their respective handlers.
-         */
+     * Initialise the screen layout and widgets for the Builders Workbench.
+     *
+     * Sets the GUI dimensions, delegates remaining initialisation to the superclass,
+     * and creates three craft buttons that request crafting of 1, 10 or all available items.
+     */
     @Override
     protected void init() {
         // Important: Set your GUI size before super.init()
@@ -105,7 +104,7 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
         int defaultLeft = this.leftPos + 90;
         int defaultTop = this.topPos + 25;
 
-        this.craftOneBtn = addRenderableWidget(Button.builder(Component.literal("Craft"), (button) -> {
+        this.craftOneBtn = addRenderableWidget(Button.builder(Component.translatable("gui.minetale.craftbtn"), (button) -> {
             handleCraftRequest(1);
         }).bounds(defaultLeft, defaultTop, 75, 20).build());
 
@@ -113,7 +112,7 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
             handleCraftRequest(10);
         }).bounds(defaultLeft, defaultTop + 22, 35, 20).build());
 
-        this.craftAllBtn = addRenderableWidget(Button.builder(Component.literal("All"), (button) -> {
+        this.craftAllBtn = addRenderableWidget(Button.builder(Component.translatable("gui.minetale.allbtn"), (button) -> {
             handleCraftRequest(-1); // -1 represents "All" logic
         }).bounds(defaultLeft + 40, defaultTop + 22, 35, 20).build());
     }

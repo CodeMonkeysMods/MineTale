@@ -88,11 +88,12 @@ public class ArmorersWorkbenchScreen extends AbstractRecipeBookScreen<ArmorersWo
     }
 
     /**
-     * Initialises the screen size and adds the three crafting buttons.
+     * Initialises the screen size and creates three crafting buttons.
      *
-     * Sets the GUI image dimensions, delegates further initialisation to the superclass,
-     * and creates/registers three buttons wired to craft one, ten or all items
-     * (they invoke handleCraftRequest with 1, 10 and -1 respectively; -1 signifies "All").
+     * Sets the GUI image dimensions, performs superclass initialisation, and adds
+     * three buttons that request crafting of 1, 10 or all items. Each button calls
+     * {@code handleCraftRequest} with arguments 1, 10 and -1 respectively; -1
+     * signifies "craft all".
      */
     @Override
     protected void init() {
@@ -105,7 +106,7 @@ public class ArmorersWorkbenchScreen extends AbstractRecipeBookScreen<ArmorersWo
         int defaultLeft = this.leftPos + 90;
         int defaultTop = this.topPos + 25;
 
-        this.craftOneBtn = addRenderableWidget(Button.builder(Component.literal("Craft"), (button) -> {
+        this.craftOneBtn = addRenderableWidget(Button.builder(Component.translatable("gui.minetale.craftbtn"), (button) -> {
             handleCraftRequest(1);
         }).bounds(defaultLeft, defaultTop, 75, 20).build());
 
@@ -113,7 +114,7 @@ public class ArmorersWorkbenchScreen extends AbstractRecipeBookScreen<ArmorersWo
             handleCraftRequest(10);
         }).bounds(defaultLeft, defaultTop + 22, 35, 20).build());
 
-        this.craftAllBtn = addRenderableWidget(Button.builder(Component.literal("All"), (button) -> {
+        this.craftAllBtn = addRenderableWidget(Button.builder(Component.translatable("gui.minetale.allbtn"), (button) -> {
             handleCraftRequest(-1); // -1 represents "All" logic
         }).bounds(defaultLeft + 40, defaultTop + 22, 35, 20).build());
     }

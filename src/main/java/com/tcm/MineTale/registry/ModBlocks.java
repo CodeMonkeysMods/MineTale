@@ -5,30 +5,27 @@ import java.util.List;
 import java.util.function.Function;
 
 import com.tcm.MineTale.MineTale;
-import com.tcm.MineTale.block.workbenches.ArmorersWorkbench;
-import com.tcm.MineTale.block.workbenches.BuildersWorkbench;
-import com.tcm.MineTale.block.workbenches.CampfireWorkbench;
-import com.tcm.MineTale.block.workbenches.FarmersWorkbench;
-import com.tcm.MineTale.block.workbenches.FurnaceWorkbench;
-import com.tcm.MineTale.block.workbenches.WorkbenchWorkbench;
+import com.tcm.MineTale.block.workbenches.*;
+import com.tcm.MineTale.block.ChickenCoopBlock;
 import com.tcm.MineTale.item.ModCreativeTab;
 
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RotatedPillarBlock;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.PushReaction;
 
 import static net.minecraft.world.level.block.Blocks.litBlockEmission;
 import static net.minecraft.world.level.block.Blocks.logProperties;
@@ -89,6 +86,35 @@ public class ModBlocks {
 		BuildersWorkbench::new,
 		BlockBehaviour.Properties.of().sound(SoundType.WOOD),
 		true
+	);
+
+	public static final Block BLACKSMITHS_WORKBENCH_BLOCK = register(
+			"blacksmiths_workbench",
+			BlacksmithsWorkbench::new,
+			BlockBehaviour.Properties.of().sound(SoundType.ANVIL),
+			true
+	);
+
+	public static final Block FURNITURE_WORKBENCH_BLOCK = register(
+			"furniture_workbench",
+			FurnitureWorkbench::new,
+			BlockBehaviour.Properties.of().sound(SoundType.WOOD),
+			true
+	);
+
+	public static final Block ALCHEMISTS_WORKBENCH_BLOCK = register(
+			"alchemists_workbench",
+			AlchemistsWorkbench::new,
+			BlockBehaviour.Properties.of().sound(SoundType.STONE),
+			true
+	);
+
+	//Is not usable in Hytale. Can make into workbench later
+	public static final Block WOODCUTTERS_BLOCK = register(
+			"woodcutters_block",
+			Block::new,
+			BlockBehaviour.Properties.of().sound(SoundType.WOOD),
+			true
 	);
 
 	//Logs
@@ -181,12 +207,48 @@ public class ModBlocks {
 
     // Functional / Crafted
     public static final Block BAMBOO_PLANTER = register("bamboo_planter", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOD), true);
+    public static final Block SMALL_KWEEBEC_CHEST = register("small_kweebec_chest", properties -> new ChestBlock(() -> BlockEntityType.CHEST, SoundEvents.CHEST_OPEN, SoundEvents.CHEST_CLOSE, properties),
+			BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(2.5F).sound(SoundType.WOOD).ignitedByLava(), true);
 
 	// Decorational
 	public static final Block ROPE = register("rope", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
 	public static final Block ROPE_DIAGONAL = register("rope_diagonal", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+	public static final Block HARVEST_TROPHY = register("harvest_trophy", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GRASS), true);
+	public static final Block FISHING_TRAP = register("fishing_trap", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WEEPING_VINES), true);
+	public static final Block LARGE_PILE_OF_BOOKS = register("large_pile_of_books", Block::new, BlockBehaviour.Properties.of().sound(SoundType.CHISELED_BOOKSHELF), true);
+	public static final Block SMALL_PILE_OF_BOOKS = register("small_pile_of_books", Block::new, BlockBehaviour.Properties.of().sound(SoundType.CHISELED_BOOKSHELF), true);
+	public static final Block KWEEBEC_PLUSHIE = register("kweebec_plushie", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOL), true);
+	public static final Block OLD_SCROLL = register("old_scroll", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOL), true);
+	public static final Block ANCIENT_CANDLE = register("ancient_candle", Block::new, BlockBehaviour.Properties.of().sound(SoundType.CANDLE), true);
+	public static final Block FERAN_CANDLE = register("feran_candle", Block::new, BlockBehaviour.Properties.of().sound(SoundType.CANDLE), true);
+	public static final Block BAMBOO_CANDLE = register("bamboo_candle", Block::new, BlockBehaviour.Properties.of().sound(SoundType.CANDLE), true);
+	public static final Block KWEEBEC_CANDLE = register("kweebec_candle", Block::new, BlockBehaviour.Properties.of().sound(SoundType.CANDLE), true);
+	public static final Block TAVERN_CANDLE = register("tavern_candle", Block::new, BlockBehaviour.Properties.of().sound(SoundType.CANDLE), true);
+	public static final Block FERAN_TORCH = register("feran_torch", properties -> new TorchBlock(ParticleTypes.FLAME, properties),
+			BlockBehaviour.Properties.of().noCollision().instabreak().lightLevel(blockStatex -> 14).sound(SoundType.WOOD).pushReaction(PushReaction.DESTROY), true);
+	public static final Block CRUDE_TORCH = register("crude_torch", properties -> new TorchBlock(ParticleTypes.FLAME, properties),
+			BlockBehaviour.Properties.of().noCollision().instabreak().lightLevel(blockStatex -> 14).sound(SoundType.WOOD).pushReaction(PushReaction.DESTROY), true);
+	public static final Block SMALL_RED_DOTTED_CHRISTMAS_PACKET = register("small_red_dotted_christmas_packet", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOL), true);
+	public static final Block SMALL_RED_CHRISTMAS_PACKET = register("small_red_christmas_packet", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOL), true);
+	public static final Block SMALL_GREEN_CHRISTMAS_PACKET = register("small_green_christmas_packet", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOL), true);
+	public static final Block SMALL_WHITE_CHRISTMAS_PACKET = register("small_white_christmas_packet", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOL), true);
+	public static final Block SMALL_CHRISTMAS_PACKET = register("small_christmas_packet", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOL), true);
+	public static final Block WINTER_ROLL = register("winter_roll", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOL), true);
+	public static final Block WINTER_BAUBLE = register("winter_bauble", Block::new, BlockBehaviour.Properties.of().sound(SoundType.GLASS), true);
+	public static final Block WINTER_WREATH = register("winter_wreath", Block::new, BlockBehaviour.Properties.of().sound(SoundType.CHERRY_LEAVES), true);
+	public static final Block WINTER_GARLAND = register("winter_garland", Block::new, BlockBehaviour.Properties.of().sound(SoundType.CHERRY_LEAVES), true);
+	public static final Block HAY_TARGET = register("hay_target", Block::new, BlockBehaviour.Properties.of().sound(SoundType.CHERRY_LEAVES), true);
 
-	// Ores
+	// Bed
+	//TODO: These are just deco right now and not functional
+	public static final Block FERAN_BED = registerBed("feran_bed", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOD), MapColor.COLOR_ORANGE, true);
+	public static final Block BAMBOO_BED = registerBed("bamboo_bed", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOD), MapColor.COLOR_CYAN, true);
+	public static final Block LUMBERJACK_BED = registerBed("lumberjack_bed", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOD), MapColor.COLOR_BROWN, true);
+	public static final Block KWEEBEC_BED = registerBed("kweebec_bed", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOD), MapColor.COLOR_GREEN, true);
+	public static final Block TAVERN_BED = registerBed("tavern_bed", Block::new, BlockBehaviour.Properties.of().sound(SoundType.WOOD), MapColor.COLOR_RED, true);
+	public static final Block CRUDE_BEDROLL = registerBed("crude_bedroll", Block::new, BlockBehaviour.Properties.of().sound(SoundType.LEAF_LITTER), MapColor.COLOR_BROWN, true);
+
+	// --- Ores ---
 
 	/// 1. COPPER
 	public static final Block COPPER_ORE_BASALT = registerOreBlock("copper_ore_basalt", Block::new, BlockBehaviour.Properties.of().strength(2).requiresCorrectToolForDrops(), Blocks.BASALT, Items.COPPER_ORE, 1);
@@ -309,6 +371,22 @@ public class ModBlocks {
 	// public static final Block THORIUM_ORE_STONE = registerOreBlock("thorium_ore_stone", Block::new, BlockBehaviour.Properties.of().strength(2).requiresCorrectToolForDrops(), Blocks.STONE, Items.COPPER_ORE, 1);
 	// public static final Block THORIUM_ORE_SANDSTONE = registerOreBlock("thorium_ore_sandstone", Block::new, BlockBehaviour.Properties.of().strength(2).requiresCorrectToolForDrops(), Blocks.SANDSTONE, Items.COPPER_ORE, 1);
 
+	public static final Block CHICKEN_COOP_BLOCK = register(
+		"chicken_coop_block", 
+		ChickenCoopBlock::new, 
+		BlockBehaviour.Properties.of()
+			.mapColor(MapColor.WOOD)
+			.instrument(NoteBlockInstrument.BASS)
+			.strength(2.0f, 3.0f)
+			.sound(SoundType.WOOD)
+			// This is important for multi-blocks:
+			.noOcclusion() 
+			// 1.21.1 requires manual ignition/burning logic if you want it flammable, 
+			// but standard wood properties are a good start.
+			.ignitedByLava(),
+		true // We want a BlockItem so we can place it!
+	);
+
     /**
      * Adds all mod-registered blocks to the MineTale creative tab and logs the action.
      *
@@ -326,16 +404,17 @@ public class ModBlocks {
     }
 
     /**
-	 * Register a block under the mod's namespace, optionally create and register its corresponding BlockItem,
-	 * and add the block to the internal list of registered blocks.
+	 * Register a block in the mod namespace and optionally register a matching BlockItem.
 	 *
-	 * @param name              the registry name (path) to use for the block and item
-	 * @param blockFactory      factory that creates the Block from provided BlockBehaviour.Properties
-	 * @param settings          the BlockBehaviour.Properties to apply to the block; this method will set the block's registry ID on it
-	 * @param shouldRegisterItem if `true`, a BlockItem for the block will be created and registered with the same name
-	 * @return                  the registered Block instance
+	 * Registers the block under the mod's namespace, adds it to REGISTERED_BLOCKS and registers it in the block registry. If {@code shouldRegisterBlock} is true, a corresponding {@code BlockItem} with the same registry name is created and registered.
+	 *
+	 * @param name                the registry path to use for both the block and item
+	 * @param blockFactory        factory that creates the Block from the provided BlockBehaviour.Properties
+	 * @param settings            the BlockBehaviour.Properties to apply to the block (its registry id will be set by this method)
+	 * @param shouldRegisterBlock {@code true} to create and register a {@code BlockItem} for the block, {@code false} to skip item registration
+	 * @return                    the registered Block instance
 	 */
-	private static Block register(String name, Function<BlockBehaviour.Properties, Block> blockFactory, BlockBehaviour.Properties settings, boolean shouldRegisterItem) {
+	private static Block register(String name, Function<BlockBehaviour.Properties, Block> blockFactory, BlockBehaviour.Properties settings, boolean shouldRegisterBlock) {
 		// Create a registry key for the block
 		ResourceKey<Block> blockKey = keyOfBlock(name);
 		// Create the block instance
@@ -343,9 +422,42 @@ public class ModBlocks {
 
 		// Sometimes, you may not want to register an item for the block.
 		// Eg: if it's a technical block like `minecraft:moving_piston` or `minecraft:end_gateway`
-		if (shouldRegisterItem) {
+		if (shouldRegisterBlock) {
 			// Items need to be registered with a different type of registry key, but the ID
 			// can be the same.
+			ResourceKey<Item> itemKey = keyOfItem(name);
+
+			BlockItem blockItem = new BlockItem(block, new Item.Properties().setId(itemKey).useBlockDescriptionPrefix());
+			Registry.register(BuiltInRegistries.ITEM, itemKey, blockItem);
+		}
+
+		REGISTERED_BLOCKS.add(block);
+
+		return Registry.register(BuiltInRegistries.BLOCK, blockKey, block);
+	}
+
+	/**
+	 * Creates a bed-like block from the given factory, applies standard wood-based properties and registers it; optionally registers a corresponding BlockItem.
+	 *
+	 * @param name               the registry name for the block (mod namespace is applied)
+	 * @param blockFactory       factory that builds the block from provided properties
+	 * @param settings           base properties to be applied before the method's standardisations
+	 * @param mapColor           the map colour to apply to the block's properties
+	 * @param shouldRegisterBlock if `true`, a BlockItem for the block is created and registered under the same name
+	 * @return                   the block after registration in the block registry
+	 */
+	private static Block registerBed(String name, Function<BlockBehaviour.Properties, Block> blockFactory, BlockBehaviour.Properties settings, MapColor mapColor, boolean shouldRegisterBlock) {
+		ResourceKey<Block> blockKey = keyOfBlock(name);
+		Block block = blockFactory.apply(settings
+						.mapColor(mapColor)
+						.sound(SoundType.WOOD)
+						.strength(0.2f)
+						.noOcclusion()
+						.ignitedByLava()
+						.pushReaction(PushReaction.DESTROY)
+						.setId(blockKey));
+
+		if (shouldRegisterBlock) {
 			ResourceKey<Item> itemKey = keyOfItem(name);
 
 			BlockItem blockItem = new BlockItem(block, new Item.Properties().setId(itemKey).useBlockDescriptionPrefix());
