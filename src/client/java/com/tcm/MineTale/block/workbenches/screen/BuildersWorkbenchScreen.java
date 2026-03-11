@@ -224,20 +224,20 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
             int available = getAvailableCount(ing);
 
             // Draw Item Icon
-            ItemStack[] variants = ing.items().toArray(ItemStack[]::new);
+            // Inside your loop
+            ItemStack[] variants = ing.items().map(ItemStack::new).toArray(ItemStack[]::new);
             if (variants.length > 0) {
-                // Cycle through variants every second
-                ItemStack displayStack = variants[(int) (System.currentTimeMillis() / 1000 % variants.length)];
+                long time = System.currentTimeMillis() / 1000;
+                ItemStack displayStack = variants[(int) (time % variants.length)];
+
                 graphics.renderFakeItem(displayStack, startX, currentY);
 
-                // Draw Text (Red if lacking, White if okay)
-                int color = (available < amountNeeded) ? 0xFF5555 : 0xFFFFFF;
+                int color = (available < amountNeeded) ? 0xFFFF5555 : 0xFFFFFFFF; // Added alpha channel
                 String progress = available + "/" + amountNeeded;
-                graphics.drawString(this.font, progress, startX + 20, currentY + 4, color, true);
+                graphics.drawString(this.font, progress, startX + 22, currentY + 4, color);
 
-                // Tooltip logic
-                if (mouseX >= startX && mouseX < startX + 16 && mouseY >= currentY && mouseY < currentY + 16) {
-                    graphics.renderItemTooltip(this.font, displayStack, mouseX, mouseY);
+                if (mouseX >= startX && mouseX <= startX + 16 && mouseY >= currentY && mouseY <= currentY + 16) {
+                    graphics.setTooltipForNextFrame(this.font, displayStack, mouseX, mouseY);
                 }
             }
             index++;
