@@ -2,19 +2,30 @@ package com.tcm.MineTale.registry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.tcm.MineTale.MineTale;
+import com.tcm.MineTale.item.ModArmorMaterials;
 import com.tcm.MineTale.item.ModCreativeTab;
 
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.BlocksAttacks;
+import net.minecraft.world.item.component.Consumables;
+import net.minecraft.world.item.component.Weapon;
+import net.minecraft.world.item.equipment.ArmorType;
 
 public class ModItems {
 
@@ -32,10 +43,12 @@ public class ModItems {
     public static final Item TREE_SAP = register("tree_sap", Item::new, new Item.Properties());
     public static final Item SAP_GLOB = register("sap_glob", Item::new, new Item.Properties());
     public static final Item RUBBLE = register("rubble", Item::new, new Item.Properties());
+    public static final Item PINECONE = register("pinecone", Item::new, new Item.Properties());
     public static final Item TREE_BARK = register("tree_bark", Item::new, new Item.Properties());
     public static final Item BLUE_CRYSTAL_SHARDS = register("blue_crystal_shards", Item::new, new Item.Properties());
     public static final Item GREEN_CRYSTAL_SHARDS = register("green_crystal_shards", Item::new, new Item.Properties());
     public static final Item YELLOW_CRYSTAL_SHARDS = register("yellow_crystal_shards", Item::new, new Item.Properties());
+    public static final Item RED_CRYSTAL_SHARDS = register("red_crystal_shards", Item::new, new Item.Properties());
 
     // --- MINERALS & REFINED METALS (Unique to Hytale) ---
     public static final Item THORIUM_INGOT = register("thorium_ingot", Item::new, new Item.Properties());
@@ -67,18 +80,42 @@ public class ModItems {
     public static final Item VENOM_SAC = register("venom_sac", Item::new, new Item.Properties());
     public static final Item BONE_FRAGMENT = register("bone_fragment", Item::new, new Item.Properties());
 
+    public static final Item POOP = register("poop", Item::new, new Item.Properties());
+
+    public static final Item MOSSHORN_MILK_BUCKET = register("mosshorn_milk_bucket", Item::new, new Item.Properties()
+            .craftRemainder(Items.BUCKET).component(DataComponents.CONSUMABLE, Consumables.MILK_BUCKET).usingConvertsTo(Items.BUCKET).stacksTo(1));
+
     // --- FABRICS & TEXTILES ---
     public static final Item LINEN_SCRAPS = register("linen_scraps", Item::new, new Item.Properties());
     public static final Item BOLT_OF_LINEN = register("bolt_of_linen", Item::new, new Item.Properties());
     public static final Item SHADOWEAVE_SCRAPS = register("shadoweave_scraps", Item::new, new Item.Properties());
     public static final Item CINDERCLOTH_SCRAPS = register("cindercloth_scraps", Item::new, new Item.Properties());
     public static final Item BOLT_OF_WOOL = register("bolt_of_wool", Item::new, new Item.Properties());
-    public static final Item YELLOW_CLOTH = register("yellow_cloth", Item::new, new Item.Properties());
+    public static final Item WOOL_SCRAPS = register("wool_scraps", Item::new, new Item.Properties());
 
     // --- SEEDS & FARMING (Bags and Bulbs) ---
     public static final Item LETTUCE = register("lettuce", Item::new, new Item.Properties().food(
-        new FoodProperties.Builder().nutrition(2).saturationModifier(0.3f).build()
-    ));
+        new FoodProperties.Builder().nutrition(2).saturationModifier(0.3f).build()));
+    public static final Item WILD_BERRY = register("wild_berry", Item::new, new Item.Properties().food(
+            new FoodProperties.Builder().nutrition(2).saturationModifier(0.3f).build()));
+    public static final Item CORN = register("corn", Item::new, new Item.Properties().food(
+            new FoodProperties.Builder().nutrition(2).saturationModifier(0.3f).build()));
+    public static final Item CAULIFLOWER = register("cauliflower", Item::new, new Item.Properties().food(
+            new FoodProperties.Builder().nutrition(2).saturationModifier(0.3f).build()));
+    public static final Item TURNIP = register("turnip", Item::new, new Item.Properties().food(
+            new FoodProperties.Builder().nutrition(2).saturationModifier(0.3f).build()));
+    public static final Item AUBERGINE = register("aubergine", Item::new, new Item.Properties().food(
+            new FoodProperties.Builder().nutrition(2).saturationModifier(0.3f).build()));
+    public static final Item TOMATO = register("tomato", Item::new, new Item.Properties().food(
+            new FoodProperties.Builder().nutrition(2).saturationModifier(0.3f).build()));
+    public static final Item CHILLI = register("chilli",  Item::new, new Item.Properties().food(
+            new FoodProperties.Builder().nutrition(2).saturationModifier(0.3f).build()));
+    public static final Item RICE = register("rice", Item::new, new Item.Properties().food(
+            new FoodProperties.Builder().nutrition(2).saturationModifier(0.3f).build()));
+    public static final Item ONION = register("onion", Item::new, new Item.Properties().food(
+            new FoodProperties.Builder().nutrition(2).saturationModifier(0.3f).build()));
+
+    public static final Item COTTON = register("cotton", Item::new, new Item.Properties());
     public static final Item CHILLI_SEED_BAG = register("chilli_seed_bag", Item::new, new Item.Properties());
     public static final Item CHILLI_SEED_BAG_ETERNAL = register("chilli_seed_bag_eternal", Item::new, new Item.Properties());
     public static final Item SUNFLOWER_SEED_BAG = register("sunflower_seed_bag", Item::new, new Item.Properties());
@@ -88,11 +125,16 @@ public class ModItems {
     public static final Item ONION_BULB = register("onion_bulb", Item::new, new Item.Properties());
 
     // --- MAGICAL & ALCHEMICAL ---
+    public static final Item GREATER_ESSENCE_OF_LIFE = register("greater_essence_of_life", Item::new, new Item.Properties());
     public static final Item ESSENCE_OF_LIFE = register("essence_of_life", Item::new, new Item.Properties());
     public static final Item ESSENCE_OF_FIRE = register("essence_of_fire", Item::new, new Item.Properties());
     public static final Item ESSENCE_OF_ICE = register("essence_of_ice", Item::new, new Item.Properties());
     public static final Item ESSENCE_OF_THE_VOID = register("essence_of_the_void", Item::new, new Item.Properties());
     public static final Item VOID_HEART = register("void_heart", Item::new, new Item.Properties());
+    public static final Item EMPTY_POTION_BOTTLE = register("empty_potion_bottle", Item::new, new Item.Properties());
+    public static final Item ANTIDOTE = register("antidote", Item::new, new Item.Properties());
+    public static final Item BOOM_POWDER = register("boom_powder", Item::new, new Item.Properties());
+    public static final Item POPBERRY_BOMB = register("popberry_bomb", Item::new, new Item.Properties());
 
     // --- FLORA COMPONENTS (Non-placeable petals) ---
     public static final Item RED_PETALS = register("red_petals", Item::new, new Item.Properties());
@@ -104,7 +146,82 @@ public class ModItems {
     public static final Item BLOOD_PETALS = register("blood_petals", Item::new, new Item.Properties());
     public static final Item CYAN_PETALS = register("cyan_petals", Item::new, new Item.Properties());
 
+    // --- ARMORS & THE LIKE ---
+    public static final Item COPPER_SHIELD = register("copper_shield", ShieldItem::new, new Item.Properties()
+            .durability(999) //Unbreakable in Hytale.
+            .repairable(ItemTags.COPPER_TOOL_MATERIALS)
+            .equippableUnswappable(EquipmentSlot.OFFHAND)
+            .component(
+                    DataComponents.BLOCKS_ATTACKS,
+                    new BlocksAttacks(
+                            0.25F,
+                            1.0F,
+                            List.of(new BlocksAttacks.DamageReduction(100.0F, Optional.empty(), 0.0F, 1.0F)),
+                            new BlocksAttacks.ItemDamageFunction(3.0F, 1.0F, 1.0F),
+                            Optional.of(DamageTypeTags.BYPASSES_SHIELD),
+                            Optional.of(SoundEvents.SHIELD_BLOCK),
+                            Optional.of(SoundEvents.SHIELD_BREAK)
+                    )
+            )
+            .component(DataComponents.BREAK_SOUND, SoundEvents.SHIELD_BREAK)
+    );
+
+    public static final Item WOOD_HELM = register("wood_helm", Item::new, new Item.Properties().humanoidArmor(ModArmorMaterials.WOOD_MATERIAL, ArmorType.HELMET));
+    public static final Item WOOD_CUIRASS = register("wood_cuirass", Item::new, new Item.Properties().humanoidArmor(ModArmorMaterials.WOOD_MATERIAL, ArmorType.CHESTPLATE));
+    //public static final Item WOOD_GAUNTLETS = register("wood_gauntlets", Item::new, new Item.Properties().humanoidArmor(ModArmorMaterials.WOOD_MATERIAL, ArmorType.BOOTS));
+    public static final Item WOOD_GREAVES = register("wood_greaves", Item::new, new Item.Properties().humanoidArmor(ModArmorMaterials.WOOD_MATERIAL, ArmorType.LEGGINGS));
+
+    // --- Tool & Weapons ---
+
+    public static final Item COPPER_MACE = register(
+            "copper_mace",
+            MaceItem::new,
+            new Item.Properties()
+                    .rarity(Rarity.UNCOMMON)
+                    .durability(300)
+                    .component(DataComponents.TOOL, MaceItem.createToolProperties())
+                    .repairable(Items.COPPER_INGOT)
+                    .attributes(MaceItem.createAttributes())
+                    .enchantable(10)
+                    .component(DataComponents.WEAPON, new Weapon(1))
+    );
+
+    public static final Item CRUDE_MACE = register(
+            "crude_mace",
+            MaceItem::new,
+            new Item.Properties()
+                    .rarity(Rarity.COMMON)
+                    .durability(100)
+                    .component(DataComponents.TOOL, MaceItem.createToolProperties())
+                    .repairable(ItemTags.STONE_TOOL_MATERIALS)
+                    .attributes(MaceItem.createAttributes())
+                    .enchantable(7)
+                    .component(DataComponents.WEAPON, new Weapon(1))
+    );
+
+    public static final Item CRUDE_BUILDERS_HAMMER = register("crude_builders_hammer", Item::new, new Item.Properties());
+    public static final Item CRUDE_HATCHET = register("crude_hatchet", Item::new, new Item.Properties());
+    public static final Item CRUDE_BATTLEAXE = register("crude_battleaxe", Item::new, new Item.Properties());
+    public static final Item CRUDE_DAGGERS = register("crude_daggers", Item::new, new Item.Properties());
+    public static final Item CRUDE_SHORTBOW = register("crude_shortbow", BowItem::new, new Item.Properties());
+    public static final Item CRUDE_SWORD = register("crude_sword", Item::new, new Item.Properties());
+    public static final Item CRUDE_LONGSWORD = register("crude_longsword", Item::new, new Item.Properties());
+    public static final Item COPPER_HATCHET = register("copper_hatchet", Item::new, new Item.Properties());
+    public static final Item COPPER_DAGGERS = register("copper_daggers", Item::new, new Item.Properties());
+    public static final Item COPPER_BATTLEAXE = register("copper_battleaxe", Item::new, new Item.Properties());
+    public static final Item COPPER_LONGSWORD = register("copper_longsword", Item::new, new Item.Properties());
+    public static final Item COPPER_SHORTBOW = register("copper_shortbow", BowItem::new, new Item.Properties());
+
     // --- REGISTRATION LOGIC ---
+    /**
+     * Register an item under the MineTale namespace and enqueue it for addition to the mod creative tab.
+     *
+     * @param name        the path portion of the item's identifier (will be combined with the mod ID to form the resource key)
+     * @param itemFactory a function that creates the item from the provided Item.Properties
+     * @param settings    the Item.Properties to apply to the created item; the method will set the item's resource key on these properties
+     * @param <GenericItem> the specific Item subtype created and returned
+     * @return the created and registered item instance
+     */
     public static <GenericItem extends Item> GenericItem register(String name, Function<Item.Properties, GenericItem> itemFactory, Item.Properties settings) {
         ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MineTale.MOD_ID, name));
         GenericItem item = itemFactory.apply(settings.setId(itemKey));

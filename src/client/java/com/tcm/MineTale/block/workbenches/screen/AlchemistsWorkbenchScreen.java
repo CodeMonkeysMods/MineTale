@@ -1,20 +1,14 @@
 package com.tcm.MineTale.block.workbenches.screen;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import com.tcm.MineTale.MineTale;
 import com.tcm.MineTale.block.workbenches.menu.AbstractWorkbenchContainerMenu;
-import com.tcm.MineTale.block.workbenches.menu.WorkbenchWorkbenchMenu;
+import com.tcm.MineTale.block.workbenches.menu.AlchemistsWorkbenchMenu;
 import com.tcm.MineTale.mixin.client.ClientRecipeBookAccessor;
 import com.tcm.MineTale.network.CraftRequestPayload;
 import com.tcm.MineTale.recipe.MineTaleRecipeBookComponent;
 import com.tcm.MineTale.registry.ModBlocks;
 import com.tcm.MineTale.registry.ModRecipeDisplay;
 import com.tcm.MineTale.registry.ModRecipes;
-
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.ClientRecipeBook;
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,6 +18,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.Holder;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -33,10 +28,14 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.RecipeDisplayEntry;
 import net.minecraft.world.item.crafting.display.RecipeDisplayId;
 import net.minecraft.world.item.crafting.display.SlotDisplayContext;
-import net.minecraft.network.chat.Component;
 
-public class WorkbenchWorkbenchScreen extends ModAbstractContainerScreen<WorkbenchWorkbenchMenu> {
-    private static final Identifier TEXTURE = 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+public class AlchemistsWorkbenchScreen extends AbstractRecipeBookScreen<AlchemistsWorkbenchMenu> {
+    private static final Identifier TEXTURE =
         Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "textures/gui/container/workbench_workbench.png");
 
     private final MineTaleRecipeBookComponent mineTaleRecipeBook;
@@ -54,7 +53,7 @@ public class WorkbenchWorkbenchScreen extends ModAbstractContainerScreen<Workben
      * @param inventory the player's inventory to display and interact with
      * @param title     the title component shown at the top of the screen
      */
-    public WorkbenchWorkbenchScreen(WorkbenchWorkbenchMenu menu, Inventory inventory, Component title) {
+    public AlchemistsWorkbenchScreen(AlchemistsWorkbenchMenu menu, Inventory inventory, Component title) {
         this(menu, inventory, title, createRecipeBookComponent(menu));
     }
 
@@ -66,7 +65,7 @@ public class WorkbenchWorkbenchScreen extends ModAbstractContainerScreen<Workben
      * @param title       the screen title component
      * @param recipeBook  the MineTaleRecipeBookComponent used to display and manage recipes in this screen
      */
-    private WorkbenchWorkbenchScreen(WorkbenchWorkbenchMenu menu, Inventory inventory, Component title, MineTaleRecipeBookComponent recipeBook) {
+    private AlchemistsWorkbenchScreen(AlchemistsWorkbenchMenu menu, Inventory inventory, Component title, MineTaleRecipeBookComponent recipeBook) {
         super(menu, recipeBook, inventory, title);
         this.mineTaleRecipeBook = recipeBook;
     }
@@ -77,14 +76,14 @@ public class WorkbenchWorkbenchScreen extends ModAbstractContainerScreen<Workben
      * @param menu the workbench menu used to initialize the recipe book component
      * @return a MineTaleRecipeBookComponent containing the workbench tab and associated recipe category
      */
-    private static MineTaleRecipeBookComponent createRecipeBookComponent(WorkbenchWorkbenchMenu menu) {
-        ItemStack tabIcon = new ItemStack(ModBlocks.WORKBENCH_WORKBENCH_BLOCK.asItem());
+    private static MineTaleRecipeBookComponent createRecipeBookComponent(AlchemistsWorkbenchMenu menu) {
+        ItemStack tabIcon = new ItemStack(ModBlocks.ALCHEMISTS_WORKBENCH_BLOCK.asItem());
         
         List<RecipeBookComponent.TabInfo> tabs = List.of(
-            new RecipeBookComponent.TabInfo(tabIcon.getItem(), ModRecipeDisplay.WORKBENCH_SEARCH)
+            new RecipeBookComponent.TabInfo(tabIcon.getItem(), ModRecipeDisplay.ALCHEMISTS_SEARCH)
         );
 
-        return new MineTaleRecipeBookComponent(menu, tabs, ModRecipes.WORKBENCH_TYPE);
+        return new MineTaleRecipeBookComponent(menu, tabs, ModRecipes.ALCHEMISTS_TYPE);
     }
 
     /**
@@ -197,9 +196,6 @@ public class WorkbenchWorkbenchScreen extends ModAbstractContainerScreen<Workben
             this.craftOneBtn.active = canCraftOne;
             this.craftTenBtn.active = canCraftTen;
             this.craftAllBtn.active = canCraftMoreThanOne;
-
-            // NEW: Render the Ingredients List
-            this.renderIngredientList(graphics, selectedEntry, mouseX, mouseY);
         } else {
             this.craftOneBtn.active = false;
             this.craftTenBtn.active = false;

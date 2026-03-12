@@ -88,12 +88,12 @@ public class FarmersWorkbenchScreen extends ModAbstractContainerScreen<FarmersWo
     }
 
     /**
-     * Initialises the screen layout and registers the crafting controls.
+     * Initialises the screen size and adds three craft buttons to the GUI.
      *
-     * Sets the GUI dimensions to 176×166 and adds three buttons wired to craft requests:
-     * - "Craft" requests 1,
-     * - "x10" requests 10,
-     * - "All" requests all (represented by -1).
+     * Configures the GUI dimensions to 176×166 and creates three buttons wired to craft requests:
+     * - the first button requests 1 item;
+     * - the second button requests 10 items;
+     * - the third button requests all items (represented by -1).
      */
     @Override
     protected void init() {
@@ -106,7 +106,7 @@ public class FarmersWorkbenchScreen extends ModAbstractContainerScreen<FarmersWo
         int defaultLeft = this.leftPos + 90;
         int defaultTop = this.topPos + 25;
 
-        this.craftOneBtn = addRenderableWidget(Button.builder(Component.literal("Craft"), (button) -> {
+        this.craftOneBtn = addRenderableWidget(Button.builder(Component.translatable("gui.minetale.craftbtn"), (button) -> {
             handleCraftRequest(1);
         }).bounds(defaultLeft, defaultTop, 75, 20).build());
 
@@ -114,7 +114,7 @@ public class FarmersWorkbenchScreen extends ModAbstractContainerScreen<FarmersWo
             handleCraftRequest(10);
         }).bounds(defaultLeft, defaultTop + 22, 35, 20).build());
 
-        this.craftAllBtn = addRenderableWidget(Button.builder(Component.literal("All"), (button) -> {
+        this.craftAllBtn = addRenderableWidget(Button.builder(Component.translatable("gui.minetale.allbtn"), (button) -> {
             handleCraftRequest(-1); // -1 represents "All" logic
         }).bounds(defaultLeft + 40, defaultTop + 22, 35, 20).build());
     }

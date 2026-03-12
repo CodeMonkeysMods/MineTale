@@ -1,17 +1,10 @@
 package com.tcm.MineTale.block.workbenches.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.jspecify.annotations.Nullable;
-
 import com.mojang.serialization.Codec;
-import com.tcm.MineTale.block.workbenches.menu.ArmorersWorkbenchMenu;
+import com.tcm.MineTale.block.workbenches.menu.AlchemistsWorkbenchMenu;
 import com.tcm.MineTale.recipe.WorkbenchRecipe;
 import com.tcm.MineTale.registry.ModBlockEntities;
 import com.tcm.MineTale.registry.ModRecipes;
-import com.tcm.MineTale.util.Constants;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
@@ -23,8 +16,12 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import org.jspecify.annotations.Nullable;
 
-public class ArmorersWorkbenchEntity extends AbstractWorkbenchEntity {
+import java.util.List;
+import java.util.stream.IntStream;
+
+public class AlchemistsWorkbenchEntity extends AbstractWorkbenchEntity {
     protected final ContainerData data = new ContainerData() {
         /**
          * Retrieves an internal data value by index for UI synchronization.
@@ -69,8 +66,8 @@ public class ArmorersWorkbenchEntity extends AbstractWorkbenchEntity {
      * @param blockPos   the world position of this block entity
      * @param blockState the block state for this block entity
      */
-    public ArmorersWorkbenchEntity(BlockPos blockPos, BlockState blockState) {
-        super(ModBlockEntities.ARMORERS_WORKBENCH_BE, blockPos, blockState);
+    public AlchemistsWorkbenchEntity(BlockPos blockPos, BlockState blockState) {
+        super(ModBlockEntities.ALCHEMISTS_WORKBENCH_BE, blockPos, blockState);
 
         this.tier = 1;
         this.canPullFromNearby = true;
@@ -87,18 +84,14 @@ public class ArmorersWorkbenchEntity extends AbstractWorkbenchEntity {
     @Override
     protected void saveAdditional(ValueOutput valueOutput) {
         super.saveAdditional(valueOutput);
-        // store() uses Codecs for type safety
         valueOutput.store("WorkbenchTier", Codec.INT, this.tier);
         valueOutput.store("ScanRadius", Codec.DOUBLE, this.scanRadius);
 
-        // Convert the SimpleContainer to a List of ItemStacks for the Codec
-        // Or use the built-in NBT helper if your framework supports it
-        List<ItemStack> stacks = new ArrayList<>();
-        for (int i = 0; i < inventory.getContainerSize(); i++) {
-            stacks.add(inventory.getItem(i));
-        }
+        // Optimized: Stream the inventory slots directly into a list
+        List<ItemStack> stacks = IntStream.range(0, inventory.getContainerSize())
+                                        .mapToObj(inventory::getItem)
+                                        .toList();
 
-        // CHANGE: Use OPTIONAL_CODEC instead of CODEC
         valueOutput.store("Inventory", ItemStack.OPTIONAL_CODEC.listOf(), stacks);
     }
 
@@ -119,6 +112,9 @@ public class ArmorersWorkbenchEntity extends AbstractWorkbenchEntity {
 
         // Read the inventory list back
         valueInput.read("Inventory", ItemStack.OPTIONAL_CODEC.listOf()).ifPresent(stacks -> {
+            // Fix: Clear existing items to prevent stale data if the saved list is smaller
+            inventory.clearContent(); 
+            
             for (int i = 0; i < stacks.size() && i < inventory.getContainerSize(); i++) {
                 inventory.setItem(i, stacks.get(i));
             }
@@ -141,7 +137,7 @@ public class ArmorersWorkbenchEntity extends AbstractWorkbenchEntity {
         }
 
         // // 2. Return the menu as usual
-        return new ArmorersWorkbenchMenu(syncId, playerInventory, this.data, this);
+        return new AlchemistsWorkbenchMenu(syncId, playerInventory, this.data, this);
     }
     
     /**
@@ -151,26 +147,16 @@ public class ArmorersWorkbenchEntity extends AbstractWorkbenchEntity {
      */
     @Override
     public RecipeType<WorkbenchRecipe> getWorkbenchRecipeType() {
-        return ModRecipes.ARMORERS_TYPE;
+        return ModRecipes.ALCHEMISTS_TYPE;
     }
 
     /**
-     * Determines whether the workbench currently has fuel available.
+     * Report that the workbench has fuel available.
      *
-     * Checks that the entity is in a loaded level and that the configured fuel slot contains an item.
-     *
-     * @return `true` if the entity is in a loaded level and the fuel slot contains an item, `false` otherwise.
+     * @return `true` always.
      */
     @Override
     protected boolean hasFuel() {
-        if (this.level == null) return false;
-        
-        // Check if block is lit
-        // BlockState state = this.level.getBlockState(this.worldPosition);
-        // boolean isLit = state.hasProperty(BlockStateProperties.LIT) && state.getValue(BlockStateProperties.LIT);
-        
-        boolean hasFuelItem = !this.getItem(Constants.FUEL_SLOT).isEmpty();
-        
-        return hasFuelItem;
+        return true;
     }
 }

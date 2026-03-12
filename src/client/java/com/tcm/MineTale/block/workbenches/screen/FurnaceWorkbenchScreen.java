@@ -19,7 +19,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 
-public class FurnaceWorkbenchScreen extends AbstractRecipeBookScreen<FurnaceWorkbenchMenu> {
+public class    FurnaceWorkbenchScreen extends AbstractRecipeBookScreen<FurnaceWorkbenchMenu> {
     private static final Identifier TEXTURE = 
         Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "textures/gui/container/furnace_workbench.png");
 
