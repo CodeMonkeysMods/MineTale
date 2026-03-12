@@ -35,7 +35,7 @@ import net.minecraft.world.item.crafting.display.RecipeDisplayId;
 import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.minecraft.network.chat.Component;
 
-public class ArmorersWorkbenchScreen extends AbstractRecipeBookScreen<ArmorersWorkbenchMenu> {
+public class ArmorersWorkbenchScreen extends ModAbstractContainerScreen<ArmorersWorkbenchMenu> {
     private static final Identifier TEXTURE = 
         Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "textures/gui/container/workbench_workbench.png");
 
@@ -189,6 +189,9 @@ public class ArmorersWorkbenchScreen extends AbstractRecipeBookScreen<ArmorersWo
             this.craftOneBtn.active = canCraftOne;
             this.craftTenBtn.active = canCraftTen;
             this.craftAllBtn.active = canCraftMoreThanOne;
+
+            // NEW: Render the Ingredients List
+            this.renderIngredientList(graphics, selectedEntry, mouseX, mouseY);
         } else {
             this.craftOneBtn.active = false;
             this.craftTenBtn.active = false;

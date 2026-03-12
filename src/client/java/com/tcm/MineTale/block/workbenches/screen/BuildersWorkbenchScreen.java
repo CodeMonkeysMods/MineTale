@@ -20,7 +20,6 @@ import net.minecraft.client.ClientRecipeBook;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.navigation.ScreenPosition;
-import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.Holder;
@@ -34,8 +33,9 @@ import net.minecraft.world.item.crafting.display.RecipeDisplayEntry;
 import net.minecraft.world.item.crafting.display.RecipeDisplayId;
 import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 
-public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWorkbenchMenu> {
+public class BuildersWorkbenchScreen extends ModAbstractContainerScreen<BuildersWorkbenchMenu> {
     private static final Identifier TEXTURE = 
         Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "textures/gui/container/workbench_workbench.png");
 
@@ -159,8 +159,8 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
       guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, k, l, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
    }
 
-        @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    @Override
+    public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         renderBackground(graphics, mouseX, mouseY, delta);
         super.render(graphics, mouseX, mouseY, delta);
 
@@ -186,7 +186,7 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
             this.craftAllBtn.active = canCraftMoreThanOne;
 
             // NEW: Render the Ingredients List
-            renderIngredientList(graphics, selectedEntry, mouseX, mouseY);
+            this.renderIngredientList(graphics, selectedEntry, mouseX, mouseY);
         } else {
             this.craftOneBtn.active = false;
             this.craftTenBtn.active = false;
@@ -194,75 +194,6 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
         }
 
         renderTooltip(graphics, mouseX, mouseY);
-    }
-
-    private void renderIngredientList(GuiGraphics graphics, RecipeDisplayEntry entry, int mouseX, int mouseY) {
-        Optional<List<Ingredient>> reqs = entry.craftingRequirements();
-        if (reqs.isEmpty()) return;
-
-        // Group requirements to avoid duplicate rows for the same item type
-        Map<List<Holder<Item>>, Integer> aggregated = new HashMap<>();
-        Map<List<Holder<Item>>, Ingredient> holderToIng = new HashMap<>();
-
-        for (Ingredient ing : reqs.get()) {
-            List<Holder<Item>> key = ing.items().toList();
-            aggregated.put(key, aggregated.getOrDefault(key, 0) + 1);
-            holderToIng.putIfAbsent(key, ing);
-        }
-
-        int startX = this.leftPos + 8; // Adjust to fit your texture's empty space
-        int startY = this.topPos + 20;
-        int rowHeight = 20;
-        int index = 0;
-
-        for (Map.Entry<List<Holder<Item>>, Integer> reqEntry : aggregated.entrySet()) {
-            Ingredient ing = holderToIng.get(reqEntry.getKey());
-            int amountNeeded = reqEntry.getValue();
-            int currentY = startY + (index * rowHeight);
-
-            // Calculate total available (Inv + Nearby)
-            int available = getAvailableCount(ing);
-
-            // Draw Item Icon
-            // Inside your loop
-            ItemStack[] variants = ing.items().map(ItemStack::new).toArray(ItemStack[]::new);
-            if (variants.length > 0) {
-                long time = System.currentTimeMillis() / 1000;
-                ItemStack displayStack = variants[(int) (time % variants.length)];
-
-                graphics.renderFakeItem(displayStack, startX, currentY);
-
-                int color = (available < amountNeeded) ? 0xFFFF5555 : 0xFFFFFFFF; // Added alpha channel
-                String progress = available + "/" + amountNeeded;
-                graphics.drawString(this.font, progress, startX + 22, currentY + 4, color);
-
-                if (mouseX >= startX && mouseX <= startX + 16 && mouseY >= currentY && mouseY <= currentY + 16) {
-                    graphics.setTooltipForNextFrame(this.font, displayStack, mouseX, mouseY);
-                }
-            }
-            index++;
-        }
-    }
-
-    private int getAvailableCount(Ingredient ingredient) {
-        int found = 0;
-        // Check Player Inventory
-        // Use getContainerSize() and getItem(i) for safe access
-        Inventory inv = this.minecraft.player.getInventory();
-        for (int i = 0; i < inv.getContainerSize(); i++) {
-            ItemStack stack = inv.getItem(i);
-            if (ingredient.test(stack)) {
-              found += stack.getCount();
-            }
-         }
-        
-        // Check Networked Nearby Items
-        if (this.menu instanceof AbstractWorkbenchContainerMenu workbenchMenu) {
-            for (ItemStack stack : workbenchMenu.getNetworkedNearbyItems()) {
-                if (ingredient.test(stack)) found += stack.getCount();
-            }
-        }
-        return found;
     }
 
     /**
