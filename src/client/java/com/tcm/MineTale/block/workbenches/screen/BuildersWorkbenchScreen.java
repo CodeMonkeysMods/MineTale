@@ -20,7 +20,6 @@ import net.minecraft.client.ClientRecipeBook;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.navigation.ScreenPosition;
-import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.Holder;
@@ -34,8 +33,9 @@ import net.minecraft.world.item.crafting.display.RecipeDisplayEntry;
 import net.minecraft.world.item.crafting.display.RecipeDisplayId;
 import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 
-public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWorkbenchMenu> {
+public class BuildersWorkbenchScreen extends ModAbstractContainerScreen<BuildersWorkbenchMenu> {
     private static final Identifier TEXTURE = 
         Identifier.fromNamespaceAndPath(MineTale.MOD_ID, "textures/gui/container/workbench_workbench.png");
 
@@ -159,28 +159,23 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
    }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         renderBackground(graphics, mouseX, mouseY, delta);
         super.render(graphics, mouseX, mouseY, delta);
 
-        // 1. Get the current selection from the book
         RecipeDisplayId currentId = this.mineTaleRecipeBook.getSelectedRecipeId();
-        
-        // 2. If it's NOT null, remember it!
         if (currentId != null) {
             this.lastKnownSelectedId = currentId;
         }
 
-        // 3. Use the remembered ID to find the entry for button activation
         RecipeDisplayEntry selectedEntry = null;
         if (this.lastKnownSelectedId != null && this.minecraft.level != null) {
             ClientRecipeBook book = this.minecraft.player.getRecipeBook();
             selectedEntry = ((ClientRecipeBookAccessor) book).getKnown().get(this.lastKnownSelectedId);
         }
 
-        // 2. Button Activation Logic
         if (selectedEntry != null) {
-            // We use the entry directly. It contains the 15 ingredients needed!
+            // Existing Button Logic
             boolean canCraftOne = canCraft(this.minecraft.player, selectedEntry, 1);
             boolean canCraftMoreThanOne = canCraft(this.minecraft.player, selectedEntry, 2);
             boolean canCraftTen = canCraft(this.minecraft.player, selectedEntry, 10);
@@ -188,6 +183,9 @@ public class BuildersWorkbenchScreen extends AbstractRecipeBookScreen<BuildersWo
             this.craftOneBtn.active = canCraftOne;
             this.craftTenBtn.active = canCraftTen;
             this.craftAllBtn.active = canCraftMoreThanOne;
+
+            // NEW: Render the Ingredients List
+            this.renderIngredientList(graphics, selectedEntry, mouseX, mouseY);
         } else {
             this.craftOneBtn.active = false;
             this.craftTenBtn.active = false;
